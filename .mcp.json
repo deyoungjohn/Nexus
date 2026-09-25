@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "project-memory": {
+      "type": "stdio",
+      "command": "bash",
+      "args": [
+        "scripts/memory-mcp.sh"
+      ]
+    }
+  }
+}

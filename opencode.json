@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "project-memory": {
+      "type": "local",
+      "command": ["bash", "scripts/memory-mcp.sh"],
+      "cwd": ".",
+      "enabled": true
+    }
+  }
+}

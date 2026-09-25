@@ -1,0 +1,7 @@
+[mcp_servers.project-memory]
+command = "bash"
+args = ["scripts/memory-mcp.sh"]
+cwd = "."
+required = true
+startup_timeout_sec = 30
+tool_timeout_sec = 30

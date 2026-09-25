@@ -1,0 +1,5 @@
+# Add this entry under mcp_servers in ~/.hermes/config.yaml once.
+# Start Hermes from the root of a project copied from portable.
+project-memory:
+  command: bash
+  args: ["scripts/memory-mcp.sh"]

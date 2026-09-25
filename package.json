@@ -1,0 +1,12 @@
+{
+  "name": "portable",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Portable cross-agent software project workspace",
+  "scripts": {
+    "check": "./scripts/check.sh"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/server-memory": "2026.8.31"
+  }
+}
