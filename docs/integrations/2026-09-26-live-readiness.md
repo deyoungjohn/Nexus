@@ -5,12 +5,14 @@ allowlist or trade authorization. P5 remains fail-closed and no signer is wired.
 
 | Gate | Evidence and implemented step | Remaining release condition |
 |---|---|---|
-| Underlying reference | Pyth Pro's documented `feedUpdateTimestamp` is the price-origin clock; `timestampUs` may carry a prior price. Stable regular-session IDs observed from its public symbol directory: NVDA 1314, AMD 949, AAPL 922. `pyth-pro.ts` converts mantissa/exponent to exact 18-decimal USD units and returns null on malformed/non-regular packets or provider errors. | Provision a server-side Pyth Pro key, verify one authenticated response and feed terms during a regular session, then test freshness with P5 policy. The key is not in project memory. |
+| Underlying reference | `chainlink-bsc.ts` reads Chainlink's published BSC NVDA/USD `0xea5c2Cbb5cD57daC24E26180b19a929F3E9699B8` and AAPL/USD `0xb7Ed5bE7977d61E83534230f3256C021e0fae0B6` proxies at a pinned block. It checks chain, block number/age, description, decimals, round validity and `updatedAt`; weekend probes decoded both Friday rounds and rejected them at a 60-second freshness limit. | Verify freshness and quote deviation during a regular NYSE session; accept that a 24-hour feed heartbeat can leave periods blocked. No BSC AMD/USD feed was listed in the published directory at this review, so AMDon is excluded from the two-asset executable MVP. Pyth remains dormant, not required. |
 | Economic quantity | Ondo publishes BSC SyntheticSharesOracle `0xF4Fd8a1B412633e10527454137A29Db7Aa35F15e`. `ondo-quantity.ts` pins one BSC block, checks chain 56, reads `getSValue` plus `assetData`, and rejects an active/scheduled pause. Read-only live probes passed for three P2 candidate token addresses. | Recheck issuer contract address and decimals at activation; refresh ratio and mapping revision with each quote/recheck. Candidate tokens are not yet registered for execution. |
-| Owner and transfer eligibility | Ondo eligibility and secondary-market restrictions require a non-prohibited person and permitted transfers; a prior supervised DEX fill does not establish a standing determination. | Owner confirms eligibility for the intended wallet and venue without storing identity details; implement a dated, revocable attestation source. No response is assumed. |
-| Exchange session and issuer events | P5 checks a dated America/New_York session and fresh issuer-event evidence. | Maintain an authoritative holiday/early-close calendar and manual issuer IR review with source/revision/recheck process; no automation from an unreviewed event feed. |
-| Settlement valuation | P5 requires fresh lower/upper USDT-to-USD evidence for cash and proceeds. | Select and verify a source with timestamps, conservative depeg bounds and outages. |
-| Token risk | Binance token audit returned unsupported for NVDAon in P2. Ondo's published contract audits are useful provenance but do not satisfy a token-specific `clear` result. | Obtain supported token-risk evidence or make an explicit, reviewed policy change with bounded scope. Current gate blocks `unsupported`. |
+| Owner and transfer eligibility | Ondo eligibility and secondary-market restrictions require a non-prohibited person and permitted transfers; a prior supervised DEX fill does not establish a standing determination. Eligibility was discussed with the owner; no identity information is retained here. | Implement a dated, revocable attestation bound to the exact wallet and venue, plus chain-level transfer check. A conversation statement cannot populate live `EligibilityEvidence`. |
+| Exchange session | `nyse-calendar.ts` fetches the official NYSE holiday/early-close section, requires an exact reviewed digest, and issues five-minute dated evidence for 2026–2027. Live read-only probes identified 2026-09-26 as closed, 2026-09-28 as regular, Thanksgiving as a holiday and 2026-11-27 as a 13:00 early close. | Review any publisher revision before updating the digest; emergency closures and stock-specific halts need separate evidence. P5 currently blocks early-close dates unless policy is set for the shorter session. |
+| Issuer events | P5 requires issuer IR provenance, revision and confirmation. | Implement the manual issuer IR review/recheck process for NVDA and AAPL; no unreviewed event feed may authorize a plan. |
+| Settlement valuation | `chainlink-bsc.ts` reads the standard 8-decimal BSC USDT/USD proxy `0xB97Ad0E74fa7d920791E90258A6E2085088b4320`, verifies round time, and applies an explicit uncertainty band to lower/upper USD values. A read-only mainnet probe succeeded; a 60-second limit blocked a round older than one minute. | Set reviewed feed-age and uncertainty policies, test depeg and provider outage behavior with P5's full evidence bundle. The published heartbeat is 900 seconds. |
+| Token status | `binance-rwa-status.ts` reads the public chain-56 token status, treats `openState=true` with `reasonCode=TRADING` as a 30-second venue status, and blocks other/unknown states. Read-only NVDAon/AAPLon probes succeeded on 2026-09-26 while the separate stock session was closed. | Recheck immediately before each leg and confirm independent issuer/chain restrictions; a public venue status is momentary and does not establish transfer eligibility. |
+| Token risk | Binance token audits returned `hasResult=false`, `isSupported=false` for both NVDAon and AAPLon on 2026-09-26. GoPlus returned proxy metadata but no honeypot, blacklist, whitelist, transfer-pause or mintability determinations for either; these unknowns cannot be called clear. Ondo's contract audits are provenance, not a token-specific result. | Obtain supported token-risk evidence or design and explicitly review a narrowly bounded exception using exact contracts/implementations, current transfer simulation and issuer controls. Current gate blocks `unsupported`. |
 | Route and lifecycle | P2 proved one owner-approved 5-USDT direct-V3 trade and receipt. P5 can decode that route class, simulate it and hash evidence. | P7 must persist exact approval, revalidate each leg, record transaction identity, deduplicate submission and reconcile mined/replaced/reorged outcomes. No application execution path exists. |
 
 Read-only BSC observation at blocks 124179311–124179324: NVDAon
@@ -20,6 +22,14 @@ metadata were zero at those blocks. These are snapshots, not cached constants.
 The NVDAon ratio differs from P2's earlier public display value, demonstrating
 why a fresh mapping revision matters.
 
+Read-only BSC Chainlink observation on 2026-09-26: NVDA/USD was $225.30
+with provider `updatedAt=2026-09-25T19:55:00Z`; AAPL/USD was $340.745 with
+`updatedAt=2026-09-25T19:40:29Z`. Both are weekend-stale for live execution.
+The USDT/USD feed returned a source timestamp and a bounded valuation under a
+20-minute age limit. These probes validate decoding, not a regular-session
+market gate pass. The MVP reference set is NVDAon and AAPLon; no candidate is
+registered for execution yet.
+
 Primary references: [Ondo contract addresses](https://docs.ondo.finance/addresses),
 [Ondo token and quote pricing](https://docs.ondo.finance/ondo-stocks/token-and-quote-pricing),
 [Ondo eligibility](https://docs.ondo.finance/ondo-stocks/eligibility),
@@ -28,3 +38,11 @@ Primary references: [Ondo contract addresses](https://docs.ondo.finance/addresse
 [Pyth Pro payload](https://docs.pyth.network/price-feeds/pro/payload-reference),
 [Pyth Pro REST authentication](https://docs.pyth.network/price-feeds/pro/api/rest),
 [Pyth Pro symbol directory](https://pyth.dourolabs.app/v1/symbols?asset_type=equity).
+The calendar source is the [NYSE holidays and trading-hours page](https://www.nyse.com/markets/hours-calendars).
+The current no-subscription source decision uses the
+[Chainlink BSC feed directory](https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json)
+and [Chainlink feed integration guidance](https://docs.chain.link/data-feeds/using-data-feeds).
+The [Pyth Core upgrade notice](https://www.pyth.network/blog/the-pyth-core-upgrade)
+explains why Core Hermes is not a free production fallback.
+Risk-source findings extend the [P2 integration matrix](2026-09-25-phase-2.md);
+unknown proxy fields follow [GoPlus's token-security response guide](https://docs.gopluslabs.io/reference/response-details).

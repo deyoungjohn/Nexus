@@ -9,14 +9,15 @@ const hex = (value: bigint): string => value.toString(16).padStart(64, "0");
 const request = { instrumentId: "nvda", tokenAddress, rpcUrl: "https://example.invalid/rpc",
   maxBlockAgeMs: 10_000, now };
 const replies = (changes: { paused?: bigint; pending?: bigint; pauseStart?: bigint;
-  chain?: string; blockTime?: bigint } = {}): typeof fetch => (async (_url, init) => {
+  chain?: string; blockTime?: bigint; blockNumber?: string } = {}): typeof fetch => (async (_url, init) => {
   const body = JSON.parse(String(init?.body)) as { id: number; method: string;
     params: Array<{ data: string }> };
   const shares = 1000932054247057497n;
   const result = body.method === "eth_chainId" ? changes.chain ?? "0x38"
     : body.method === "eth_blockNumber" ? "0x100"
       : body.method === "eth_getBlockByNumber"
-        ? { timestamp: `0x${(changes.blockTime ?? second).toString(16)}` }
+        ? { number: changes.blockNumber ?? "0x100",
+          timestamp: `0x${(changes.blockTime ?? second).toString(16)}` }
         : body.params[0]?.data.startsWith("0x0a562827")
           ? `0x${hex(shares)}${hex(changes.paused ?? 0n)}`
           : `0x${hex(shares)}${hex(changes.pending ?? 0n)}${hex(second - 10n)}`
@@ -38,4 +39,5 @@ test("P5 Ondo quantity blocks wrong chain, old block and corporate-action pause"
   assert.equal(await fetchOndoBscQuantity(request, replies({ paused: 1n })), null);
   assert.equal(await fetchOndoBscQuantity(request, replies({ pending: 2n })), null);
   assert.equal(await fetchOndoBscQuantity(request, replies({ pauseStart: second + 100n })), null);
+  assert.equal(await fetchOndoBscQuantity(request, replies({ blockNumber: "0xff" })), null);
 });

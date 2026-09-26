@@ -627,3 +627,71 @@ evidence supports them; do not invent failures to populate the log.
   typecheck, build and configuration checks; `git diff --check` passed.
   Five focused P5.5 tests passed. P5.5 remains open for authenticated price
   access and the other matrix gates; no live execution claim is made.
+
+## 2026-09-26 — P5.5a/P5.5c/P5.5d — Keyless market-source pivot
+
+- Agent/client: Codex. The owner reported no Pyth Pro access and supplied
+  eligibility context. No identity or wallet details were stored. Read
+  state/specification/plan/recent logs and ADR 0007; searched
+  shared memory. Baseline `./scripts/check.sh` passed 46 named tests, with two
+  PostgreSQL suites skipped, plus typecheck/build/config. Existing unrelated
+  workspace changes were preserved. Existing P3/P4/P5 interfaces remain
+  compatible.
+- P5.5a source decision: Pyth Core Hermes also requires an authenticated data
+  plan after its 2026 upgrade, so it is not a free fallback. Chainlink's
+  published BSC directory lists underlying NVDA/USD and AAPL/USD proxies with
+  `latestRoundData` timestamps, but no AMD/USD BSC proxy at this review. The
+  blueprint permits two verified equity instruments; selected NVDAon/AAPLon
+  as read-only MVP candidates and kept the Pyth adapter dormant. This pivot
+  and its freshness limitation are in [ADR 0008](decisions/0008-keyless-bsc-market-reference.md).
+- P5.5a component: `chainlink-bsc.ts` verifies chain 56, proxy label and
+  decimals, a pinned block, positive/answered round and provider `updatedAt`.
+  It converts eight-decimal USD to 18-decimal exact units. Mainnet read-only
+  probes returned NVDA/USD $225.30 at 2026-09-25 19:55Z and AAPL/USD
+  $340.745 at 19:40:29Z. A 60-second source-age limit correctly blocked both
+  on Saturday. Wrong chain, label, decimals, price, round, age and block tests
+  pass. Lesson: a published feed is not always fresh enough to authorize a
+  trade; regular-session checks must measure availability before activation.
+- P5.5d component: the same validated Chainlink round reader produces a
+  conservative lower/upper USDT/USD settlement valuation from the standard
+  BSC proxy, with explicit uncertainty basis points. Mainnet read-only probe
+  succeeded with a 20-minute policy; a 60-second policy blocked the older
+  round. Depeg, stale and invalid-band regression cases pass. The actual
+  uncertainty/age policy still needs review.
+- P5.5b bug prevention: both Ondo and Chainlink readers now verify that the
+  returned block header number matches the pinned RPC block. Mismatched-header
+  regression cases pass. Lesson: a block tag alone is insufficient to validate
+  metadata returned in a separate RPC response.
+- P5.5c eligibility: a conversation confirmation is useful owner context but
+  cannot populate live `EligibilityEvidence` without an exact wallet/venue,
+  expiry and revocation record. The app has no such flow yet. No details were
+  put in the repository or MCP memory. Remaining release gates are in the
+  [live-readiness matrix](integrations/2026-09-26-live-readiness.md).
+- P5.5c component: `binance-rwa-status.ts` adapts the public per-asset venue
+  status to a 30-second token-status receipt and maps all non-explicit-open
+  responses to blocked/unknown. A regular exchange session remains an
+  independent gate. Fixture failure/expiry tests and read-only NVDAon/AAPLon
+  endpoint probes passed. Lesson: off-hours token transferability and equity
+  reference-market hours are separate facts.
+- P5.5d risk-source finding: read-only Binance audits returned unsupported for
+  both candidates. GoPlus returned proxy metadata and zero observed taxes, but
+  its critical honeypot/blacklist/whitelist/transfer-pause/mintability fields
+  were absent for each proxy, consistent with its documented proxy caveat.
+  No `clear` audit evidence was produced. Lesson: a provider response with
+  missing risk fields is not a passed risk check; a scoped policy exception
+  would require a separate reviewed decision.
+- P5.5c component/decision: `nyse-calendar.ts` records the official 2026–2027
+  holiday and early-close dates and fetches the publisher page before issuing
+  a five-minute session record. It hashes the reviewed table/footnote section;
+  a publisher/layout revision, outage, invalid date or date outside the reviewed
+  range blocks. Live read-only checks produced weekend, regular, Thanksgiving
+  holiday and 13:00 early-close states. Fixture tests cover each and digest
+  mismatch. [ADR 0009](decisions/0009-versioned-nyse-calendar.md) records the
+  fail-closed maintenance choice. Lesson: static calendar content needs a
+  publisher-change detector; an early close must retain its actual close time.
+- Full verification after this increment: local PostgreSQL 16-backed
+  `TEST_DATABASE_URL=… ./scripts/check.sh` passed 67/67 tests, strict
+  typecheck, build and configuration; `git diff --check` passed. Six new
+  named tests passed, including the revised Ondo pinned-header regression.
+  Mainnet probes were read-only and performed on a closed equity session;
+  no regular-session approval or execution test is claimed.

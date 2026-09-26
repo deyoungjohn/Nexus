@@ -276,3 +276,23 @@
   passed 61/61 tests, typecheck, build and configuration checks; `git diff
   --check` passed. Live read-only BSC oracle probes succeeded for NVDAon,
   AMDon and AAPLon; no authenticated Pyth response was available.
+
+## 2026-09-26 — P5.5 keyless market evidence and calendar
+
+- Agent/client: Codex.
+- Change: Added pinned-block Chainlink BSC readers for NVDA/USD, AAPL/USD and
+  USDT/USD, a short-lived Binance token-status reader, and a versioned NYSE
+  calendar reader. Hardened Ondo block-header matching; added ADRs 0008/0009,
+  updated P5.5 records and six named tests.
+- Reason: The owner has no Pyth Pro access; a two-equity MVP can use published
+  on-chain prices without a new API subscription. Calendar changes and proxy
+  token-risk unknowns must fail closed.
+- Behavior/compatibility impact: New read-only P5.5 adapters and an MVP
+  candidate scope of NVDAon/AAPLon; AMDon remains read-only. P3/P4/P5 public
+  APIs stay compatible. No wallet signer, trade submission or live instrument
+  registration was added. Unsupported token audits still block live execution.
+- Verification: baseline `./scripts/check.sh` passed 46 named tests with two
+  database suites skipped. PostgreSQL-backed final `./scripts/check.sh`
+  passed 67/67 tests, typecheck, build and configuration; `git diff --check`
+  passed. Read-only BSC and NYSE probes validated decoding and stale/weekend
+  blocking; no regular-session execution was tested.

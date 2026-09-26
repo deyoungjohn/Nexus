@@ -1,6 +1,6 @@
 # ADR 0007: Source equity price age and Ondo share exposure independently
 
-- Status: accepted for read-only integration; live release remains gated
+- Status: superseded for the MVP equity reference by [ADR 0008](0008-keyless-bsc-market-reference.md); Ondo quantity decision retained
 - Date: 2026-09-26
 - Owners: Codex (implementation); project owner (eligibility and risk policy pending)
 

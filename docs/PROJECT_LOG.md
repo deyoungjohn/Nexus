@@ -222,3 +222,23 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
 - P5.5 remains open. No wallet call, signer, trade or executable instrument
   registration was added. P6 has not begun. The remaining gates are tracked in
   [the live-readiness matrix](integrations/2026-09-26-live-readiness.md).
+
+## 2026-09-26 — P5.5 keyless reference and settlement pivot
+
+- A production Pyth subscription is unavailable, so the two-asset MVP now
+  targets published BSC Chainlink NVDA/USD and AAPL/USD underlying feeds and
+  the USDT/USD settlement feed. AMDon remains outside the executable scope.
+- Added read-only pinned-block Chainlink adapters and source-age/round checks.
+  The live probes decoded the three feeds; Friday equity timestamps correctly
+  blocked a Saturday 60-second freshness policy. The owner eligibility
+  discussion does not create wallet/venue-bound evidence or a standing trade
+  approval. No signer or execution path was enabled.
+- P5.5 remains open for regular-session validation and the remaining matrix
+  gates. P6 has not begun; P7 still owns approval and recovery.
+- A separate short-lived public token-status reader passed read-only checks
+  for both candidates. Neither Binance nor GoPlus produced enough token-risk
+  evidence to mark either token clear; the audit gate remains blocked.
+- A versioned official NYSE calendar reader passed read-only weekend,
+  regular-day, holiday and early-close probes. Publisher revisions block until
+  reviewed. Issuer events, wallet/venue attestation, audit policy, regular-
+  session source validation and P7 execution/recovery remain open.

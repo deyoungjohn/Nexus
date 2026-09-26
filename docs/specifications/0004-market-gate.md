@@ -85,12 +85,18 @@ tampering, wrong input, cost limits, low allowance, settlement depeg conversion,
 missing held-position valuation, full-size P4 limits and adapter outage. The PostgreSQL-backed full check also
 preserves P3/P4 behavior.
 
-Production source adapters still need verified owner/transfer eligibility,
-chain-checked quantity semantics for each chosen token, source-timestamped
-reference prices, a maintained exchange calendar, a checked issuer IR process,
-settlement valuation and a supported audit source or an explicit future
-policy change for unavailable audits. P2's one
-supervised trade supplies no standing eligibility. P7 owns durable approval,
+Production evidence still needs wallet/venue-bound owner/transfer eligibility,
+regular-session source freshness and quote validation, a maintained exchange
+calendar, a checked issuer IR process, reviewed settlement bounds and a
+supported audit source or an explicit future policy change for unavailable
+audits. P2's one supervised trade supplies no standing eligibility. P7 owns durable approval,
 pre-leg revalidation, transaction identity, receipt/reorg recovery and any
 actual live executor. Until these gates are met, no automated plan is
 executable.
+
+P5.5 follow-up: read-only Ondo quantity and BSC Chainlink reference/settlement
+adapters now cover the NVDAon/AAPLon candidate scope. Regular-session
+freshness, wallet/venue-bound eligibility and the remaining source/policy
+checks are still required. [ADR 0008](../decisions/0008-keyless-bsc-market-reference.md)
+records the keyless source pivot; this specification's fail-closed boundary
+and no-execution status remain in force.

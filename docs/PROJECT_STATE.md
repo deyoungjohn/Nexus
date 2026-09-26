@@ -78,20 +78,36 @@ inspectable evidence and recoverable sequential execution.
   [specification 0004](specifications/0004-market-gate.md).
 - P5.5 progress: a Pyth Pro reference adapter preserves the provider's
   `feedUpdateTimestamp` and fails closed on malformed/non-regular packets or
-  missing credentials; no authenticated live Pyth response has been verified.
+  missing credentials; it is dormant because no Pro access is available.
   A read-only BSC adapter reads Ondo's published SyntheticSharesOracle at one
   pinned block and rejects wrong-chain, stale, paused or scheduled mappings.
   Live read-only probes returned positive NVDAon, AMDon and AAPLon ratios on
   2026-09-26. See [the live-readiness matrix](integrations/2026-09-26-live-readiness.md)
   and [ADR 0007](decisions/0007-live-market-sources.md).
-- Current full verification: 61/61 tests with a real PostgreSQL 16 server,
+- P5.5 no-subscription source pivot: read-only Chainlink BSC adapters now
+  source timestamped NVDA/USD and AAPL/USD underlying rounds and a bounded
+  USDT/USD settlement valuation. Mainnet probes decoded the feeds; the equity
+  rounds were from the prior session and correctly failed a 60-second age
+  limit on 2026-09-26. The two-asset candidate scope is NVDAon and AAPLon;
+  AMDon remains read-only without a verified BSC reference. See
+  [ADR 0008](decisions/0008-keyless-bsc-market-reference.md).
+- A short-lived Binance public status adapter now reports only an explicit
+  open venue state; read-only NVDAon/AAPLon checks succeeded. Both Binance
+  token audits remain unsupported, and GoPlus leaves core proxy-token risk
+  fields unknown. Neither result can satisfy P5's `clear` audit state.
+- A versioned NYSE calendar adapter now fetches the official holiday and
+  early-close section and rejects unreviewed revisions or dates outside
+  2026–2027. Read-only weekend, regular-day, holiday and early-close probes
+  succeeded. See [ADR 0009](decisions/0009-versioned-nyse-calendar.md).
+- Current full verification: 67/67 tests with a real PostgreSQL 16 server,
   including P5.5 source-adapter tests and all P3/P4 database cases; 1,000
   generated allocation cases, strict typecheck, build and Portable
   configuration checks pass.
-- Next: finish P5.5 before P6. Pyth access and authenticated response
-  validation, owner/transfer eligibility, maintained calendar/event checks,
-  settlement valuation and unsupported-audit policy remain open. The BSC
-  quantity source is read-only verified, but no instrument is live-registered.
+- Next: finish P5.5 before P6. Regular-session Chainlink freshness and
+  quote-deviation validation, wallet/venue-bound eligibility attestation,
+  issuer-event checks, settlement policy and unsupported-audit
+  policy remain open. BSC price, quantity and settlement sources are read-only
+  verified, but no instrument is live-registered.
   P7 must still add approval binding, pre-leg revalidation, idempotent
   submission, receipt recovery and reorg handling. Nexus live automation
   remains disabled.
@@ -103,7 +119,8 @@ inspectable evidence and recoverable sequential execution.
 
 - Modular monolith; domain kernel in `src/domain/`, PostgreSQL ledger in
   `src/ledger/`, offline coordinator in `src/coordinator/` and pure market gate
-  plus read-only P5.5 adapters in `src/market-gate/`; no web runtime framework.
+  plus read-only Ondo/Chainlink P5.5 adapters in `src/market-gate/`; no web
+  runtime framework.
 - Node.js 22.x; TypeScript 5.9.3; Node types 22.18.6; pinned npm lockfile.
 - Native `bigint` accounting with explicit chain/token denomination; JSON base
   units are strings. Identity never uses ticker symbols as execution keys.
@@ -121,7 +138,9 @@ inspectable evidence and recoverable sequential execution.
   ADR 0003 (Phase 2 integration gates and quantity semantics), ADR 0004
   (PostgreSQL ledger and leased outbox), ADR 0005 (staged conservative planning),
   ADR 0006 (market evidence boundary and direct V3 decoder), ADR 0007
-  (source-timestamped reference and on-chain share mapping).
+  (source-timestamped reference and on-chain share mapping), ADR 0008
+  (keyless BSC Chainlink source for the two-asset MVP), ADR 0009
+  (versioned NYSE calendar).
 
 ## Required verification
 
@@ -147,9 +166,10 @@ PostgreSQL test database. A database-free run skips their integration suites.
   models remain read-only; the CLI example identities and balances are synthetic.
   Phase 2 observed real candidate addresses in documentation only; none are
   installed as executable instruments in the application.
-- Binance public market status is momentary. The observed reference-price
+- Binance public market status is momentary. Its observed reference-price
   payload did not expose a source timestamp; receipt time does not establish
-  underlying price freshness. User eligibility remains to be verified.
+  underlying price freshness. Exact wallet/venue eligibility evidence is not
+  yet bound to an attestation and cannot be inferred from a prior fill.
 - Agentic Wallet status returned a false `UNCONNECTED` result in the sandbox;
   the same CLI reported `CONNECTED` outside it. Quote responses expose amounts
   and slippage but no route transaction fields. A separate Kyber route was
@@ -171,10 +191,13 @@ PostgreSQL test database. A database-free run skips their integration suites.
   source block are still caller inputs, not externally verified facts. A
   contingent post-sell buy is preview only. P5 must validate market evidence,
   clocks and quantity mapping; P7 must recheck each leg before execution.
-- The Pyth reader has only documentation/fixture verification until a provider
-  key and regular-session response are available. The Ondo quantity reader is
-  live-tested read-only; other live adapters, calendar verification and full
-  execution recovery are pending.
+- The Pyth reader has only documentation/fixture verification and is dormant.
+  BSC Chainlink equity and settlement plus Ondo quantity readers are live-
+  tested read-only; public Binance status is a 30-second venue receipt.
+  Chainlink's equity feed heartbeat can leave rounds too old
+  for the configured trade gate. Regular-session verification, wallet/venue
+  attestation, issuer-event/audit evidence and full execution recovery
+  are pending.
 - The local MCP memory package should not be written by multiple agent processes
   concurrently. Close one agent and its MCP process before opening the next.
 - MCP memory is supplementary and does not replace tests, Git history, decision

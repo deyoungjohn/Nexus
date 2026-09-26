@@ -9,3 +9,6 @@ import "./coordinator-store.test.js";
 import "./market-gate.test.js";
 import "./pyth-pro.test.js";
 import "./ondo-quantity.test.js";
+import "./chainlink-bsc-equity.test.js";
+import "./binance-rwa-status.test.js";
+import "./nyse-calendar.test.js";

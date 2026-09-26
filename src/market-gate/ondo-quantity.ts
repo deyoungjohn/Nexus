@@ -41,7 +41,9 @@ export async function fetchOndoBscQuantity(input: OndoQuantityRequest,
     if (typeof block !== "string" || !/^0x[0-9a-fA-F]+$/.test(block)) return null;
     const header = await rpc("eth_getBlockByNumber", [block, false]);
     if (!header || typeof header !== "object") return null;
-    const timestamp = (header as Record<string, unknown>).timestamp;
+    const fields = header as Record<string, unknown>;
+    if (fields.number !== block) return null;
+    const timestamp = fields.timestamp;
     if (typeof timestamp !== "string" || !/^0x[0-9a-fA-F]+$/.test(timestamp)) return null;
     const blockMs = BigInt(timestamp) * 1000n;
     const token = input.tokenAddress.toLowerCase().slice(2).padStart(64, "0");
