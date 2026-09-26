@@ -1,12 +1,27 @@
 {
-  "name": "portable",
+  "name": "nexus",
   "version": "0.0.0",
   "private": true,
-  "description": "Portable cross-agent software project workspace",
+  "description": "Coordinated portfolios for tokenized stocks",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0 <23"
+  },
   "scripts": {
-    "check": "./scripts/check.sh"
+    "check": "./scripts/check.sh",
+    "test": "tsc -p tsconfig.test.json && node dist-test/test/run.js",
+    "typecheck": "tsc -p tsconfig.test.json --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "db:migrate": "npm run build && node dist/ledger/migrate-cli.js",
+    "demo": "npm run build && node dist/demo.js"
   },
   "devDependencies": {
-    "@modelcontextprotocol/server-memory": "2026.8.31"
+    "@modelcontextprotocol/server-memory": "2026.8.31",
+    "@types/node": "22.18.6",
+    "@types/pg": "8.23.1",
+    "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "pg": "8.23.0"
   }
 }

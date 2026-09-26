@@ -1,0 +1,6 @@
+// One explicit entry point keeps named-test reporting visible in agent shells
+// and avoids discovering obsolete files left in the compilation directory.
+import "./amount.test.js";
+import "./instrument.test.js";
+import "./allocation.test.js";
+import "./ledger.test.js";

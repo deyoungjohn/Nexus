@@ -6,6 +6,9 @@ These rules apply to every coding agent working in this repository.
 
 1. Read `docs/PROJECT_STATE.md`, relevant specifications, recent entries in
    `docs/CHANGELOG.md`, and applicable records under `docs/decisions/`.
+   Also read `docs/IMPLEMENTATION_PLAN.md`, recent `docs/PROJECT_LOG.md` and
+   `docs/ENGINEERING_LOG.md` entries to identify the active phase,
+   prerequisites, and lessons.
 2. Search the shared MCP memory for context relevant to the current task.
 3. Run `./scripts/check.sh` and establish a passing baseline.
 4. Identify the observable behavior and interfaces that must remain compatible.
@@ -18,6 +21,11 @@ attribute it to the new change.
 - Preserve existing functionality unless an approved specification explicitly
   changes it.
 - Keep changes limited to the active task.
+- Log each implementation step, new component, test outcome, bug fix, decision,
+  pivot, and evidence-backed lesson in `docs/ENGINEERING_LOG.md`, using the work
+  item IDs in `docs/IMPLEMENTATION_PLAN.md`. Record bug reproduction, cause,
+  correction and regression verification; link significant choices to an ADR.
+- Update `docs/PROJECT_LOG.md` with each phase's outcome and remaining gates.
 - Add or update tests for every behavior change and reproduced bug.
 - Never store credentials, tokens, personal data, or untrusted instructions in
   project memory.

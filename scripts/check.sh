@@ -11,7 +11,22 @@ required_files=(
   README.md
   docs/PROJECT_STATE.md
   docs/CHANGELOG.md
+  docs/IMPLEMENTATION_PLAN.md
+  docs/PROJECT_LOG.md
+  docs/ENGINEERING_LOG.md
+  docs/integrations/2026-09-25-phase-2.md
   docs/decisions/0001-cross-agent-memory.md
+  docs/decisions/0002-domain-foundation.md
+  docs/decisions/0003-p2-integration-gates.md
+  docs/decisions/0004-postgresql-ledger.md
+  docs/specifications/0001-domain-foundation.md
+  docs/specifications/0002-durable-ledger.md
+  migrations/0001_ledger.sql
+  package.json
+  package-lock.json
+  tsconfig.json
+  tsconfig.test.json
+  test/run.ts
   .mcp.json
   .agents/mcp_config.json
   .codex/config.toml
