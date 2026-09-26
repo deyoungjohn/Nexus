@@ -62,6 +62,11 @@ tokens and current wrappers all returned no liquidity, and direct Pancake V3
 pools against USDT, USDC and WBNB were absent at the tested fee tiers. Those
 observations are time-specific and do not rule out other venues or off-chain
 filler routes. No instrument was enabled for execution.
+An additional eight-token wallet quote probe found seven more no-liquidity
+responses and one SPYx quote with a roughly 11.65-fold implied price versus
+an indicative public token price. The latter is not a viable substitute for
+the selected candidates or a reason to relax P5's fresh-reference deviation
+gate.
 
 Sources: [xStocks developers](https://docs.xstocks.fi/developers),
 [current and legacy wrappers](https://docs.xstocks.fi/developers/wrapped-xstocks),

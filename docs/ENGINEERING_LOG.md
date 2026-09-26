@@ -862,3 +862,21 @@ evidence supports them; do not invent failures to populate the log.
   contract identities, route failure and remaining gates. Lesson: an issuer
   deployment plus a valid quantity adapter does not imply reachable liquidity
   or permission to trade; venue feasibility must be verified separately.
+
+## 2026-09-26 — P5.5e — Wider xStocks route probe
+
+- Agent/client: Codex. Baseline PostgreSQL-backed `./scripts/check.sh` passed
+  73/73 before this documentation increment. Binance's `type=2` BSC list
+  supplied exact AMZNx, COINx, GOOGLx, METAx, MSFTx, QQQx, SPYx and TSLAx
+  addresses. Read-only Agentic Wallet 5-USDT quotes returned `No liquidity
+  available, please try again later.` for seven. SPYx returned
+  `0.000558226306813186` for 5 USDT, an implied $8,956.94/token. The public
+  dynamic API indicated about $769.00/token but has no verified source-origin
+  timestamp, so this is a screening comparison rather than trade valuation.
+- Decision/lesson: a quote object is not evidence of an economically usable
+  route. Do not silently substitute SPYx or relax the independent P5
+  deviation, liquidity and exact-calldata checks. No wallet state changed and
+  no additional execution candidate was registered. [The integration matrix](integrations/2026-09-26-xstocks-bsc.md)
+  and [ADR 0011](decisions/0011-xstocks-first-bsc-provider.md) record the
+  finding. Final `./scripts/check.sh` and diff verification are recorded in
+  the corresponding changelog entry.

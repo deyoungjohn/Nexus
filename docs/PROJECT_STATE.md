@@ -133,7 +133,9 @@ inspectable evidence and recoverable sequential execution.
   Both candidates passed live read-only probes. The bare EVM tokens rebase;
   current wrappers are distinct instruments with stable shares. Four 5-USDT
   Agentic Wallet quotes for the bare tokens/wrappers all reported no liquidity;
-  tested direct Pancake V3 pools were absent. No xStocks instrument is live-
+  tested direct Pancake V3 pools were absent. Seven of eight further BSC
+  xStocks wallet quotes also lacked liquidity; SPYx returned an implausibly
+  poor quote versus an indicative public price. No xStocks instrument is live-
   registered. See [the xStocks matrix](integrations/2026-09-26-xstocks-bsc.md)
   and [ADR 0011](decisions/0011-xstocks-first-bsc-provider.md).
 - Current full verification: 73/73 tests with PostgreSQL 16, strict

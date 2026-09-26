@@ -42,10 +42,21 @@ API reports `supportsAtomicSwaps=true` for the deployments, but its published
 xChange guide does not list BSC among the supported EVM networks; this
 inconsistency is not resolved by assuming the route works.
 
+A wider read-only Agentic Wallet probe then requested 5-USDT quotes for eight
+other issuer-listed BSC xStocks: AMZNx, COINx, GOOGLx, METAx, MSFTx, QQQx,
+SPYx and TSLAx. Seven returned the same no-liquidity error. SPYx returned
+about `0.000558226306813186` tokens for 5 USDT, implying about $8,956.94
+per token. Binance's public dynamic response gave an **indicative** SPYx token
+price of about $769.00 without a verified source-price timestamp. The quote
+is roughly 11.65 times that indicative price; the comparison is a route
+screen, not execution-grade valuation. SPYx was not added as an executable
+candidate. A nonempty quote must still pass independent fresh-reference,
+price-impact and route-bound checks.
+
 | Gate | Current evidence | Remaining condition |
 |---|---|---|
 | Contract/quantity | Exact issuer/API/BSC identity and current wrapper conversion observed; fail-closed adapter/tests added. | Review current wrapper implementation and corporate-action update timing; reconcile external rebases and wrapper balances across ledger revisions. |
-| Venue/route | No direct Pancake V3 pools at tested pairs/fees; Agentic Wallet 5-USDT quotes unavailable. | Find a BSC venue that returns actual-size, wallet-bound executable calldata with spender/recipient/deadline/minimum output; decode, simulate and reconcile it. |
+| Venue/route | No direct Pancake V3 pools at tested pairs/fees; selected NVDAx/AAPLx 5-USDT wallet quotes unavailable. A wider eight-token check produced seven no-liquidity responses and one economically implausible SPYx quote. | Find a BSC venue that returns actual-size, economically bounded, wallet-bound executable calldata with spender/recipient/deadline/minimum output; decode, simulate and reconcile it. |
 | Eligibility | xStocks says tokens are technically transferable, while distribution and partner access remain restricted. | Establish user/venue-specific legal eligibility and current transfer permission without reusing Ondo's declaration as proof. |
 | Market evidence | Existing Chainlink NVDA/USD, AAPL/USD and USDT/USD readers, NYSE calendar and issuer-event procedure may be reused if their source semantics fit the selected route. | Regular-session freshness, current issuer event review, current venue status and price/quote deviation validation. |
 | Risk/authorization | Code presence and matching conversion establish neither an audit nor approval. | Supported risk evidence or a separately reviewed policy, then P7 approval binding, per-leg rechecks and transaction recovery. |

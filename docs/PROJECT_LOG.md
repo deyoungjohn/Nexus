@@ -304,3 +304,8 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   open for a bound venue route, current eligibility and token-risk evidence,
   corporate-action handling, regular-session validation and issuer events.
   P7 approval/submission/recovery still blocks live trading; P6 has not begun.
+- A follow-up 5-USDT wallet quote sweep over eight more issuer-listed BSC
+  xStocks returned seven no-liquidity errors. SPYx returned a nonempty but
+  economically implausible quote against Binance's indicative token price;
+  it was not substituted into the MVP. Venue liquidity and independent
+  reference-price validation remain a release gate.

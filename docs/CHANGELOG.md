@@ -370,3 +370,17 @@
   final PostgreSQL-backed run passed 73/73 tests, strict typecheck, build and
   configuration. Read-only issuer/BSC probes verified two current wrappers;
   `git diff --check` passed. No wallet state change occurred.
+
+## 2026-09-26 — P5.5 wider xStocks route evidence
+
+- Agent/client: Codex.
+- Change: Documented eight additional read-only 5-USDT BSC xStocks wallet
+  quotes and the economically implausible SPYx result in the P5.5 matrix,
+  ADR, state and phase logs.
+- Reason: A nonempty quote alone could otherwise be mistaken for a viable
+  replacement route after NVDAx/AAPLx returned no liquidity.
+- Behavior/compatibility impact: Documentation only; no candidate was
+  execution registered, and no wallet state changed.
+- Verification: PostgreSQL-backed baseline and post-change
+  `./scripts/check.sh` passed 73/73 tests, strict typecheck/build/config;
+  `git diff --check` passed. Eight wallet quotes were read-only.
