@@ -12,3 +12,5 @@ import "./ondo-quantity.test.js";
 import "./chainlink-bsc-equity.test.js";
 import "./binance-rwa-status.test.js";
 import "./nyse-calendar.test.js";
+import "./owner-attestation.test.js";
+import "./ondo-beacon-risk.test.js";

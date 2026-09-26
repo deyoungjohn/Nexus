@@ -99,10 +99,22 @@ inspectable evidence and recoverable sequential execution.
   early-close section and rejects unreviewed revisions or dates outside
   2026–2027. Read-only weekend, regular-day, holiday and early-close probes
   succeeded. See [ADR 0009](decisions/0009-versioned-nyse-calendar.md).
-- Current full verification: 67/67 tests with a real PostgreSQL 16 server,
-  including P5.5 source-adapter tests and all P3/P4 database cases; 1,000
-  generated allocation cases, strict typecheck, build and Portable
-  configuration checks pass.
+- P5.5 owner-attestation groundwork now creates and verifies a 24-hour EIP-712
+  declaration bound to exact BSC wallet, token, router, venue, side and nonce.
+  A local challenge/verify CLI is available; no owner declaration has been
+  signed for this workflow and no production eligibility adapter is wired.
+  Durable revocation and current transfer checks remain open. See
+  [the owner procedure](integrations/2026-09-26-eligibility-risk.md) and
+  [ADR 0010](decisions/0010-owner-attestation-and-token-risk.md).
+- A repeat Binance audit probe supports BSC USDT but returns unsupported for
+  NVDAon and AAPLon, confirming a provider coverage gap without disclosing
+  its internal cause. Read-only pinned-block checks found both Ondo tokens
+  share one EIP-1967 beacon and implementation; their hashes can invalidate
+  a later contract review but do not amount to an audit. P5 still rejects
+  unsupported token risk. No exception is active.
+- Current full verification: 70/70 tests with PostgreSQL 16, strict
+  typecheck, build and Portable configuration checks pass. The database-free
+  run passed 55 tests with two PostgreSQL suites skipped.
 - Next: finish P5.5 before P6. Regular-session Chainlink freshness and
   quote-deviation validation, wallet/venue-bound eligibility attestation,
   issuer-event checks, settlement policy and unsupported-audit
@@ -119,7 +131,7 @@ inspectable evidence and recoverable sequential execution.
 
 - Modular monolith; domain kernel in `src/domain/`, PostgreSQL ledger in
   `src/ledger/`, offline coordinator in `src/coordinator/` and pure market gate
-  plus read-only Ondo/Chainlink P5.5 adapters in `src/market-gate/`; no web
+  plus read-only Ondo/Chainlink P5.5 adapters and owner-attestation verifier in `src/market-gate/`; no web
   runtime framework.
 - Node.js 22.x; TypeScript 5.9.3; Node types 22.18.6; pinned npm lockfile.
 - Native `bigint` accounting with explicit chain/token denomination; JSON base
@@ -132,6 +144,10 @@ inspectable evidence and recoverable sequential execution.
   `TEST_DATABASE_URL` to run the real PostgreSQL integration suite; without it,
   the suite is reported as skipped.
 - Build: TypeScript into ignored `dist/`. `npm run demo` runs synthetic data.
+- `npm --silent run attestation -- challenge ...` generates a 24-hour EIP-712 request;
+  `npm --silent run attestation -- verify ...` checks a local signature and revocation
+  list. `ethers` 6.17.0 is pinned for typed-data verification and BSC code
+  hashing. Keep signed records under ignored `.agent-memory/`.
 - Planned: P6 rules, Next.js application and verified live EVM/wallet adapters.
   No frontend, signing or application trade execution exists yet.
 - Decisions: ADR 0001 (shared memory), ADR 0002 (domain kernel and allocation),
@@ -140,7 +156,8 @@ inspectable evidence and recoverable sequential execution.
   ADR 0006 (market evidence boundary and direct V3 decoder), ADR 0007
   (source-timestamped reference and on-chain share mapping), ADR 0008
   (keyless BSC Chainlink source for the two-asset MVP), ADR 0009
-  (versioned NYSE calendar).
+  (versioned NYSE calendar), ADR 0010 (owner declaration and unsupported
+  token-risk boundary).
 
 ## Required verification
 
@@ -198,6 +215,12 @@ PostgreSQL test database. A database-free run skips their integration suites.
   for the configured trade gate. Regular-session verification, wallet/venue
   attestation, issuer-event/audit evidence and full execution recovery
   are pending.
+- A valid owner EIP-712 signature proves wallet control and a dated owner
+  representation; it does not prove issuer KYC or transfer permission. The
+  current CLI's local revocation file is not durable production state. The
+  beacon fingerprint detects implementation changes but does not establish
+  token safety or match a reviewed audit report to the runtime code. The
+  unsupported Binance audit remains a P5 live-use blocker.
 - The local MCP memory package should not be written by multiple agent processes
   concurrently. Close one agent and its MCP process before opening the next.
 - MCP memory is supplementary and does not replace tests, Git history, decision

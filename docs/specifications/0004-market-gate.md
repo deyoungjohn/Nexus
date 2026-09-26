@@ -40,6 +40,14 @@ this policy. Token halt/paused/unknown states block both directions. A fresh
 token-audit result must be `clear`; `risk` and `unsupported` block. P2's
 unsupported NVDAon audit therefore cannot authorize automation.
 
+P5.5 adds a 24-hour EIP-712 owner declaration verifier scoped to exact wallet,
+token, venue, router and side, plus a read-only Ondo beacon/implementation
+fingerprint. Neither is wired as production `EligibilityEvidence` or a `clear`
+audit result. Signature validity records a wallet-controlled declaration, not
+issuer eligibility or current transfer permission; fingerprint identity does
+not establish implementation safety. [ADR 0010](../decisions/0010-owner-attestation-and-token-risk.md)
+keeps unsupported audits blocked until a separate policy decision and review.
+
 Issuer IR event evidence requires a direct HTTPS URL, revision, confirmation
 state and expiry. Uncertain, withdrawn, malformed or in-blackout confirmed
 events block. A `none-confirmed` record requires a recent checked source and

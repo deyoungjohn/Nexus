@@ -13,7 +13,8 @@
     "typecheck": "tsc -p tsconfig.test.json --noEmit",
     "build": "tsc -p tsconfig.json",
     "db:migrate": "npm run build && node dist/ledger/migrate-cli.js",
-    "demo": "npm run build && node dist/demo.js"
+    "demo": "npm run build && node dist/demo.js",
+    "attestation": "npm run build && node dist/market-gate/attestation-cli.js"
   },
   "devDependencies": {
     "@modelcontextprotocol/server-memory": "2026.8.31",
@@ -22,6 +23,7 @@
     "typescript": "5.9.3"
   },
   "dependencies": {
+    "ethers": "6.17.0",
     "pg": "8.23.0"
   }
 }

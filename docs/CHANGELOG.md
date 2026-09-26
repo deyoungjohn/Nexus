@@ -296,3 +296,25 @@
   passed 67/67 tests, typecheck, build and configuration; `git diff --check`
   passed. Read-only BSC and NYSE probes validated decoding and stale/weekend
   blocking; no regular-session execution was tested.
+
+## 2026-09-26 — P5.5 owner attestation and Ondo beacon identity
+
+- Agent/client: Codex.
+- Change: Added pinned `ethers` dependency, 24-hour EIP-712 owner
+  attestation challenge/verification and local CLI, plus a read-only BSC
+  Ondo beacon/implementation fingerprint reader. Reproduced unsupported
+  NVDAon/AAPLon audits against a supported USDT control, added ADR 0010 and
+  the owner/risk operating note, and updated plan, state and logs.
+- Reason: Give the owner a concrete wallet-bound declaration workflow and
+  detect upgrades to the contracts a later risk review would examine without
+  misclassifying unsupported provider data as a clear audit.
+- Behavior/compatibility impact: New read-only P5.5 APIs and
+  `npm --silent run attestation -- ...`; existing P3/P4/P5 interfaces and fail-closed
+  audit behavior remain intact. No actual signature, live instrument,
+  signer, token approval or trade path was enabled.
+- Verification: database-free baseline passed 52 tests with two database
+  suites skipped; full PostgreSQL 16-backed final `./scripts/check.sh`
+  passed 70/70 tests, typecheck, build and configuration. Signature-scope,
+  revocation, expiry and beacon-change/failure regressions passed. Read-only
+  BSC/API probes reproduced the documented observations. A synthetic CLI
+  challenge/signature/verify round trip and `git diff --check` passed.

@@ -695,3 +695,69 @@ evidence supports them; do not invent failures to populate the log.
   named tests passed, including the revised Ondo pinned-header regression.
   Mainnet probes were read-only and performed on a closed equity session;
   no regular-session approval or execution test is claimed.
+
+## 2026-09-26 — P5.5c/P5.5d — Owner attestation and unsupported-audit investigation
+
+- Agent/client: Codex. Read state, P5 specification, implementation plan,
+  recent logs and applicable ADRs; searched and opened the shared Nexus memory
+  entity. Baseline `./scripts/check.sh` passed 52 tests with two
+  PostgreSQL suites skipped, plus typecheck/build/config. Preserved the
+  pre-existing `.codex/config.toml` modification and unrelated untracked file.
+  Existing P3/P4/P5 interfaces and the fail-closed audit gate remain compatible.
+- P5.5d reproduction: three Binance BSC token-audit requests used the
+  documented `binanceChainId=56` and exact contracts. NVDAon and AAPLon each
+  returned HTTP 200/code `000000`, `hasResult=false`, `isSupported=false`;
+  control USDT returned `hasResult=true`, `isSupported=true`. Cause visible to
+  us is provider noncoverage, not a malformed chain/address request. The API
+  does not disclose its internal reason. Correction: keep `unsupported`
+  blocked; add an exact on-chain implementation identity reader for future
+  review, not a false `clear` result. Regression: P5's existing unsupported-
+  audit test still passes; new beacon failure/change tests pass. Lesson: audit
+  transport success and provider coverage are independent.
+- P5.5d component: `ondo-beacon-risk.ts` pins chain 56 and one block,
+  verifies its header timestamp, reads the EIP-1967 beacon slot, calls
+  `implementation()`, and hashes proxy/beacon/implementation runtime code.
+  Read-only BSC probes at blocks 124188783/124188793 found that NVDAon and
+  AAPLon share beacon `0xc046b05a920e4b412815934dd8e58904dda73315`
+  and implementation `0x578f397ca4661d1db4d9a65065d6b284a1a850fd`.
+  Exact hashes and token addresses are in
+  [the integration note](integrations/2026-09-26-eligibility-risk.md).
+  Wrong chain, stale/mismatched block, absent beacon/implementation and empty
+  code fail closed. A fingerprint proves code identity only; Ondo audit reports
+  have not been mapped to this exact runtime hash. The review/exception choice
+  is recorded in [ADR 0010](decisions/0010-owner-attestation-and-token-risk.md).
+- P5.5c component: `owner-attestation.ts` creates a 24-hour EIP-712
+  declaration bound to chain 56, exact wallet/token/router/venue/side and
+  random nonce. It requires explicit positive eligibility declarations,
+  verifies EOA signature, scope, lifetime and revocation callback; Agentic
+  Wallet's split signature/recovery format is accepted. A local CLI generates
+  a challenge and checks a signed file plus revocation list. It uses pinned
+  `ethers` 6.17.0. Tests cover valid signature, changed asset/route/venue/side,
+  altered declarations, expiry, revoked nonce and malformed signature.
+  This verifies wallet control and owner representation only; it is not a
+  legal/KYC or transfer permission determination, and no production adapter
+  or durable revocation store is wired. No actual owner signature was asked
+  for or stored. The steps are in
+  [the owner procedure](integrations/2026-09-26-eligibility-risk.md).
+- P5.5c lesson: a generated challenge must not silently assert eligibility.
+  The first factory draft defaulted declaration booleans to `true`; review
+  caught this before release. It now requires explicit `true` inputs and the
+  CLI requires `I_ATTEST_ELIGIBLE`. A changed-declaration regression test
+  passes. Signed declarations will be requested only near activation because
+  they expire after 24 hours.
+- P5.5c CLI bug reproduction: a smoke test redirected `npm run attestation`
+  output to a file and found npm's banner before the JSON. The CLI itself
+  returned valid JSON, but the documented redirect would produce an invalid
+  challenge file. Corrected the procedure to use `npm --silent run`, then
+  repeated the redirect/parse check. Lesson: test copyable operator commands,
+  including their wrapper output, not just the TypeScript function.
+- Verification: after dependency install and each material code increment,
+  `./scripts/check.sh` passed. A synthetic CLI challenge/signature/verify
+  round trip passed. Final PostgreSQL 16-backed
+  `TEST_DATABASE_URL=… ./scripts/check.sh` passed 70/70 tests, strict
+  typecheck, build and configuration; `git diff --check` passed. Mainnet reads
+  and audit probes were read-only; no real-wallet signature,
+  token approval or transaction was submitted. P5.5 remains open for actual
+  owner signature, durable revocation, current transfer checks, issuer events,
+  regular-session price evidence and a token-risk policy decision. P7 still
+  owns approval and transaction recovery.

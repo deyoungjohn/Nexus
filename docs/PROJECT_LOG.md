@@ -242,3 +242,23 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   regular-day, holiday and early-close probes. Publisher revisions block until
   reviewed. Issuer events, wallet/venue attestation, audit policy, regular-
   session source validation and P7 execution/recovery remain open.
+
+## 2026-09-26 — P5.5 owner-attestation and token-risk groundwork
+
+- Added an EIP-712 owner declaration and local challenge/verify workflow for
+  exact BSC wallet, Ondo token, direct-V3 router, venue and side. It expires
+  after 24 hours and checks signature and revocation lookup. No owner
+  declaration has been signed or stored, and no production eligibility
+  adapter or durable revocation store is connected.
+- Reproduced Binance's unsupported NVDAon/AAPLon audit responses against a
+  supported BSC USDT control. A read-only BSC adapter now pins and hashes the
+  shared Ondo beacon and implementation so upgrades invalidate a later
+  review. The fingerprint does not replace a security audit; P5 continues
+  to block `unsupported`. [ADR 0010](decisions/0010-owner-attestation-and-token-risk.md)
+  and [the integration note](integrations/2026-09-26-eligibility-risk.md)
+  record the decision and owner steps.
+- Full PostgreSQL 16-backed `./scripts/check.sh` passed 70/70 tests,
+  typecheck/build/config. P5.5 remains open for a timely signed owner
+  declaration, current transfer check, supported audit or explicit reviewed
+  exception, issuer events and regular-session source validation. P6 has
+  not begun; P7 execution/recovery is still required before live use.
