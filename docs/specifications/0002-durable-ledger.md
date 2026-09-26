@@ -30,6 +30,9 @@ changed content fails. One `executing`/`reconciling`/`unknown` plan per portfoli
 is also enforced by a partial unique index. `startExecution` refuses stale or
 expired holds. `markSubmitted` requires an external transaction identity,
 persists it, freezes the reservation and enqueues reconciliation atomically.
+P4 may pass an already transactional PostgreSQL client to `reservePlan` so its
+snapshot check, decision record and reservation share the same portfolio lock;
+the standalone call retains its original transaction behavior.
 It **does not broadcast**. Expiry releases only `held` rows, never `submitted`
 rows; an unsubmitted executing batch whose hold expires also releases its
 execution slot. An unresolved submission blocks new plans and balance

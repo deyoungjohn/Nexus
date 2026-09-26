@@ -214,3 +214,29 @@
   expired-unsubmitted-batch release and
   submitted-reservation cases passed. `git diff --check` passed. Temporary
   PostgreSQL binaries and cluster were kept outside the repository.
+
+## 2026-09-26 — P4 Portfolio Coordinator
+
+- Agent/client: Codex.
+- Change: Added a pure coordinator for mandatory sell phases, exact-instrument
+  netting, priority/proportional cash allocation and conservative company,
+  sector, issuer, cash and gas limits. Added PostgreSQL policy activation,
+  immutable instrument records, unique blocked occurrences and atomic
+  evidence/decision/reservation commits. Added specification 0003, ADR 0005,
+  phase logs and eleven pure plus six database integration tests.
+- Reason: Resolve competing portfolio proposals against one versioned policy
+  and reconciled application snapshot while keeping dependent purchases
+  contingent until sell proceeds are confirmed.
+- Behavior/compatibility impact: New `src/coordinator/` APIs and migration
+  `0002_coordinator.sql`; P3 `reservePlan` accepts an optional same-transaction
+  client while its original call behavior remains. No live eligibility,
+  quote, owner approval, signing or automated execution path was enabled.
+- Verification: Baseline `./scripts/check.sh` passed 22 foundation tests,
+  typecheck/build/config with the P3 database suite explicitly skipped.
+  Final real PostgreSQL 16-backed `TEST_DATABASE_URL=… ./scripts/check.sh`
+  passed 48/48 tests, typecheck, build and configuration. Blueprint conflict,
+  halted sale, conservative intermediate limits, wrapper/issuer aggregation,
+  exact netting, cash fairness, stale revisions, policy changes and concurrent
+  attempts passed. `git diff --check` passed. Reproduced and corrected P4 cash
+  fairness, invalid-sell netting and raw-hold projection bugs are logged in
+  the engineering log.

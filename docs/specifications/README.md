@@ -8,6 +8,9 @@ requirements, and the tests that demonstrate completion.
   instrument identity and deterministic allocation; P1 complete.
 - [0002 — Durable ledger](0002-durable-ledger.md): PostgreSQL records,
   reservations, replay protection and outbox recovery; P3 complete.
+- [0003 — Portfolio Coordinator](0003-portfolio-coordinator.md): staged
+  reductions, deterministic buys, conservative exposure limits and durable
+  decisions; P4 complete.
 
 Product authority: [Nexus blueprint](../../Nexus.md). Delivery sequence:
 [implementation plan](../IMPLEMENTATION_PLAN.md). Evidence:

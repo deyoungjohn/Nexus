@@ -4,10 +4,11 @@ Many strategies. One portfolio plan.
 
 Nexus is being built to coordinate tokenized-stock baskets, conditional rules
 and earnings controls on BNB Smart Chain. The current implementation is an
-domain foundation plus a PostgreSQL ledger. Phase 2 feasibility is complete,
-including one owner-approved, manually executed route test. Phase 3 adds
-transactional reservations and a durable outbox. Automated live trading and
-the web application are not built.
+domain foundation, a PostgreSQL ledger and an offline Portfolio Coordinator.
+Phase 2 feasibility included one owner-approved, manually executed route test.
+Phase 3 added transactional reservations and a durable outbox; Phase 4 added
+conservative portfolio planning. Automated live trading and the web application
+are not built.
 
 ## Start here
 
@@ -30,7 +31,7 @@ npm ci
 ./scripts/check.sh
 ```
 
-For the Phase 3 integration checks, provide a dedicated PostgreSQL database:
+For the Phase 3–4 integration checks, provide a dedicated PostgreSQL database:
 
 ```bash
 TEST_DATABASE_URL=postgresql://user@localhost:5432/nexus_test ./scripts/check.sh
@@ -57,8 +58,10 @@ amounts are not USD valuations, and it cannot sign or submit transactions.
   rounding, rejection reasons and independent native gas budget.
 - `src/ledger/`: PostgreSQL migrations, exact inventory reservations,
   revision checks, idempotent plan creation and an at-least-once outbox worker.
-- `test/`: 22 foundation tests plus a seven-case PostgreSQL integration suite,
-  including 1,000 deterministic generated allocation cases.
+- `src/coordinator/`: deterministic sell-first proposal arbitration,
+  conservative exposure limits and atomic decision/reservation records.
+- `test/`: 22 foundation tests, 13 PostgreSQL integration subtests and
+  coordinator unit tests, including 1,000 generated allocation cases.
   Register new suites in `test/run.ts`.
 
 `npm test`, `npm run typecheck` and `npm run build` can be run individually;

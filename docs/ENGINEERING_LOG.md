@@ -463,3 +463,68 @@ evidence supports them; do not invent failures to populate the log.
   retry and crash reclaim. The combined check passed 30 total tests, strict typecheck, build and
   configuration. The final post-documentation check result is in the changelog.
   No Phase 4 planner or application execution adapter was enabled.
+
+## 2026-09-26 — P4.1–P4.4 — Portfolio Coordinator
+
+- Agent/client: Codex. Trigger: owner requested Phase 4. Read state, plan,
+  blueprint sections 4/5/8/11, recent project/engineering/changelog entries,
+  specifications 0001/0002, ADRs 0002–0004 and shared MCP memory. Baseline
+  `./scripts/check.sh` passed 22 foundation tests, typecheck, build and config;
+  the P3 database suite was explicitly skipped without `TEST_DATABASE_URL`.
+  Existing domain and ledger behavior remained the compatibility baseline.
+- P4.1 component: added `migrations/0002_coordinator.sql` for active policy
+  links, immutable instrument metadata and unique occurrences even for
+  blocked decisions. `CoordinatorStore.activatePolicy` increments the portfolio
+  revision and invalidates unsubmitted holds; `coordinateAndReserve` locks one
+  portfolio, verifies exact raw balances/reservations and registered metadata,
+  then plans and persists evidence, decision and P3 reservations atomically.
+  The existing P3 reservation method gained an optional same-transaction
+  client; its standalone API and tests remain compatible.
+- P4.2 component: `coordinatePortfolio` applies mandatory sells first, never
+  nets those sells with purchases, and shows dependent buys only as contingent.
+  Optional opposing proposals net only for the same exact eligible instrument
+  with sufficient inventory. Different wrappers remain distinct. A confirmed
+  new revision is required before a post-sell buy is reserved. P1's allocator
+  supplies priority/proportional cash shares and stable rounding; no failed
+  leg's unused cash is silently redistributed. The blueprint fixture gives
+  $30 NVDA sell, $60 NVDA buy blocked, $50 AMD buy contingent at $30, then a
+  separate confirmed-revision $30 AMD reservation. Halted NVDA sale blocks it.
+- P4.3 component: bigint upper exposure/lower total valuation checks enforce
+  company, sector and issuer caps, minimum cash, fee allowance and separate
+  native gas. Wrapper values aggregate by underlying for company limits.
+  Each buy is clipped after prior accepted legs; a haircut that shrinks the
+  denominator can block an unrelated holding's cap. Each sell is screened for
+  a newly introduced intermediate concentration breach. These are planning
+  bounds on supplied evidence, not live market validation.
+- P4.4 component: decisions include requested, accepted, netted, contingent
+  and stable reason fields; only accepted legs become reservations. Evidence,
+  decision and blocked-occurrence records persist even when no leg is viable.
+  Identical retries replay the stored decision; changed content conflicts.
+  Real PostgreSQL tests verified atomic records, stale snapshot/policy
+  invalidation, metadata tamper rejection, one post-sell buy reservation,
+  blocked-occurrence uniqueness and concurrent stale-snapshot rejection.
+- P4 bug reproduction/correction — cash fairness: two same-priority 40-unit
+  buys with 50 units cash first produced 40/10 because P4 iterated IDs.
+  Added a failing regression, used P1's proportional allocator for the cash
+  envelope, and verified 25/25 with the full suite. Lesson: stable order is
+  for deterministic limits, not a replacement for same-priority allocation.
+- P4 bug reproduction/correction — unsafe netting: an optional sell without
+  inventory canceled a valid opposing buy in the first netting draft. The
+  failing test had no buy leg. Netting now requires sell eligibility and
+  backed inventory, and refuses a group whose aggregate optional sells exceed
+  available raw units. Regression tests cover both invalid and oversubscribed
+  opposing sells. Lesson: netting cannot create fictitious inventory.
+- P4 bug reproduction/correction — reserved inventory: after the first of two
+  mandatory sells, the draft projection zeroed an existing raw reservation.
+  A failing test then accepted two 30-unit sells despite only 40 unreserved
+  units. Preserving the prior hold caused the second sale to be rejected;
+  full checks passed. Lesson: projection must carry existing commitments.
+- P4 decision/lesson: instrument classifications and blocked occurrences must
+  be database records, not only caller fields or plan rows. Added immutable
+  registry comparison and a unique coordination-occurrence table; adversarial
+  classification and no-leg replay tests passed. [ADR 0005](decisions/0005-coordinator-sequential-bounds.md)
+  records sell-first phases and conservative limits.
+- Verification: eleven pure coordinator tests and six P4 PostgreSQL subtests
+  pass alongside all P1/P3 tests: 48/48 total, strict typecheck, build and
+  config with a real PostgreSQL 16 server. `git diff --check` passed. No
+  wallet signer, market adapter, owner approval or automated trade was added.

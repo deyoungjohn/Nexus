@@ -114,9 +114,9 @@ export class Ledger {
     });
   }
 
-  async reservePlan(input: ReservePlanInput): Promise<{ id: string; replay: boolean }> {
+  async reservePlan(input: ReservePlanInput, transactionClient?: PoolClient): Promise<{ id: string; replay: boolean }> {
     const hash = validateReserve(input);
-    return transaction(this.pool, async (client) => {
+    const reserve = async (client: PoolClient): Promise<{ id: string; replay: boolean }> => {
       const portfolio = await lockedPortfolio(client, input.portfolioId);
       const prior = await client.query<{ id: string; request_hash: string }>(
         "SELECT id, request_hash FROM plans WHERE portfolio_id = $1 AND idempotency_key = $2",
@@ -161,7 +161,10 @@ export class Ledger {
       await client.query(`INSERT INTO outbox(event_key, topic, payload) VALUES ($1, 'plan.reserved', $2::jsonb)`,
         [`plan.reserved:${input.planId}`, JSON.stringify({ portfolioId: input.portfolioId, planId: input.planId })]);
       return { id: input.planId, replay: false };
-    });
+    };
+    // A caller supplying a client must already be inside a transaction. This
+    // allows P4 to plan and reserve under the same portfolio row lock.
+    return transactionClient ? reserve(transactionClient) : transaction(this.pool, reserve);
   }
 
   async startExecution(portfolioId: string, planId: string): Promise<void> {

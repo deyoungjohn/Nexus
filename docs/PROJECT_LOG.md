@@ -157,3 +157,25 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   resolve wallet submissions, receipts and reorgs before live automation. See
   [specification 0002](specifications/0002-durable-ledger.md) and
   [ADR 0004](decisions/0004-postgresql-ledger.md).
+
+## 2026-09-26 — P4 Portfolio Coordinator complete
+
+- Added deterministic, offline coordination of mandatory reductions, exact-
+  instrument netting, priority/proportional buys and conservative company,
+  sector, issuer, cash and gas limits. A sell can be reserved first; dependent
+  buys remain contingent until a new reconciled portfolio revision.
+- The blueprint fixture produced a $30 NVDA sell, rejected $60 NVDA buy and
+  contingent $30 AMD buy. On a separately reconciled snapshot, only the $30
+  AMD buy was reserved. A halted sale, a new intermediate breach, changed
+  instrument classification or stale revision blocked dependent planning.
+- PostgreSQL records activated policy versions, exact instrument metadata,
+  evidence and decisions under the same portfolio lock as P3 reservations.
+  Blocked occurrences are unique and safe to replay. A concurrent stale-
+  snapshot test accepted one reservation and rejected the competing attempt.
+  Full `TEST_DATABASE_URL=… ./scripts/check.sh` passed 48/48 tests, typecheck,
+  build and configuration checks.
+- **P4 is complete** as an offline coordinator. P5 is next: real source clocks,
+  eligibility, quantity compatibility, quote costs and simulation evidence.
+  P7 still owns owner approval, submission and receipt/reorg recovery. See
+  [specification 0003](specifications/0003-portfolio-coordinator.md) and
+  [ADR 0005](decisions/0005-coordinator-sequential-bounds.md).

@@ -13,8 +13,9 @@ inspectable evidence and recoverable sequential execution.
 - Cross-agent workspace initialized.
 - Shared MCP memory initialized with the `Nexus` project entity; all four initial
   observations were retrieved successfully through `open_nodes` on 2026-09-25.
-- P0 (roadmap), P1 (domain foundation), P2 (integration feasibility) and P3
-  (durable portfolio ledger) are complete. P4 (portfolio coordinator) is next. See
+- P0 (roadmap), P1 (domain foundation), P2 (integration feasibility), P3
+  (durable ledger) and P4 (Portfolio Coordinator) are complete. P5 (market
+  gate and data adapters) is next. See
   [the implementation plan](IMPLEMENTATION_PLAN.md) for all phases and exit gates.
 - P2 read-only evidence: chain 56, BSC USDT and three Ondo candidate token
   contracts (NVDAon, AMDon, AAPLon); public metadata/status and RPC `decimals()`
@@ -60,10 +61,18 @@ inspectable evidence and recoverable sequential execution.
   portfolio, blocks overspending and unresolved submissions, and exposes an
   at-least-once leased worker helper. See
   [specification 0002](specifications/0002-durable-ledger.md).
-- Verified: 22 foundation tests, including 1,000 generated allocation cases,
-  plus seven real PostgreSQL integration subtests; strict type checking, build
-  and original Portable configuration checks pass.
-- Next: implement P4 portfolio coordination. P5 must enforce owner
+- Implemented in P4: pure deterministic coordinator and PostgreSQL decision
+  store with versioned policy activation, immutable instrument mappings,
+  snapshot-to-ledger checks, exact-instrument netting, sell-first phases,
+  priority/proportional cash allocation and conservative company/sector/issuer
+  limits. The blueprint NVDA/AMD example resolves to a $30 NVDA sell and a
+  contingent $30 AMD buy; only a new reconciled revision can reserve that buy.
+  See [specification 0003](specifications/0003-portfolio-coordinator.md).
+- Verified: 48 tests with a real PostgreSQL 16 server (22 foundation, 11 pure
+  coordinator tests, seven P3 and six P4 database subtests, plus two suite
+  parents); 1,000 generated allocation cases, strict typecheck, build and
+  Portable configuration checks pass.
+- Next: implement P5 market gates. P5 must enforce owner
   eligibility, reference freshness, per-asset quantity compatibility, audit
   policy and market/session gates before automated execution. P7 must add
   idempotent submission, receipt recovery and reorg handling.
@@ -73,23 +82,25 @@ inspectable evidence and recoverable sequential execution.
 
 ## Architecture
 
-- Modular monolith; domain kernel in `src/domain/` and PostgreSQL ledger in
-  `src/ledger/`, no web runtime framework.
+- Modular monolith; domain kernel in `src/domain/`, PostgreSQL ledger in
+  `src/ledger/` and offline coordinator in `src/coordinator/`; no web runtime
+  framework.
 - Node.js 22.x; TypeScript 5.9.3; Node types 22.18.6; pinned npm lockfile.
 - Native `bigint` accounting with explicit chain/token denomination; JSON base
   units are strings. Identity never uses ticker symbols as execution keys.
 - Runtime database driver: `pg` 8.23.0; types 8.23.1. Numbered SQL migrations
-  in `migrations/`; `DATABASE_URL` is required for `npm run db:migrate`.
+  in `migrations/` (P4 adds `0002_coordinator.sql`); `DATABASE_URL` is required
+  for `npm run db:migrate`.
 - Tests: Node's built-in runner via explicit `test/run.ts` imports; new suites
   must be registered there. `test/` compiles into ignored `dist-test/`. Set
   `TEST_DATABASE_URL` to run the real PostgreSQL integration suite; without it,
   the suite is reported as skipped.
 - Build: TypeScript into ignored `dist/`. `npm run demo` runs synthetic data.
-- Planned: P4 coordinator, Next.js application and verified EVM/wallet adapters.
+- Planned: P5 market gate, Next.js application and verified EVM/wallet adapters.
   No frontend, signing or application trade execution exists yet.
 - Decisions: ADR 0001 (shared memory), ADR 0002 (domain kernel and allocation),
   ADR 0003 (Phase 2 integration gates and quantity semantics), ADR 0004
-  (PostgreSQL ledger and leased outbox).
+  (PostgreSQL ledger and leased outbox), ADR 0005 (staged conservative planning).
 
 ## Required verification
 
@@ -102,14 +113,15 @@ Run:
 Install pinned dependencies with `npm ci` on Node 22.x first. The script validates
 required project records, shell and MCP config syntax, then runs tests, strict
 type checking and build. It remains the single entry point for required checks.
-For full P3 evidence, run it with `TEST_DATABASE_URL` pointing to an isolated
-PostgreSQL test database. A database-free run skips the P3 integration suite.
+For full P3/P4 evidence, run it with `TEST_DATABASE_URL` pointing to an isolated
+PostgreSQL test database. A database-free run skips their integration suites.
 
 ## Known limitations
 
-- Allocation is pure spending math, not a portfolio coordinator or transactional
-  reservation service. It cannot enforce concentration, freshness, eligibility,
-  authorization or concurrency and must not be connected directly to a wallet.
+- P1 allocation remains pure spending math. The P4 coordinator adds offline
+  concentration constraints and durable reservations but cannot establish
+  freshness, eligibility, owner authorization or chain state. It must not be
+  connected directly to a wallet.
 - Registry entries are metadata, not verified token support. Unknown quantity
   models remain read-only; the CLI example identities and balances are synthetic.
   Phase 2 observed real candidate addresses in documentation only; none are
@@ -133,8 +145,12 @@ PostgreSQL test database. A database-free run skips the P3 integration suite.
   least once and future handlers must deduplicate. A database-free check does
   not exercise concurrency or crash recovery. No P3 worker handler calls a
   wallet. Production deployment roles and backup procedures remain open.
+- P4 snapshots match application-ledger balances and immutable registered
+  classifications. Their valuation bounds, eligibility flags, proceeds and
+  source block are still caller inputs, not externally verified facts. A
+  contingent post-sell buy is preview only. P5 must validate market evidence,
+  clocks and quantity mapping; P7 must recheck each leg before execution.
 - Live adapters, calendar verification and full execution recovery are pending.
-  The complete blueprint conflict example belongs to P4.
 - The local MCP memory package should not be written by multiple agent processes
   concurrently. Close one agent and its MCP process before opening the next.
 - MCP memory is supplementary and does not replace tests, Git history, decision

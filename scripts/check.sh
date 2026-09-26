@@ -19,9 +19,12 @@ required_files=(
   docs/decisions/0002-domain-foundation.md
   docs/decisions/0003-p2-integration-gates.md
   docs/decisions/0004-postgresql-ledger.md
+  docs/decisions/0005-coordinator-sequential-bounds.md
   docs/specifications/0001-domain-foundation.md
   docs/specifications/0002-durable-ledger.md
+  docs/specifications/0003-portfolio-coordinator.md
   migrations/0001_ledger.sql
+  migrations/0002_coordinator.sql
   package.json
   package-lock.json
   tsconfig.json
