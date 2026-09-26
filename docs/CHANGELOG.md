@@ -240,3 +240,21 @@
   attempts passed. `git diff --check` passed. Reproduced and corrected P4 cash
   fairness, invalid-sell netting and raw-hold projection bugs are logged in
   the engineering log.
+
+## 2026-09-26 — P5 offline Market Gate
+
+- Agent/client: Codex.
+- Change: Added a fail-closed market gate, read-only evidence adapter seam,
+  dated exchange-session logic and direct V3 calldata decoder; added eight
+  adversarial tests, specification 0004, ADR 0006 and phase records.
+- Reason: P4's caller-supplied eligibility and valuations need verified source,
+  quantity, route and simulation boundaries before owner approval.
+- Behavior/compatibility impact: New pure `src/market-gate/` API; existing P4
+  and P3 interfaces remain compatible. No production provider, signer or live
+  execution path is enabled. Missing/stale/unsupported inputs block this gate.
+- Verification: baseline `./scripts/check.sh` passed 33 named tests, with two
+  PostgreSQL suites skipped; real PostgreSQL 16-backed final
+  `TEST_DATABASE_URL=… ./scripts/check.sh` passed 56/56 tests, typecheck, build
+  and configuration checks. Holiday/DST, mapping, source-age, event, quote,
+  recipient/spender, settlement-conversion and simulation cases passed;
+  `git diff --check` passed.

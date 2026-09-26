@@ -528,3 +528,53 @@ evidence supports them; do not invent failures to populate the log.
   pass alongside all P1/P3 tests: 48/48 total, strict typecheck, build and
   config with a real PostgreSQL 16 server. `git diff --check` passed. No
   wallet signer, market adapter, owner approval or automated trade was added.
+
+## 2026-09-26 — P5.1–P5.4 — Offline Market Gate
+
+- Agent/client: Codex. Request: proceed to Phase 5. Read the contract,
+  blueprint §5, state, phase plan, P2 integration matrix, specification 0003,
+  ADRs 0003/0005 and recent logs; searched the Nexus MCP entity. Baseline
+  `./scripts/check.sh` passed 33 named tests with two PostgreSQL suites
+  explicitly skipped, plus typecheck/build/config. Existing unrelated
+  `.codex/config.toml` and Zone.Identifier workspace files were preserved.
+- Compatibility: P4's caller-provided eligibility and valuation flags remain
+  valid offline APIs; P5 adds a separate pre-approval boundary. No signing,
+  live data registration, transaction or approval occurred.
+
+| Work item / component | Change and reason | Test evidence |
+|---|---|---|
+| P5.1 — `evidence.ts`, `gate.ts` | Require exact instrument identity, wallet/venue/transfer requirements and observed quantity model, adapter version, positive raw-to-share ratio, source block and mapping revision. A changed revision blocks an older plan. | Mapping mismatch, owner transfer denial, missing data and actual-size sell/buy tests pass. |
+| P5.2 — `session.ts`, `adapters.ts` | Separate provider `sourceAt` from HTTP receipt, dated exchange session from token status, and quote from simulation. Adapter exceptions become missing evidence. Configure IANA timezone and regular hours. | Timestamp-less/stale reference and outage block; 2026 spring/fall DST, holiday and closed-hour tests pass. |
+| P5.3 — `gate.ts` | Require fresh issuer IR provenance, revision, explicit confirmation and blackout bounds; uncertain, withdrawn or active event blocks. Halt/paused/unknown token states and unsupported/risky audits block. | Uncertain and confirmed-blackout event, halted-token and unsupported-audit tests pass. |
+| P5.4 — `route.ts`, `gate.ts` | Decode direct V3 calldata to verify exact pair, recipient, input, minimum output and deadline; enforce approved venue/router/fee tier, quote cost and full-size P4 re-evaluation. Bind matching actual-state simulation fields and hash the evidence. | Recipient/spender/calldata/input tampering, impact/native-fee/allowance/portfolio-cap tests pass. |
+
+- P5 design correction — valuation: the first gate draft assigned sell
+  `proceedsValueLower` directly from settlement raw units. Review showed this
+  silently assumed a stable token always equals the valuation unit. Added
+  timed lower/upper settlement conversion evidence and a depeg regression;
+  an 0.8 lower conversion now yields 0.8× lower sale value. Lesson: preserve
+  denomination boundaries when feeding P4's portfolio caps.
+- P5 review correction — aggregate denominator: a fresh quote for one
+  instrument did not prove that P4's other held values were current. Added
+  per-held-position valuation records and a conservative cash-value ceiling;
+  removal of the held record now blocks the sell fixture. Lesson: source
+  freshness must cover the whole snapshot used by aggregate constraints.
+- P5 design correction — evidence dependency: first collector requested quote
+  and simulation concurrently, so simulation could not be bound to the quote.
+  It now passes the collected quote to the simulation adapter sequentially;
+  missing quotes skip simulation and block. Lesson: dependency order is part
+  of a read-only adapter contract.
+- P5 compile correction: adding settlement evidence initially reused the
+  `settlement` local for the token address; strict typecheck reproduced a
+  redeclaration error. Renamed the parsed address `settlementToken` and
+  re-ran tests. This was a draft compile failure, not a baseline defect.
+- Decision: [ADR 0006](decisions/0006-market-evidence-boundary.md) keeps P5
+  pure and restricts calldata decoding to direct V3; opaque wallet/Kyber
+  routes remain unsupported. [Specification 0004](specifications/0004-market-gate.md)
+  defines the pre-approval boundary and live limitations. No product pivot.
+- Full verification after implementation: local PostgreSQL 16-backed
+  `TEST_DATABASE_URL=… ./scripts/check.sh` passed 56/56 tests, strict
+  typecheck, build and configuration checks. Eight new P5 named tests passed;
+  all P3/P4 database cases passed. Final document/check result is recorded in
+  the same-day changelog. Production provider verification and P7 owner
+  approval/receipt recovery remain open; simulation is not a fill guarantee.

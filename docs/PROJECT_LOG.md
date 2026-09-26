@@ -179,3 +179,30 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   P7 still owns owner approval, submission and receipt/reorg recovery. See
   [specification 0003](specifications/0003-portfolio-coordinator.md) and
   [ADR 0005](decisions/0005-coordinator-sequential-bounds.md).
+
+## 2026-09-26 — P5 offline Market Gate complete
+
+- Added a pure, fail-closed market gate and read-only adapter seam. Exact
+  eligibility, verified raw-to-share quantity mapping, source-timestamped
+  reference, settlement valuation, dated exchange session, token status,
+  issuer event, clear supported token audit, actual-size direct-V3 quote and
+  exact simulation are required.
+  Missing or stale evidence blocks; P2's timestamp-less public price cannot
+  be treated as fresh. Every held position also needs a current valuation
+  record matching P4's portfolio snapshot.
+- The direct-V3 calldata decoder checks token pair, wallet recipient, amount,
+  minimum output and on-chain deadline independently of quote labels. Venue,
+  router, spender, fee tier, slippage, impact, spread, gas, price deviation and
+  full-size P4 portfolio constraints are bounded. Mapping changes invalidate
+  an old evidence hash and block its plan at the P5 gate.
+- Tests cover exchange DST and holiday states, changed mappings, missing/stale
+  prices, eligibility, events, halts, route substitutions, fees, low allowance,
+  sell proceeds under a depegged settlement valuation and adapter outages.
+  Real PostgreSQL-backed `./scripts/check.sh` passed 56/56 tests, typecheck,
+  build and configuration checks.
+- **P5 is complete as an offline gate.** Production evidence providers and
+  the unsupported token-audit policy remain open. No live execution adapter
+  or standing trade permission was added. P6 rules are next; P7 must bind
+  approvals, recheck evidence and recover submitted transactions. See
+  [specification 0004](specifications/0004-market-gate.md) and
+  [ADR 0006](decisions/0006-market-evidence-boundary.md).

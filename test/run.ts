@@ -6,3 +6,4 @@ import "./allocation.test.js";
 import "./ledger.test.js";
 import "./coordinator.test.js";
 import "./coordinator-store.test.js";
+import "./market-gate.test.js";

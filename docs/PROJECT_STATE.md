@@ -14,8 +14,8 @@ inspectable evidence and recoverable sequential execution.
 - Shared MCP memory initialized with the `Nexus` project entity; all four initial
   observations were retrieved successfully through `open_nodes` on 2026-09-25.
 - P0 (roadmap), P1 (domain foundation), P2 (integration feasibility), P3
-  (durable ledger) and P4 (Portfolio Coordinator) are complete. P5 (market
-  gate and data adapters) is next. See
+  (durable ledger), P4 (Portfolio Coordinator) and P5 (offline Market Gate)
+  are complete. P6 (rules and scheduling) is next. See
   [the implementation plan](IMPLEMENTATION_PLAN.md) for all phases and exit gates.
 - P2 read-only evidence: chain 56, BSC USDT and three Ondo candidate token
   contracts (NVDAon, AMDon, AAPLon); public metadata/status and RPC `decimals()`
@@ -68,13 +68,22 @@ inspectable evidence and recoverable sequential execution.
   limits. The blueprint NVDA/AMD example resolves to a $30 NVDA sell and a
   contingent $30 AMD buy; only a new reconciled revision can reserve that buy.
   See [specification 0003](specifications/0003-portfolio-coordinator.md).
-- Verified: 48 tests with a real PostgreSQL 16 server (22 foundation, 11 pure
-  coordinator tests, seven P3 and six P4 database subtests, plus two suite
-  parents); 1,000 generated allocation cases, strict typecheck, build and
-  Portable configuration checks pass.
-- Next: implement P5 market gates. P5 must enforce owner
-  eligibility, reference freshness, per-asset quantity compatibility, audit
-  policy and market/session gates before automated execution. P7 must add
+- Implemented in P5: a pure fail-closed market gate and read-only evidence
+  adapter seam. It checks exact eligibility, quantity mapping/version, separate
+  reference/session/status/quote clocks, dated holiday/DST sessions, issuer
+  events, clear supported audit, held-position valuation freshness, decoded
+  direct-V3 route bounds, normalized price and settlement
+  conversion, gas/cost limits, full-size P4 limits and exact simulation fields.
+  It emits an evidence hash for P7 revalidation. See
+  [specification 0004](specifications/0004-market-gate.md).
+- Verified: 56 tests with a real PostgreSQL 16 server, including eight P5
+  named tests and all P3/P4 database cases; 1,000 generated allocation cases,
+  strict typecheck, build and Portable configuration checks pass.
+- Next: P6 rules and scheduling. Production source adapters remain blocked by
+  unverified owner/transfer eligibility, source-timestamped stock reference,
+  token-specific economic quantity mappings, maintained calendar/event checks,
+  settlement valuation and unsupported-audit policy. No live market evidence
+  is fabricated from P2. P7 must add approval binding, pre-leg revalidation,
   idempotent submission, receipt recovery and reorg handling.
 - Detailed work, tests, reporting correction and lessons recorded in
   [the engineering log](ENGINEERING_LOG.md). One supervised mainnet trade was
@@ -83,8 +92,8 @@ inspectable evidence and recoverable sequential execution.
 ## Architecture
 
 - Modular monolith; domain kernel in `src/domain/`, PostgreSQL ledger in
-  `src/ledger/` and offline coordinator in `src/coordinator/`; no web runtime
-  framework.
+  `src/ledger/`, offline coordinator in `src/coordinator/` and pure market gate
+  in `src/market-gate/`; no web runtime framework.
 - Node.js 22.x; TypeScript 5.9.3; Node types 22.18.6; pinned npm lockfile.
 - Native `bigint` accounting with explicit chain/token denomination; JSON base
   units are strings. Identity never uses ticker symbols as execution keys.
@@ -96,11 +105,12 @@ inspectable evidence and recoverable sequential execution.
   `TEST_DATABASE_URL` to run the real PostgreSQL integration suite; without it,
   the suite is reported as skipped.
 - Build: TypeScript into ignored `dist/`. `npm run demo` runs synthetic data.
-- Planned: P5 market gate, Next.js application and verified EVM/wallet adapters.
+- Planned: P6 rules, Next.js application and verified live EVM/wallet adapters.
   No frontend, signing or application trade execution exists yet.
 - Decisions: ADR 0001 (shared memory), ADR 0002 (domain kernel and allocation),
   ADR 0003 (Phase 2 integration gates and quantity semantics), ADR 0004
-  (PostgreSQL ledger and leased outbox), ADR 0005 (staged conservative planning).
+  (PostgreSQL ledger and leased outbox), ADR 0005 (staged conservative planning),
+  ADR 0006 (market evidence boundary and direct V3 decoder).
 
 ## Required verification
 
