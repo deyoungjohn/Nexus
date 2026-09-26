@@ -813,3 +813,52 @@ evidence supports them; do not invent failures to populate the log.
   limitation explicit. No exception was activated. Final PostgreSQL-backed
   `./scripts/check.sh` passed 70/70 tests, typecheck/build/config, and
   `git diff --check` passed.
+
+## 2026-09-26 — P5.5b/P5.5c/P5.5e — xStocks-first BSC integration
+
+- Agent/client: Codex. Owner directed a provider-priority pivot from Ondo to
+  xStocks before P6. Read blueprint, phase plan, state, recent logs and ADRs;
+  searched shared memory. Baseline PostgreSQL 16-backed `./scripts/check.sh`
+  passed 70/70 named tests, strict typecheck/build/config. Preserved P3/P4/P5
+  interfaces and the no-execution boundary. Decision: [ADR 0011](decisions/0011-xstocks-first-bsc-provider.md).
+- P5.5b source finding: issuer developer documentation says EVM xStocks
+  `balanceOf()` rebases, whereas the current v2 ERC-4626 wrapper holds stable
+  share units. The legacy v1 wrapper can have a donation-sensitive rate. Live
+  issuer API, Binance `type=2` list and read-only BSC calls agreed on NVDAx and
+  AAPLx native/current-wrapper identities. At block `124221220`, each wrapper
+  `asset()` matched its native token, both decimals were 18, and
+  `convertToAssets(10^18)` equaled native `getCurrentMultiplier()`. Lesson:
+  do not carry Ondo's quantity model or treat a ticker as a token identity.
+- P5.5b component: `xstocks-bsc.ts` accepts only exact registered BSC token
+  and v2-wrapper addresses, underlying symbol and USD denomination from the
+  public issuer asset response. A pinned
+  chain-56 RPC read verifies recent block header, code presence, both decimals,
+  `asset()` and multiplier/conversion agreement; it binds multiplier and both
+  code hashes into a P5 `xstocks-v2-wrapper` mapping revision. Issuer halt and
+  stale issuer identity block quantity evidence. Live read-only adapter calls
+  succeeded for both assets at blocks `124221960` and `124221967`. Code hashes
+  are identity observations, not a review of upgrade controls or safety.
+- P5.5c decision: the Ondo 24-hour signed declaration is not reused as an
+  xStocks credential. The issuer's technically transferable token still has
+  distribution/jurisdiction restrictions and partner responsibilities. No
+  user-specific eligibility or venue-open `EligibilityEvidence` is emitted.
+- P5.5e route reproduction: at pinned block `124221220`, Pancake V3 `getPool`
+  found no direct USDT/USDC/WBNB pools for either native or current-wrapped
+  candidate at fee tiers 100/500/2500/10000. Agentic Wallet read-only 5-USDT
+  quotes for NVDAx, AAPLx and both wrappers each failed with exact message
+  `No liquidity available, please try again later.` This does not exclude
+  PancakeSwap X, CowSwap or a later market-maker route. Their calldata,
+  bounds, simulation and wallet compatibility remain unverified. No swap,
+  allowance, wallet signature or live registration was attempted.
+- Test bug/correction: the first RPC fixture typed every parameter as an
+  object, but `eth_getCode` takes a string address. TypeScript rejected the
+  impossible comparison. Corrected the fixture to model both parameter
+  shapes, then reran the named suite. Three new tests cover exact issuer
+  identity, denomination and duplicate/legacy rejection; pinned wrapper mapping; wrong
+  chain, stale block/identity, halt, wrong asset, conversion mismatch, missing
+  code and bad decimals. `npm test` passed 58 tests with two DB suites skipped;
+  full PostgreSQL-backed `./scripts/check.sh` passed 73/73, typecheck/build/config.
+- [The integration matrix](integrations/2026-09-26-xstocks-bsc.md) records
+  contract identities, route failure and remaining gates. Lesson: an issuer
+  deployment plus a valid quantity adapter does not imply reachable liquidity
+  or permission to trade; venue feasibility must be verified separately.

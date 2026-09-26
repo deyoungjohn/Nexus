@@ -114,3 +114,13 @@ freshness, wallet/venue-bound eligibility and the remaining source/policy
 checks are still required. [ADR 0008](../decisions/0008-keyless-bsc-market-reference.md)
 records the keyless source pivot; this specification's fail-closed boundary
 and no-execution status remain in force.
+
+The xStocks-first P5.5 pivot adds a separate read-only BSC current-wrapper
+identity/quantity adapter. It verifies exact expected issuer-listed addresses,
+chain, deployed token/wrapper code, `asset()`, decimals and pinned-block
+`getCurrentMultiplier()`/`convertToAssets(10^18)` equality. Its
+`xstocks-v2-wrapper` model is not interchangeable with Ondo or bare rebasing
+xStocks. It supplies quantity evidence only. The issuer's non-halted flag does
+not establish an executable venue, and no xStocks route is currently accepted
+by P5. [ADR 0011](../decisions/0011-xstocks-first-bsc-provider.md) and the
+[xStocks matrix](../integrations/2026-09-26-xstocks-bsc.md) record the gates.

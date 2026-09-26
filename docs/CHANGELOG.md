@@ -350,3 +350,23 @@
 - Verification: Read-only Sourcify source and BSC calls;
   PostgreSQL-backed `./scripts/check.sh` passed 70/70 tests, typecheck/build/
   config, and `git diff --check` passed.
+
+## 2026-09-26 — P5.5 xStocks-first BSC provider integration
+
+- Agent/client: Codex.
+- Change: Made xStocks the first live-provider target in the implementation
+  plan; added ADR 0011, an xStocks BSC evidence matrix, and a separate
+  read-only exact-token/current-v2-wrapper quantity adapter with three tests.
+  Updated project state, market-gate specification and phase logs.
+- Reason: The owner chose xStocks as the initial provider. Its EVM rebasing
+  token and current non-rebasing wrapper need different quantity handling from
+  Ondo, while an actual BSC execution route must be verified independently.
+- Behavior/compatibility impact: New read-only P5.5 functions and
+  `xstocks-v2-wrapper` quantity evidence. Existing P3/P4/P5 interfaces and
+  Ondo adapters remain compatible. No xStocks instrument, signer, allowance,
+  trade submission or policy exception was enabled. All four tested 5-USDT
+  wallet quotes lacked liquidity, so live execution remains blocked.
+- Verification: baseline PostgreSQL-backed `./scripts/check.sh` passed 70/70;
+  final PostgreSQL-backed run passed 73/73 tests, strict typecheck, build and
+  configuration. Read-only issuer/BSC probes verified two current wrappers;
+  `git diff --check` passed. No wallet state change occurred.

@@ -15,7 +15,9 @@ inspectable evidence and recoverable sequential execution.
   observations were retrieved successfully through `open_nodes` on 2026-09-25.
 - P0 (roadmap), P1 (domain foundation), P2 (integration feasibility), P3
   (durable ledger), P4 (Portfolio Coordinator) and P5 (offline Market Gate)
-  are complete. P5.5 live-readiness is active before P6. See
+  are complete. P5.5 now targets xStocks first; live-readiness remains active
+  before P6. The completed P2 Ondo trade is historical feasibility evidence,
+  not proof of an xStocks route. See
   [the implementation plan](IMPLEMENTATION_PLAN.md) for all phases and exit gates.
 - P2 read-only evidence: chain 56, BSC USDT and three Ondo candidate token
   contracts (NVDAon, AMDon, AAPLon); public metadata/status and RPC `decimals()`
@@ -88,7 +90,7 @@ inspectable evidence and recoverable sequential execution.
   source timestamped NVDA/USD and AAPL/USD underlying rounds and a bounded
   USDT/USD settlement valuation. Mainnet probes decoded the feeds; the equity
   rounds were from the prior session and correctly failed a 60-second age
-  limit on 2026-09-26. The two-asset candidate scope is NVDAon and AAPLon;
+  limit on 2026-09-26. The earlier Ondo candidate scope was NVDAon and AAPLon;
   AMDon remains read-only without a verified BSC reference. See
   [ADR 0008](decisions/0008-keyless-bsc-market-reference.md).
 - A short-lived Binance public status adapter now reports only an explicit
@@ -124,14 +126,24 @@ inspectable evidence and recoverable sequential execution.
   activated. The [issuer-event runbook](runbooks/issuer-event-review.md)
   records a manual direct-source process and treats inaccessible/dynamic
   pages as uncertain, not as proof of no event.
-- Current full verification: 70/70 tests with PostgreSQL 16, strict
+- Owner-directed provider pivot: xStocks is the first live-integration target;
+  Ondo adapters remain available but dormant. A new read-only BSC adapter
+  checks exact issuer-listed NVDAx/AAPLx native tokens and current v2 wrappers,
+  then pins code, `asset()`, decimals and multiplier/conversion at one block.
+  Both candidates passed live read-only probes. The bare EVM tokens rebase;
+  current wrappers are distinct instruments with stable shares. Four 5-USDT
+  Agentic Wallet quotes for the bare tokens/wrappers all reported no liquidity;
+  tested direct Pancake V3 pools were absent. No xStocks instrument is live-
+  registered. See [the xStocks matrix](integrations/2026-09-26-xstocks-bsc.md)
+  and [ADR 0011](decisions/0011-xstocks-first-bsc-provider.md).
+- Current full verification: 73/73 tests with PostgreSQL 16, strict
   typecheck, build and Portable configuration checks pass. The database-free
-  run passed 55 tests with two PostgreSQL suites skipped.
-- Next: finish P5.5 before P6. Regular-session Chainlink freshness and
-  quote-deviation validation, wallet/venue-bound eligibility attestation,
-  issuer-event checks, settlement policy and unsupported-audit
-  policy remain open. BSC price, quantity and settlement sources are read-only
-  verified, but no instrument is live-registered.
+  `npm test` run passed 58 tests with two PostgreSQL suites skipped.
+- Next: finish xStocks-first P5.5 before P6. Establish a bound BSC xStocks
+  execution route and current venue status, provider-specific eligibility,
+  wrapper/corporate-action review, regular-session reference freshness,
+  issuer-event checks, settlement and token-risk policy. Existing BSC price,
+  quantity and settlement sources are read-only; no instrument is live-registered.
   P7 must still add approval binding, pre-leg revalidation, idempotent
   submission, receipt recovery and reorg handling. Nexus live automation
   remains disabled.
@@ -143,8 +155,8 @@ inspectable evidence and recoverable sequential execution.
 
 - Modular monolith; domain kernel in `src/domain/`, PostgreSQL ledger in
   `src/ledger/`, offline coordinator in `src/coordinator/` and pure market gate
-  plus read-only Ondo/Chainlink P5.5 adapters and owner-attestation verifier in `src/market-gate/`; no web
-  runtime framework.
+  plus separate read-only xStocks/Ondo/Chainlink P5.5 adapters and the dormant
+  Ondo owner-attestation verifier in `src/market-gate/`; no web runtime framework.
 - Node.js 22.x; TypeScript 5.9.3; Node types 22.18.6; pinned npm lockfile.
 - Native `bigint` accounting with explicit chain/token denomination; JSON base
   units are strings. Identity never uses ticker symbols as execution keys.
@@ -168,8 +180,9 @@ inspectable evidence and recoverable sequential execution.
   ADR 0006 (market evidence boundary and direct V3 decoder), ADR 0007
   (source-timestamped reference and on-chain share mapping), ADR 0008
   (keyless BSC Chainlink source for the two-asset MVP), ADR 0009
-  (versioned NYSE calendar), ADR 0010 (owner declaration and unsupported
-  token-risk boundary).
+  (versioned NYSE calendar), ADR 0010 (Ondo owner declaration and unsupported
+  token-risk boundary), ADR 0011 (xStocks-first provider priority and wrapper
+  identity boundary).
 
 ## Required verification
 
@@ -231,6 +244,13 @@ PostgreSQL test database. A database-free run skips their integration suites.
   but its production limits and full P5 evidence-bundle behavior remain
   unvalidated. Issuer-event review requires a fresh human-sourced record;
   no `none-confirmed` record was issued from dynamic or inaccessible pages.
+- xStocks' current v2 wrapper conversion has been verified read-only, but
+  issuer status is not a DEX venue status and neither selected candidate had
+  an available 5-USDT Agentic Wallet quote at the recorded time. Other
+  venues/filler paths require new route decoding and simulation. Bare xStocks
+  rebasing requires explicit ledger reconciliation; legacy v1 wrappers must
+  not be registered as supported instruments. xStocks distribution and
+  jurisdiction restrictions remain unresolved for production use.
 - A valid owner EIP-712 signature proves wallet control and a dated owner
   representation; it does not prove issuer KYC or transfer permission. The
   current CLI's local revocation file is not durable production state. The

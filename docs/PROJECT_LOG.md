@@ -286,3 +286,21 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   tokens. These facts explain why a code-only fingerprint cannot complete a
   risk exception; it must include privileged roles and control configuration.
   The P5 audit remains `unsupported`, with no exception or live use enabled.
+
+## 2026-09-26 — P5.5 xStocks-first provider pivot
+
+- The owner selected xStocks as the first live-provider target. The blueprint's
+  instrument identity and adapter boundaries support this; the completed P2
+  Ondo trade remains historical and its route is not transferred to xStocks.
+  Ondo adapters are retained for later integration. [ADR 0011](decisions/0011-xstocks-first-bsc-provider.md)
+  and the [xStocks BSC matrix](integrations/2026-09-26-xstocks-bsc.md)
+  record the provider decision and evidence.
+- Added a read-only exact-contract xStocks BSC identity and current-v2-wrapper
+  quantity adapter. Issuer/API and BSC checks passed for NVDAx and AAPLx;
+  three new named regression tests pass. No instrument is execution registered.
+- Four 5-USDT Agentic Wallet quotes to the two bare tokens and two wrappers
+  each returned `No liquidity available, please try again later.` Direct
+  Pancake V3 pools at the tested pairs/fee tiers were absent. P5.5 remains
+  open for a bound venue route, current eligibility and token-risk evidence,
+  corporate-action handling, regular-session validation and issuer events.
+  P7 approval/submission/recovery still blocks live trading; P6 has not begun.

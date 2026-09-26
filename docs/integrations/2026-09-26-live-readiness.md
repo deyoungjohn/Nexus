@@ -2,6 +2,9 @@
 
 This records read-only integration findings for P5.5. It is not a production
 allowlist or trade authorization. P5 remains fail-closed and no signer is wired.
+This table records the earlier Ondo candidate path. The owner has since made
+xStocks the first live-provider target; its separate current findings and
+remaining gates are in the [xStocks BSC matrix](2026-09-26-xstocks-bsc.md).
 
 | Gate | Evidence and implemented step | Remaining release condition |
 |---|---|---|
