@@ -77,7 +77,22 @@ unresolved beacon. These identities can detect an upgrade, but do not assess
 the implementation or admin powers. Ondo publishes [Stocks contract audits](https://docs.ondo.finance/audits),
 yet no reviewed report has been mapped to this exact runtime code hash here.
 
+Sourcify's [BSC runtime-source lookup](https://sourcify.dev/server/v2/contract/56/0x578f397ca4661d1db4d9a65065d6b284a1a850fd?fields=all)
+reports a `match` for `GMToken`. Its published source exposes role-gated mint,
+admin burn, and configuration of compliance and pause managers; its transfer
+hook checks the sender/receiver (and sometimes the caller) against compliance
+and checks the pause manager. The [beacon lookup](https://sourcify.dev/server/v2/contract/56/0xc046b05a920e4b412815934dd8e58904dda73315?fields=all)
+exposes an owner-controlled `upgradeTo`. `match` is verified source
+provenance, not a security assessment or a promise that privileged controls
+will remain unchanged. Read-only BSC calls at block `0x7670306` found both
+tokens using compliance contract `0x76be569c94c39a2e2492de2f4d1c253f348250d0`
+and pause manager `0x6334924c787ebd21c881740ef6237ef51962638f`;
+the beacon owner was `0x8860bbfc7a83e4788a981f4e9f30878331413b26`.
+Those pointers and role memberships can change without changing the token or
+implementation bytecode, so the existing fingerprint alone is insufficient
+for a reviewed exception. A future review must bind and recheck them.
+
 Current risk state remains `unsupported` in P5. A supported audit, or an
 explicitly approved narrowly scoped exception with independent code-scope
-review, fresh implementation identity, token status and actual-size route
+review, fresh implementation and control identities, token status and actual-size route
 simulation, is required before a live risk decision. No exception is active.

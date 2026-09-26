@@ -29,7 +29,11 @@ must check transfer/venue state separately and use durable revocation state.
 For token risk, read the EIP-1967 beacon, its implementation and all three
 code hashes at one pinned BSC block. A change invalidates any review of that
 implementation. A matching fingerprint is an identity check, not a security
-audit. Continue to return `unsupported` at P5 until either a supported token
+audit. Sourcify's verified runtime source shows role-gated mint/admin burn,
+configurable compliance and pause managers, and an upgradeable beacon. A
+future exception must also bind current control addresses, privileged roles
+and actual-size transfer behavior because these can change without code-hash
+changes. Continue to return `unsupported` at P5 until either a supported token
 audit becomes available or the owner explicitly approves a separate,
 time-limited policy exception after contract-scope review and current route
 simulation. An exception must be represented distinctly from `clear`, bound
@@ -50,4 +54,5 @@ Sources: [Ondo eligibility](https://docs.ondo.finance/ondo-stocks/eligibility),
 [secondary-market restrictions](https://docs.ondo.finance/ondo-stocks/secondary-market-restrictions),
 [Ondo audit index](https://docs.ondo.finance/audits),
 [GoPlus response details](https://docs.gopluslabs.io/reference/response-details),
+[Sourcify verified implementation](https://sourcify.dev/server/v2/contract/56/0x578f397ca4661d1db4d9a65065d6b284a1a850fd?fields=all),
 [EIP-712 signature verification](https://docs.ethers.org/v6/api/hashing/).

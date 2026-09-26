@@ -112,6 +112,11 @@ inspectable evidence and recoverable sequential execution.
   share one EIP-1967 beacon and implementation; their hashes can invalidate
   a later contract review but do not amount to an audit. P5 still rejects
   unsupported token risk. No exception is active.
+- Sourcify's verified runtime source identifies role-gated mint/admin burn,
+  mutable compliance and pause managers, and beacon upgrades for the shared
+  Ondo implementation. Read-only BSC checks found current control pointers,
+  but code hashes alone do not detect later role or pointer changes. Any
+  exception policy would need to monitor those controls and actual routes.
 - P5.5 settlement correction: the Chainlink USDT/USD reader now emits the
   P5 snapshot's `USD-18` unit and requires an explicit peg-deviation ceiling
   in addition to source age and uncertainty. A read-only mainnet probe passed

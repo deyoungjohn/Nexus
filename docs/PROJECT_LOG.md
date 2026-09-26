@@ -277,3 +277,12 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   reviewed event records, production settlement policy, regular-session
   evidence, actual owner attestation and token-risk decision. P6 remains
   unstarted; P7 execution/recovery still blocks live automation.
+
+## 2026-09-26 — P5.5 Ondo control-surface review
+
+- Verified-source review of the shared Ondo implementation found role-gated
+  mint/admin burn, mutable compliance and pause managers, and an upgradeable
+  beacon. Read-only BSC calls found current shared control pointers for both
+  tokens. These facts explain why a code-only fingerprint cannot complete a
+  risk exception; it must include privileged roles and control configuration.
+  The P5 audit remains `unsupported`, with no exception or live use enabled.

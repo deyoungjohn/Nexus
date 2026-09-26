@@ -796,3 +796,20 @@ evidence supports them; do not invent failures to populate the log.
   after the code change, plus typecheck/build/config. Final documentation
   check and `git diff --check` passed. No application trade,
   token approval or wallet signature was submitted.
+
+## 2026-09-26 — P5.5d — Verified Ondo control-surface review
+
+- Agent/client: Codex. Sourcify's BSC v2 contract lookup reports a runtime
+  source `match` for the common GMToken implementation and beacon. The source
+  includes role-gated mint/admin burn, configurable compliance and pause
+  managers, and a transfer hook that checks pause and parties' compliance.
+  The beacon exposes `upgradeTo`. Read-only BSC calls at one block found the
+  same compliance/pause pointers for both tokens. This establishes neither
+  malicious behavior nor safety. Lesson: code hashes do not capture changing
+  role assignments or external control pointers; a risk exception would have
+  to bind and recheck those as well. The
+  [integration note](integrations/2026-09-26-eligibility-risk.md) and
+  [ADR 0010](decisions/0010-owner-attestation-and-token-risk.md) make this
+  limitation explicit. No exception was activated. Final PostgreSQL-backed
+  `./scripts/check.sh` passed 70/70 tests, typecheck/build/config, and
+  `git diff --check` passed.

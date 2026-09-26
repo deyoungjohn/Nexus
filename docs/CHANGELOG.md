@@ -336,3 +336,17 @@
   `./scripts/check.sh` passed 70/70 tests, strict typecheck, build and
   configuration. Fresh BSC settlement probe passed illustrative bounds;
   2% depeg, invalid threshold and unit mismatch regressions passed.
+
+## 2026-09-26 — P5.5 Ondo risk-scope clarification
+
+- Agent/client: Codex.
+- Change: Recorded Sourcify verified-source and pinned-block findings about
+  Ondo's shared implementation, beacon, compliance and pause controls in
+  ADR 0010, the integration note, state and logs.
+- Reason: A code hash does not capture control-pointer or privileged-role
+  changes, so it cannot alone justify a token-audit exception.
+- Behavior/compatibility impact: Documentation only. P5 continues to block
+  unsupported audit results; no exception or trade path was enabled.
+- Verification: Read-only Sourcify source and BSC calls;
+  PostgreSQL-backed `./scripts/check.sh` passed 70/70 tests, typecheck/build/
+  config, and `git diff --check` passed.
