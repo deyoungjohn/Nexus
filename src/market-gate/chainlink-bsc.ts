@@ -24,6 +24,8 @@ export interface ChainlinkBscEquityRequest {
 export interface ChainlinkBscSettlementRequest extends Omit<ChainlinkBscEquityRequest, "underlyingId"> {
   /** Conservative haircut added in both directions around the feed answer. */
   readonly uncertaintyBps: number;
+  /** Reject a settlement token whose observed USD price has moved too far from $1. */
+  readonly maxPegDeviationBps: number;
 }
 
 type Feed = { readonly proxy: string; readonly description: string };
@@ -109,15 +111,19 @@ export async function fetchChainlinkBscEquity(input: ChainlinkBscEquityRequest,
 export async function fetchChainlinkBscSettlement(input: ChainlinkBscSettlementRequest,
   fetcher: typeof fetch = fetch): Promise<SettlementEvidence | null> {
   if (!Number.isInteger(input.uncertaintyBps) || input.uncertaintyBps < 0
-    || input.uncertaintyBps > 1000) return null;
+    || input.uncertaintyBps > 1000 || !Number.isInteger(input.maxPegDeviationBps)
+    || input.maxPegDeviationBps < 0 || input.maxPegDeviationBps > 10_000) return null;
   const round = await fetchRound(input, BSC_USDT_USD_FEED, fetcher);
   if (!round) return null;
+  const oneDollar = 10n ** 18n;
+  const pegDeviation = round.answer18 >= oneDollar ? round.answer18 - oneDollar : oneDollar - round.answer18;
+  if (pegDeviation * 10_000n > oneDollar * BigInt(input.maxPegDeviationBps)) return null;
   const lower = round.answer18 * BigInt(10_000 - input.uncertaintyBps) / 10_000n;
   const upper = (round.answer18 * BigInt(10_000 + input.uncertaintyBps) + 9_999n) / 10_000n;
   if (lower <= 0n) return null;
   return { source: round.source, observedAt: round.updatedAt,
     expiresAt: new Date(Date.parse(round.updatedAt) + input.maxReferenceAgeMs).toISOString(),
-    valuationUnit: "USD", assetId: BSC_USDT_ASSET,
+    valuationUnit: "USD-18", assetId: BSC_USDT_ASSET,
     lowerValueNumerator: lower, upperValueNumerator: upper,
     denominator: 10n ** 18n };
 }

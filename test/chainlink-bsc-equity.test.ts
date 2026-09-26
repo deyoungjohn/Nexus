@@ -51,10 +51,12 @@ test("P5.5 Chainlink BSC reader blocks stale, malformed and mismatched rounds", 
 
 test("P5.5 USDT valuation widens a timed on-chain quote and rejects stale rounds", async () => {
   const request = { rpcUrl: input.rpcUrl, maxBlockAgeMs: input.maxBlockAgeMs,
-    maxReferenceAgeMs: input.maxReferenceAgeMs, now: input.now, uncertaintyBps: 50 };
+    maxReferenceAgeMs: input.maxReferenceAgeMs, now: input.now, uncertaintyBps: 50,
+    maxPegDeviationBps: 100 };
   const result = await fetchChainlinkBscSettlement(request,
     replies({ label: "USDT / USD", answer: 99900000n }));
   assert.equal(result?.assetId, BSC_USDT_ASSET);
+  assert.equal(result?.valuationUnit, "USD-18");
   assert.equal(result?.observedAt, "2026-09-25T14:00:00.000Z");
   assert.equal(result?.lowerValueNumerator, 994005000000000000n);
   assert.equal(result?.upperValueNumerator, 1003995000000000000n);
@@ -62,5 +64,9 @@ test("P5.5 USDT valuation widens a timed on-chain quote and rejects stale rounds
   assert.equal(await fetchChainlinkBscSettlement(request,
     replies({ label: "USDT / USD", updatedAt: updatedAt - 120n })), null);
   assert.equal(await fetchChainlinkBscSettlement({ ...request, uncertaintyBps: 10_001 },
+    replies({ label: "USDT / USD" })), null);
+  assert.equal(await fetchChainlinkBscSettlement(request,
+    replies({ label: "USDT / USD", answer: 98000000n })), null);
+  assert.equal(await fetchChainlinkBscSettlement({ ...request, maxPegDeviationBps: -1 },
     replies({ label: "USDT / USD" })), null);
 });

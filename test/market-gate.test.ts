@@ -109,6 +109,7 @@ test("P5 source timestamp is distinct from receipt and missing input blocks", ()
   assert.equal(adaptTimestampedReference({ pricePerShare: "200" }, now, "exchange-price", "company"), null);
   assert.equal(reason(withEvidence({ reference: null })), "MISSING_EVIDENCE");
   assert.equal(reason(withEvidence({ reference: { ...fixture().evidence.reference!, sourceAt: "2026-09-28T13:00:00Z" } })), "REFERENCE_UNAVAILABLE");
+  assert.equal(reason(withEvidence({ settlement: { ...fixture().evidence.settlement!, valuationUnit: "USD" } })), "REFERENCE_UNAVAILABLE");
 });
 
 test("P5 exchange timezone handles daylight saving and supplied holiday record", () => {

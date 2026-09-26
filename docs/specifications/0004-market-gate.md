@@ -48,6 +48,12 @@ issuer eligibility or current transfer permission; fingerprint identity does
 not establish implementation safety. [ADR 0010](../decisions/0010-owner-attestation-and-token-risk.md)
 keeps unsupported audits blocked until a separate policy decision and review.
 
+The Chainlink BSC settlement adapter must emit the snapshot's `USD-18`
+valuation unit. It rejects a USDT/USD answer beyond an explicit policy peg
+deviation, independent of its conservative uncertainty band. The manual
+[issuer-event runbook](../runbooks/issuer-event-review.md) requires direct
+issuer provenance and marks inaccessible or ambiguous schedules uncertain.
+
 Issuer IR event evidence requires a direct HTTPS URL, revision, confirmation
 state and expiry. Uncertain, withdrawn, malformed or in-blackout confirmed
 events block. A `none-confirmed` record requires a recent checked source and

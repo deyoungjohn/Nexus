@@ -262,3 +262,18 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   declaration, current transfer check, supported audit or explicit reviewed
   exception, issuer events and regular-session source validation. P6 has
   not begun; P7 execution/recovery is still required before live use.
+
+## 2026-09-26 — P5.5 settlement compatibility and issuer-event process
+
+- Corrected the read-only Chainlink USDT/USD adapter's valuation unit from
+  `USD` to `USD-18`, matching the P5 snapshot interface, and added an
+  explicit peg-deviation ceiling. A mainnet read passed illustrative
+  20-minute source age, 50-bp uncertainty and 100-bp peg bounds; these are
+  not activated production thresholds. The full PostgreSQL-backed check
+  passed after the code change.
+- Added a manual issuer-event runbook for official NVDA/AAPL sources and
+  fail-closed revision/recheck handling. Dynamic or inaccessible issuer pages
+  do not justify a `none-confirmed` record. P5.5 remains open for current
+  reviewed event records, production settlement policy, regular-session
+  evidence, actual owner attestation and token-risk decision. P6 remains
+  unstarted; P7 execution/recovery still blocks live automation.

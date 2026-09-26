@@ -761,3 +761,38 @@ evidence supports them; do not invent failures to populate the log.
   owner signature, durable revocation, current transfer checks, issuer events,
   regular-session price evidence and a token-risk policy decision. P7 still
   owns approval and transaction recovery.
+
+## 2026-09-26 — P5.5c/P5.5d — Settlement unit correction and issuer-event procedure
+
+- Agent/client: Codex. Prior committed P5.5 attestation/fingerprint work is
+  `da512dd`. Read state, plan, source, test and existing source ADR; baseline
+  PostgreSQL 16-backed `./scripts/check.sh` passed 70/70 tests. Existing
+  public gate and coordinator interfaces remain compatible.
+- P5.5d bug reproduction: `fetchChainlinkBscSettlement` emitted
+  `valuationUnit: "USD"`, while P5's snapshot and examples use `"USD-18"`.
+  The gate rejects that otherwise fresh settlement record as
+  `REFERENCE_UNAVAILABLE`. Cause: adapter label was not aligned with the
+  domain valuation-unit contract. Correction: emit `USD-18`; add an adapter
+  assertion and a gate mismatch regression. Lesson: evidence adapters must
+  be tested against the consumer's semantic units, not only their own value
+  arithmetic.
+- P5.5d policy control: `maxPegDeviationBps` is now an explicit settlement
+  reader input; a 2% USDT/USD deviation fails a 1% fixture ceiling before
+  uncertainty is applied. Invalid thresholds fail closed. A read-only BSC
+  probe returned a fresh `USD-18` value under illustrative 20-minute age,
+  50-bp uncertainty and 100-bp peg parameters. These are test/probe settings,
+  not an approved production policy. [ADR 0008](decisions/0008-keyless-bsc-market-reference.md)
+  records the source boundary.
+- P5.5c issuer event: reviewed official NVIDIA and Apple investor pages.
+  NVIDIA's financial report identified the prior quarter, but event sections
+  were dynamic or inaccessible to the read-only runtime; Apple's investor
+  page was also dynamic. The absence of visible next-date text cannot prove
+  `none-confirmed`. Added [the manual runbook](runbooks/issuer-event-review.md)
+  with direct-source URL, timezone, revision, expiration and recheck rules;
+  ambiguous or inaccessible sources map to `uncertain`. No event evidence
+  was issued for live use. Lesson: manual confirmation requires a positive
+  reviewer finding; a blank or blocked page is not evidence of no event.
+- Verification: full PostgreSQL-backed `./scripts/check.sh` passed 70/70
+  after the code change, plus typecheck/build/config. Final documentation
+  check and `git diff --check` passed. No application trade,
+  token approval or wallet signature was submitted.

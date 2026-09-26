@@ -112,6 +112,13 @@ inspectable evidence and recoverable sequential execution.
   share one EIP-1967 beacon and implementation; their hashes can invalidate
   a later contract review but do not amount to an audit. P5 still rejects
   unsupported token risk. No exception is active.
+- P5.5 settlement correction: the Chainlink USDT/USD reader now emits the
+  P5 snapshot's `USD-18` unit and requires an explicit peg-deviation ceiling
+  in addition to source age and uncertainty. A read-only mainnet probe passed
+  illustrative 20-minute/50-bp/100-bp bounds; production thresholds are not
+  activated. The [issuer-event runbook](runbooks/issuer-event-review.md)
+  records a manual direct-source process and treats inaccessible/dynamic
+  pages as uncertain, not as proof of no event.
 - Current full verification: 70/70 tests with PostgreSQL 16, strict
   typecheck, build and Portable configuration checks pass. The database-free
   run passed 55 tests with two PostgreSQL suites skipped.
@@ -215,6 +222,10 @@ PostgreSQL test database. A database-free run skips their integration suites.
   for the configured trade gate. Regular-session verification, wallet/venue
   attestation, issuer-event/audit evidence and full execution recovery
   are pending.
+- The USDT settlement reader now has compatible units and depeg rejection,
+  but its production limits and full P5 evidence-bundle behavior remain
+  unvalidated. Issuer-event review requires a fresh human-sourced record;
+  no `none-confirmed` record was issued from dynamic or inaccessible pages.
 - A valid owner EIP-712 signature proves wallet control and a dated owner
   representation; it does not prove issuer KYC or transfer permission. The
   current CLI's local revocation file is not durable production state. The

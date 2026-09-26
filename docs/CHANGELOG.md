@@ -318,3 +318,21 @@
   revocation, expiry and beacon-change/failure regressions passed. Read-only
   BSC/API probes reproduced the documented observations. A synthetic CLI
   challenge/signature/verify round trip and `git diff --check` passed.
+
+## 2026-09-26 — P5.5 settlement unit and issuer-event review process
+
+- Agent/client: Codex.
+- Change: Corrected Chainlink USDT/USD evidence to `USD-18`, added a
+  configurable peg-deviation ceiling and regression checks, and documented
+  the manual NVDA/AAPL issuer-event review and fail-closed uncertainty rules.
+- Reason: A fresh adapter record labeled `USD` could never satisfy a
+  `USD-18` P5 portfolio snapshot; an explicit peg ceiling prevents using a
+  materially depegged USDT round as ordinary settlement evidence.
+- Behavior/compatibility impact: P5 and P4 interfaces remain unchanged;
+  `fetchChainlinkBscSettlement` now requires `maxPegDeviationBps` and returns
+  the compatible valuation unit. No event evidence or live execution was
+  enabled.
+- Verification: PostgreSQL 16-backed baseline and post-change
+  `./scripts/check.sh` passed 70/70 tests, strict typecheck, build and
+  configuration. Fresh BSC settlement probe passed illustrative bounds;
+  2% depeg, invalid threshold and unit mismatch regressions passed.
