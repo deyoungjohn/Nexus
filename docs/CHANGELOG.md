@@ -258,3 +258,21 @@
   and configuration checks. Holiday/DST, mapping, source-age, event, quote,
   recipient/spender, settlement-conversion and simulation cases passed;
   `git diff --check` passed.
+
+## 2026-09-26 — P5.5 read-only live-evidence groundwork
+
+- Agent/client: Codex.
+- Change: Added a fail-closed Pyth Pro reference parser/accessor and a BSC
+  Ondo SyntheticSharesOracle quantity reader, five focused tests, P5.5 plan
+  item, live-readiness matrix and ADR 0007.
+- Reason: The P2 public price lacks a source timestamp and wallet display
+  multipliers are not a durable raw-to-share mapping; live automation also
+  lacks several independent safety and execution gates.
+- Behavior/compatibility impact: New read-only market-evidence adapters;
+  existing P3/P4/P5 APIs stay compatible. No instrument registration, signing,
+  trade submission or live automation enabled. Provider/access gaps remain.
+- Verification: Baseline `./scripts/check.sh` passed 41 named tests with two
+  database suites skipped. Final PostgreSQL 16-backed `./scripts/check.sh`
+  passed 61/61 tests, typecheck, build and configuration checks; `git diff
+  --check` passed. Live read-only BSC oracle probes succeeded for NVDAon,
+  AMDon and AAPLon; no authenticated Pyth response was available.

@@ -7,3 +7,5 @@ import "./ledger.test.js";
 import "./coordinator.test.js";
 import "./coordinator-store.test.js";
 import "./market-gate.test.js";
+import "./pyth-pro.test.js";
+import "./ondo-quantity.test.js";

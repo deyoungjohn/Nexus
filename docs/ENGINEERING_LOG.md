@@ -578,3 +578,52 @@ evidence supports them; do not invent failures to populate the log.
   all P3/P4 database cases passed. Final document/check result is recorded in
   the same-day changelog. Production provider verification and P7 owner
   approval/receipt recovery remain open; simulation is not a fill guarantee.
+
+## 2026-09-26 — P5.5a–P5.5d — Live automation readiness investigation
+
+- Agent/client: Codex. User requested the cause of the live block and a fix
+  before the next phase. Read the project contract, state, blueprint and P5
+  specification/ADR, plan and recent logs; searched shared MCP memory.
+  Baseline `./scripts/check.sh` passed 41 named tests, with two PostgreSQL
+  suites skipped, plus typecheck/build/config. Existing unrelated
+  `.codex/config.toml` and Zone.Identifier files were preserved. Existing P3/P4
+  and P5 interfaces remain compatible. No transaction was authorized here.
+- P5.5a investigation/component: P2's public Binance reference lacks a
+  provider-origin timestamp. Pyth Pro documents `feedUpdateTimestamp`, exact
+  equity feed IDs and an authenticated REST endpoint. Implemented
+  `pyth-pro.ts` with source-origin timing, exact feed identity, regular-session
+  and positive-price checks, exact mantissa/exponent conversion, server-side
+  key input and fail-closed fetch. Fixture and provider-error tests pass. An
+  authenticated live response is not verified because access is unprovisioned;
+  no secret was logged or stored.
+- P5.5b investigation/component: issuer-published BSC SyntheticSharesOracle
+  responded at a pinned block for NVDAon, AMDon and AAPLon. Implemented
+  `ondo-quantity.ts` to check chain 56, block age, `getSValue` against
+  `assetData`, active and scheduled pause, and a token/value/update mapping
+  revision. Read-only live checks succeeded at blocks 124179311–124179324;
+  NVDAon's `sValue` changed relative to P2's display multiplier. Wrong-chain,
+  old-block and corporate-action regression tests pass.
+- P5.5b draft bug/correction: parallel oracle calls initially compared each
+  JSON-RPC response to the mutable shared request counter, which could reject
+  a valid first response when a second call incremented it. Captured each
+  request ID locally. A live probe then exposed that comparing a newly mined
+  block to a clock sampled before network calls could reject a valid block;
+  the adapter now checks receipt-time freshness. The final live probe and
+  `./scripts/check.sh` passed. Lesson: pin source state, and compare freshness
+  to a clock sampled after asynchronous reads.
+- P5.5c/P5.5d gate findings: user-specific eligibility cannot be inferred
+  from the P2 fill; a dated exchange calendar, reviewed issuer IR events,
+  conservative USDT/USD valuation and token-risk policy still need verified
+  sources. Binance's unsupported NVDAon audit cannot be labeled clear from
+  issuer contract audits. P7's approval, exact pre-leg recheck, transaction
+  identity and receipt/reorg recovery also remain unimplemented. These are
+  tracked explicitly in the P5.5 matrix. No pivot to live execution.
+- Decision: [ADR 0007](decisions/0007-live-market-sources.md) separates Pyth
+  price-origin time from Ondo's on-chain economic quantity mapping and keeps
+  all other evidence independent. [Live-readiness matrix](integrations/2026-09-26-live-readiness.md)
+  records sources, observations and outstanding gates.
+- Final verification: local PostgreSQL 16-backed
+  `TEST_DATABASE_URL=… ./scripts/check.sh` passed 61/61 tests, strict
+  typecheck, build and configuration checks; `git diff --check` passed.
+  Five focused P5.5 tests passed. P5.5 remains open for authenticated price
+  access and the other matrix gates; no live execution claim is made.

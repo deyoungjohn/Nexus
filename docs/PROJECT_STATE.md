@@ -15,7 +15,7 @@ inspectable evidence and recoverable sequential execution.
   observations were retrieved successfully through `open_nodes` on 2026-09-25.
 - P0 (roadmap), P1 (domain foundation), P2 (integration feasibility), P3
   (durable ledger), P4 (Portfolio Coordinator) and P5 (offline Market Gate)
-  are complete. P6 (rules and scheduling) is next. See
+  are complete. P5.5 live-readiness is active before P6. See
   [the implementation plan](IMPLEMENTATION_PLAN.md) for all phases and exit gates.
 - P2 read-only evidence: chain 56, BSC USDT and three Ondo candidate token
   contracts (NVDAon, AMDon, AAPLon); public metadata/status and RPC `decimals()`
@@ -76,15 +76,25 @@ inspectable evidence and recoverable sequential execution.
   conversion, gas/cost limits, full-size P4 limits and exact simulation fields.
   It emits an evidence hash for P7 revalidation. See
   [specification 0004](specifications/0004-market-gate.md).
-- Verified: 56 tests with a real PostgreSQL 16 server, including eight P5
-  named tests and all P3/P4 database cases; 1,000 generated allocation cases,
-  strict typecheck, build and Portable configuration checks pass.
-- Next: P6 rules and scheduling. Production source adapters remain blocked by
-  unverified owner/transfer eligibility, source-timestamped stock reference,
-  token-specific economic quantity mappings, maintained calendar/event checks,
-  settlement valuation and unsupported-audit policy. No live market evidence
-  is fabricated from P2. P7 must add approval binding, pre-leg revalidation,
-  idempotent submission, receipt recovery and reorg handling.
+- P5.5 progress: a Pyth Pro reference adapter preserves the provider's
+  `feedUpdateTimestamp` and fails closed on malformed/non-regular packets or
+  missing credentials; no authenticated live Pyth response has been verified.
+  A read-only BSC adapter reads Ondo's published SyntheticSharesOracle at one
+  pinned block and rejects wrong-chain, stale, paused or scheduled mappings.
+  Live read-only probes returned positive NVDAon, AMDon and AAPLon ratios on
+  2026-09-26. See [the live-readiness matrix](integrations/2026-09-26-live-readiness.md)
+  and [ADR 0007](decisions/0007-live-market-sources.md).
+- Current full verification: 61/61 tests with a real PostgreSQL 16 server,
+  including P5.5 source-adapter tests and all P3/P4 database cases; 1,000
+  generated allocation cases, strict typecheck, build and Portable
+  configuration checks pass.
+- Next: finish P5.5 before P6. Pyth access and authenticated response
+  validation, owner/transfer eligibility, maintained calendar/event checks,
+  settlement valuation and unsupported-audit policy remain open. The BSC
+  quantity source is read-only verified, but no instrument is live-registered.
+  P7 must still add approval binding, pre-leg revalidation, idempotent
+  submission, receipt recovery and reorg handling. Nexus live automation
+  remains disabled.
 - Detailed work, tests, reporting correction and lessons recorded in
   [the engineering log](ENGINEERING_LOG.md). One supervised mainnet trade was
   performed with separate owner approval; the application remains offline.
@@ -93,7 +103,7 @@ inspectable evidence and recoverable sequential execution.
 
 - Modular monolith; domain kernel in `src/domain/`, PostgreSQL ledger in
   `src/ledger/`, offline coordinator in `src/coordinator/` and pure market gate
-  in `src/market-gate/`; no web runtime framework.
+  plus read-only P5.5 adapters in `src/market-gate/`; no web runtime framework.
 - Node.js 22.x; TypeScript 5.9.3; Node types 22.18.6; pinned npm lockfile.
 - Native `bigint` accounting with explicit chain/token denomination; JSON base
   units are strings. Identity never uses ticker symbols as execution keys.
@@ -110,7 +120,8 @@ inspectable evidence and recoverable sequential execution.
 - Decisions: ADR 0001 (shared memory), ADR 0002 (domain kernel and allocation),
   ADR 0003 (Phase 2 integration gates and quantity semantics), ADR 0004
   (PostgreSQL ledger and leased outbox), ADR 0005 (staged conservative planning),
-  ADR 0006 (market evidence boundary and direct V3 decoder).
+  ADR 0006 (market evidence boundary and direct V3 decoder), ADR 0007
+  (source-timestamped reference and on-chain share mapping).
 
 ## Required verification
 
@@ -160,7 +171,10 @@ PostgreSQL test database. A database-free run skips their integration suites.
   source block are still caller inputs, not externally verified facts. A
   contingent post-sell buy is preview only. P5 must validate market evidence,
   clocks and quantity mapping; P7 must recheck each leg before execution.
-- Live adapters, calendar verification and full execution recovery are pending.
+- The Pyth reader has only documentation/fixture verification until a provider
+  key and regular-session response are available. The Ondo quantity reader is
+  live-tested read-only; other live adapters, calendar verification and full
+  execution recovery are pending.
 - The local MCP memory package should not be written by multiple agent processes
   concurrently. Close one agent and its MCP process before opening the next.
 - MCP memory is supplementary and does not replace tests, Git history, decision

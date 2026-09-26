@@ -206,3 +206,19 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   approvals, recheck evidence and recover submitted transactions. See
   [specification 0004](specifications/0004-market-gate.md) and
   [ADR 0006](decisions/0006-market-evidence-boundary.md).
+
+## 2026-09-26 — P5.5 live-readiness investigation in progress
+
+- Live automation was blocked by missing authenticated, source-timestamped
+  reference prices, owner/transfer eligibility, maintained session and event
+  evidence, settlement conversion, unsupported token audit and P7's approval,
+  submission and recovery lifecycle. The earlier supervised trade proved one
+  route and receipt, not standing authorization or automation safety.
+- Added a read-only Pyth Pro parser/accessor using the provider's price-origin
+  timestamp. A provider key and authenticated regular-session response remain
+  outstanding. Added an Ondo BSC oracle reader for three P2 candidate tokens;
+  one pinned-block read checks share ratio, active/scheduled pause and mapping
+  revision. The real BSC read succeeded for NVDAon, AMDon and AAPLon.
+- P5.5 remains open. No wallet call, signer, trade or executable instrument
+  registration was added. P6 has not begun. The remaining gates are tracked in
+  [the live-readiness matrix](integrations/2026-09-26-live-readiness.md).
