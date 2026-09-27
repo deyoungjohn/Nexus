@@ -360,3 +360,17 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   timely independent reference and settlement policy, issuer events and an
   end-to-end Market Gate bundle. P7 approval/recovery and actual wallet
   funding/allowance are still absent; live automation remains disabled.
+
+## 2026-09-27 — P5.5c on-chain bStocks transfer preflight
+
+- Added a read-only same-block check for token pause and the exact V3 route's
+  wallet, pool and router against bStocks compliance controls. A synthetic-
+  address BSC probe at block 124353819 succeeded; it cannot establish the
+  intended user's eligibility. Three named tests cover passing, restricted,
+  stale and changed-control paths. Local checks pass 64 tests with two
+  database suites skipped.
+- [ADR 0014](decisions/0014-bstocks-transfer-preflight-boundary.md) keeps
+  on-chain transfer state separate from geographic/account eligibility. The
+  reviewed public FAQ gives no country-eligibility endpoint path. Current
+  issuer-supported jurisdiction/account proof and actual-wallet preflight
+  remain gates, along with P5.5 risk/price/event evidence and P7 recovery.

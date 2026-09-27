@@ -458,3 +458,25 @@
   block 124352879 had no pending multiplier and `isTokenPaused=false`.
   Sourcify reports an exact runtime match for the current implementation.
   `git diff --check` passed; no wallet state changed.
+
+## 2026-09-27 — P5.5c bStocks on-chain transfer preflight
+
+- Agent/client: Codex, continuing the owner's bStocks-first integration.
+- Change: Added a read-only same-block transfer-control preflight for the
+  exact NVDAB V3 route's wallet, pool and router. It rechecks token pause and
+  compliance calls, requires a reviewed control fingerprint, and fails closed
+  on restrictions, stale blocks or provider errors. Added three named tests,
+  [ADR 0014](decisions/0014-bstocks-transfer-preflight-boundary.md), and
+  updated the route matrix, Market Gate specification, plan, state and logs.
+- Reason: The verified token implementation consults mutable compliance and
+  pause contracts during transfers. A route quote or code hash cannot prove
+  that the current participants can transfer.
+- Behavior/compatibility impact: New read-only evidence only. It does not
+  certify geographic/account eligibility, produce P5 `EligibilityEvidence`,
+  clear unsupported audit, register an instrument or enable wallet execution.
+  Existing P3/P4/P5 and provider modules remain intact.
+- Verification: Baseline `./scripts/check.sh` passed 61 tests with two database
+  suites skipped. Post-change check passed 64 tests with two database suites
+  skipped, plus typecheck/build/config. A live read-only BSC call passed for a
+  synthetic address and public route contracts at block 124353819; no user
+  eligibility or wallet state was established. `git diff --check` passed.

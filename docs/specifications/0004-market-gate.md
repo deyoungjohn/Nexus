@@ -140,3 +140,11 @@ and proxy/beacon/implementation fingerprint. Its output is deliberately not
 reference-share entitlement required for P5 portfolio valuation. A pending
 multiplier or changed reviewed code/control fingerprint blocks reuse. See
 [ADR 0013](../decisions/0013-bstocks-display-mapping-boundary.md).
+
+The bStocks read-only transfer preflight checks current pause state and the
+wallet, exact V3 pool and router against the verified compliance contract at
+the same pinned block. Its result is not P5 `EligibilityEvidence`: it lacks
+issuer-backed jurisdiction and account-level permission. Any restriction,
+RPC failure, changed control or stale block returns no evidence. P7 must
+refresh the check for the actual wallet and route. See
+[ADR 0014](../decisions/0014-bstocks-transfer-preflight-boundary.md).

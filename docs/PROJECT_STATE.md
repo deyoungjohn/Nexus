@@ -173,12 +173,20 @@ inspectable evidence and recoverable sequential execution.
   produced. [ADR 0013](decisions/0013-bstocks-display-mapping-boundary.md)
   records this boundary. Binance's FAQ mentions a jurisdiction API but gives
   no endpoint in the reviewed public text; no speculative integration exists.
-- Current local verification: `./scripts/check.sh` passes 61 tests; two
+- P5.5c on-chain transfer preflight: `src/market-gate/bstocks-transfer.ts`
+  rechecks token pause and wallet, exact validated V3 pool and router against
+  the verified compliance contract at the quantity snapshot's BSC block.
+  A synthetic-address live read succeeded at block 124353819; it is not the
+  owner's wallet or issuer/jurisdiction eligibility. [ADR 0014](decisions/0014-bstocks-transfer-preflight-boundary.md)
+  keeps this result separate from P5 `EligibilityEvidence`. No official
+  country endpoint path or current account permission was established.
+- Current local verification: `./scripts/check.sh` passes 64 tests; two
   PostgreSQL suites are skipped because `TEST_DATABASE_URL` is unavailable.
   Strict typecheck, build and Portable configuration checks pass. The earlier
   PostgreSQL-backed 73/73 result predates this adapter and does not cover it.
 - Next: finish bStocks-first P5.5 before P6. Review the issuer's economic
-  reference-share mapping and mutable controls beyond the new fingerprint; establish current
+  reference-share mapping and mutable controls beyond the new fingerprint;
+  establish current
   wallet/jurisdiction eligibility, a supported token-risk policy, bStocks
   reference/session rules, issuer events and settlement bounds. Refresh and
   simulate the exact route after actual funding/allowance only within an
@@ -195,7 +203,8 @@ inspectable evidence and recoverable sequential execution.
 
 - Modular monolith; domain kernel in `src/domain/`, PostgreSQL ledger in
   `src/ledger/`, offline coordinator in `src/coordinator/` and pure market gate
-  plus separate read-only bStocks/xStocks/Ondo/Chainlink P5.5 adapters and the dormant
+  plus separate read-only bStocks quantity/transfer and xStocks/Ondo/Chainlink
+  P5.5 adapters and the dormant
   Ondo owner-attestation verifier in `src/market-gate/`; no web runtime framework.
 - Node.js 22.x; TypeScript 5.9.3; Node types 22.18.6; pinned npm lockfile.
 - Native `bigint` accounting with explicit chain/token denomination; JSON base
@@ -223,7 +232,7 @@ inspectable evidence and recoverable sequential execution.
   (versioned NYSE calendar), ADR 0010 (Ondo owner declaration and unsupported
   token-risk boundary), ADR 0011 (historical xStocks priority and wrapper
   identity boundary), ADR 0012 (bStocks-first provider priority), ADR 0013
-  (bStocks display mapping boundary).
+  (bStocks display mapping boundary), ADR 0014 (on-chain transfer boundary).
 
 ## Required verification
 

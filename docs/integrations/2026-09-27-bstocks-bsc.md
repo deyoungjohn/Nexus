@@ -83,6 +83,14 @@ read-only quotes were available at the same fee tier.
   changes, and transfers consult both pause and compliance contracts. A source-
   backed economic mapping and review of the external managers' internal
   controls remain open.
+- A separate [on-chain transfer preflight](../../src/market-gate/bstocks-transfer.ts)
+  now checks the exact validated pool/router and a supplied wallet against
+  the token's compliance contract, plus token pause state, at the quantity
+  snapshot's block. A read-only probe at block 124353819 (15:05:59 UTC) passed
+  for a **synthetic, non-owner address** and the public route contracts. This
+  proves that the check is callable, not that the intended wallet or any
+  jurisdiction is eligible. [ADR 0014](../decisions/0014-bstocks-transfer-preflight-boundary.md)
+  defines the boundary.
 - Establish current issuer/venue/wallet eligibility and geographic policy.
   Binance's [bStocks FAQ](https://www.binance.com/en-NG/support/faq/detail/f0c03cd6509a4085b4cce1636f16be38)
   describes restrictions; a route quote is not an eligibility result.

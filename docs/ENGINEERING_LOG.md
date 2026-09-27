@@ -1032,3 +1032,39 @@ evidence supports them; do not invent failures to populate the log.
 - Post-change `./scripts/check.sh` passed 61 tests with two database suites
   skipped, plus typecheck/build/config. Final documentation check is recorded
   in the changelog.
+
+## 2026-09-27 — P5.5c — bStocks on-chain transfer preflight
+
+- Agent/client: Codex, continuing the active bStocks-first P5.5 work. Prior
+  passing `./scripts/check.sh` (61 tests, two PostgreSQL suites skipped) set
+  this increment's baseline; read the existing P5 contract, integration
+  matrix and ADR 0013. Preserved the raw/UI adapter and existing P5 interfaces.
+- Source review: Sourcify exact-runtime matches for the current bStocks
+  compliance and pause-manager contracts expose a per-token blocklist, global
+  sanctions list, global/token pause and mutable admin/operations roles. The
+  token's transfer hook checks sender and recipient; `transferFrom` may also
+  check its caller. A route quote does not test these restrictions. The public
+  Binance FAQ says a country-eligibility API exists but gives no endpoint path
+  in the reviewed text. No country or account permission is inferred from a
+  localized web page.
+- New component: `src/market-gate/bstocks-transfer.ts` checks the exact
+  validated direct-V3 pool/router and supplied wallet at the quantity
+  snapshot's block. It requires an unchanged reviewed control fingerprint,
+  rejects scheduled multiplier/stale block, rechecks pause state and calls
+  `checkIsCompliant` for all three participants. Any RPC error or restriction
+  returns no result. The output is deliberately not P5 `EligibilityEvidence`;
+  it cannot decide geography, account permission or overall token risk.
+  [ADR 0014](decisions/0014-bstocks-transfer-preflight-boundary.md) records
+  that separation.
+- Tests: three named tests cover exact participant calls, blocked wallet/pool/
+  router, token pause, invalid reply, changed reviewed control, pending
+  multiplier, stale/expired/mismatched block and wrong chain. Local
+  `./scripts/check.sh` passed 64 tests with two PostgreSQL suites skipped,
+  plus typecheck/build/config. A read-only BSC probe at block 124353819
+  (15:05:59 UTC) passed for a synthetic address and public route contracts;
+  it is not an actual-wallet or jurisdiction eligibility result.
+- Remaining: issuer-backed country/account eligibility, actual-wallet checks
+  at an approved trade preview, full mutable manager policy review, supported
+  audit, independent timely price/settlement rules, issuer events and P7
+  approval/recovery. No private address or signed data was stored in project
+  records. No wallet state changed.
