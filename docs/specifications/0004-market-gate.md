@@ -133,3 +133,10 @@ registration. The [direct NVDAB BSC route probe](../integrations/2026-09-27-bsto
 matched this specification's V3 calldata shape and passed a conditional
 read-only simulation with temporary balance/allowance overrides. It did not
 produce a production P5 evidence bundle or enable an execution route.
+
+The first bStocks adapter now reports a pinned raw/UI mapping, pending schedule
+and proxy/beacon/implementation fingerprint. Its output is deliberately not
+`QuantityEvidence`: the BEP-677 UI multiplier by itself does not verify the
+reference-share entitlement required for P5 portfolio valuation. A pending
+multiplier or changed reviewed code/control fingerprint blocks reuse. See
+[ADR 0013](../decisions/0013-bstocks-display-mapping-boundary.md).

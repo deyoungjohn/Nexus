@@ -976,3 +976,59 @@ evidence supports them; do not invent failures to populate the log.
   Market Gate specification, project log, ADR status and CHANGELOG while
   preserving the issuer-neutral modular architecture. Post-change checks are
   recorded in the matching changelog entry.
+
+## 2026-09-27 — P5.5b — bStocks raw/UI and control snapshot
+
+- Agent/client: Codex, continuing the owner's bStocks-first instruction.
+  Read the project contract, state, plan, P5 specification, recent logs and
+  ADRs; searched supplementary MCP memory. Baseline `./scripts/check.sh`
+  passed 58 tests, with two PostgreSQL suites skipped because no
+  `TEST_DATABASE_URL` was configured; typecheck/build/config passed. Preserved
+  the existing P3/P4/P5 interfaces and unrelated workspace changes.
+- Source and decision: current BEP-677 specifies canonical raw BEP-20 amounts,
+  18-decimal UI scaling and pending multiplier semantics. The Binance bStocks
+  FAQ says displayed units are intended to reflect some corporate actions but
+  that entitlement remains subject to product terms. [ADR 0013](decisions/0013-bstocks-display-mapping-boundary.md)
+  keeps this UI snapshot separate from P5 economic `QuantityEvidence` until
+  reference-share mapping is independently reviewed.
+- New component: `src/market-gate/bstocks-bsc.ts` reads the exact NVDAB token
+  at one pinned BSC block. It checks chain, freshness, 18 raw decimals,
+  required BEP-677 interfaces, active/pending multiplier consistency, EIP-1967
+  beacon/implementation and deployed code, plus beacon owner. It returns
+  source block, mapping revision and code/control hashes; changed reviewed
+  fingerprints or pending changes block review reuse. `bStocksDisplayedRaw`
+  applies floor division for display only. No wallet mutation or P5 evidence
+  registration was added.
+- Test step: registered three named tests for valid mapping, pending schedule,
+  wrong token/chain, stale or inconsistent RPC values, absent code, changed
+  owner/implementation code and exact display truncation. Initial `npm test`
+  failed at TypeScript compilation: an array literal inferred `pending` as
+  `bigint[]`, while the mock requires a two-element tuple. Explicitly checked
+  the array against `Change[]`; the rerun passed 61 tests with two PostgreSQL
+  suites skipped. This was a test fixture typing error, not a production bug.
+- Live read-only verification: BSC block 124351665 at 14:49:49 UTC returned
+  multiplier `1000778223752807865`, no pending change, 18 decimals and a
+  nonempty beacon/implementation code path. The code/control hashes are a
+  revision fingerprint, not a security audit; mutable roles and external
+  controls remain unreviewed. The public FAQ mentions a country-eligibility
+  API without an endpoint path, so no guessed API was integrated. Unsupported
+  token audit, current eligibility, source-timestamped bStock pricing,
+  issuer-event policy and P7 execution/recovery remain open.
+- Source/control follow-up: Sourcify reports an exact runtime match for the
+  current implementation. Its verified source shows transfer pause/compliance
+  hooks, mutable manager pointers, enumerable admin/issuer roles and issuer
+  multiplier authority. Extended the adapter to pin manager addresses/code,
+  role-set hashes and token pause state. A second live read at block 124352879
+  (14:58:56 UTC) found no pending multiplier and `isTokenPaused=false`.
+  Internal manager policies can still change without these fingerprints;
+  neither this check nor verified source is a token-risk clearance.
+- Regression fixture correction: after adding manager-code checks, the new
+  changed-compliance test unexpectedly passed review matching. Reproduction:
+  `npm test` failed test 63 at the changed-compliance assertion. Cause: the
+  mock matched lowercase addresses while ethers decoded checksummed addresses,
+  so it returned the default code for the compliance contract. Normalized
+  mock target comparisons; `npm test` then passed 61 tests with two database
+  suites skipped. The live RPC probe confirmed the real adapter path.
+- Post-change `./scripts/check.sh` passed 61 tests with two database suites
+  skipped, plus typecheck/build/config. Final documentation check is recorded
+  in the changelog.

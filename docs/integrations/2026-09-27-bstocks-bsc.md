@@ -67,8 +67,22 @@ read-only quotes were available at the same fee tier.
 
 ## Remaining gates
 
-- Implement and test a separate bStocks raw/UI quantity adapter, multiplier
-  scheduling and code/control revision checks before registering this token.
+- A separate [read-only bStocks raw/UI adapter](../../src/market-gate/bstocks-bsc.ts)
+  now pins token, chain, code path and BEP-677 state at one block. A 2026-09-27
+  14:49:49 UTC probe at block 124351665 returned 18 raw decimals, current
+  multiplier `1000778223752807865`, no pending change, EIP-1967 beacon
+  `0x156d6dce9a4f6139a3406f1f021f1a4880de93a3` and implementation
+  `0xcfed6c4679297ea4889f8183bc057b4a86c64e46`. The proxy, beacon and
+  implementation code hashes were captured; this is a fingerprint, not a
+  contract audit. [ADR 0013](../decisions/0013-bstocks-display-mapping-boundary.md)
+  keeps this UI mapping separate from verified P5 reference-share exposure.
+  A later 14:58:56 UTC probe at block 124352879 also pinned the compliance
+  and pause-manager pointers/code, enumerable admin/issuer role-set hashes and
+  `isTokenPaused=false`. [Verified implementation source](https://sourcify.dev/server/v2/contract/56/0xcfed6c4679297ea4889f8183bc057b4a86c64e46?fields=all)
+  shows that admin can change managers, admin/issuer can schedule multiplier
+  changes, and transfers consult both pause and compliance contracts. A source-
+  backed economic mapping and review of the external managers' internal
+  controls remain open.
 - Establish current issuer/venue/wallet eligibility and geographic policy.
   Binance's [bStocks FAQ](https://www.binance.com/en-NG/support/faq/detail/f0c03cd6509a4085b4cce1636f16be38)
   describes restrictions; a route quote is not an eligibility result.
@@ -78,6 +92,11 @@ read-only quotes were available at the same fee tier.
   unsupported audit until a reviewed policy supplies equivalent evidence.
 - Obtain a source-timestamped reference/settlement policy for bStocks across
   regular and off-hours trading, plus corporate-action and issuer-event checks.
+  Binance says the multiplier can reflect dividends and splits, and that
+  secondary bStock prices can diverge from underlying shares; a timely spot
+  ask alone cannot settle that policy. The FAQ mentions a public country-
+  eligibility API but does not specify its endpoint; no unverified endpoint
+  has been wired into Nexus.
 - Fund and approve only after a fresh owner-reviewed plan; then refresh the
   quote, deadline, exact calldata, real-state wallet preview and simulation.
   P7 approval binding, submission recovery and reconciliation are still absent.

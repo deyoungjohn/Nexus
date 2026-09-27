@@ -432,3 +432,29 @@
   QuoterV2 probes, on-chain BEP-677 multiplier read, price screening,
   conditional `eth_call`, gas estimate and negative bounds were recorded.
   `git diff --check` passed; no wallet state changed.
+
+## 2026-09-27 — P5.5b bStocks quantity and control snapshot
+
+- Agent/client: Codex, continuing the owner's bStocks-first integration.
+- Change: Added a separate read-only exact-NVDAB BSC adapter for pinned BEP-677
+  raw/UI multiplier and schedule, beacon/implementation fingerprints, mutable
+  compliance/pause-manager pointers, token pause state and admin/issuer role-set
+  hashes. Added three named tests, [ADR 0013](decisions/0013-bstocks-display-mapping-boundary.md),
+  and updated the integration matrix, Market Gate specification, implementation
+  plan, project state and phase logs.
+- Reason: The validated route still lacked provider-specific quantity semantics
+  and a way to detect changes to the code and controls that govern transfers.
+  Binance's multiplier describes display adjustment; the P5 stock-share ratio
+  requires separate economic evidence.
+- Behavior/compatibility impact: New read-only module only. Raw amounts remain
+  canonical; no bStocks instrument is registered, no audit is marked clear,
+  and no wallet approval, trade or application executor is enabled. Existing
+  Ondo/xStocks and P3/P4/P5 interfaces remain intact. External manager policy,
+  eligibility, reference pricing, issuer events and P7 remain open.
+- Verification: Baseline `./scripts/check.sh` passed 58 tests with two database
+  suites skipped. Post-change local checks pass 61 tests with two database
+  suites skipped, plus strict typecheck/build/config. Two live read-only BSC
+  probes confirmed the exact contract and controls; the later pinned probe at
+  block 124352879 had no pending multiplier and `isTokenPaused=false`.
+  Sourcify reports an exact runtime match for the current implementation.
+  `git diff --check` passed; no wallet state changed.

@@ -344,3 +344,19 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   gate integration. P7 owner approval and recovery remain absent. The route
   proof is time-specific and its deadline has expired; Nexus live automation
   remains disabled.
+
+## 2026-09-27 — P5.5b bStocks quantity/control groundwork
+
+- Added a separate read-only NVDAB adapter for BEP-677 raw/UI mapping,
+  scheduled multiplier detection and pinned proxy, compliance, pause-manager
+  and token-role fingerprints. A live block-124352879 probe succeeded and
+  reported no token pause. Three named tests cover valid, changed and
+  invalid states; local checks pass 61 tests with two database suites skipped.
+- [ADR 0013](decisions/0013-bstocks-display-mapping-boundary.md) preserves raw
+  accounting and keeps UI scaling distinct from verified stock-share exposure.
+  No bStock is registered for live P5 use.
+- Remaining P5.5 gates: issuer economic mapping and full control review,
+  current jurisdiction/wallet eligibility, supported token-risk evidence,
+  timely independent reference and settlement policy, issuer events and an
+  end-to-end Market Gate bundle. P7 approval/recovery and actual wallet
+  funding/allowance are still absent; live automation remains disabled.

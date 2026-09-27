@@ -162,11 +162,23 @@ inspectable evidence and recoverable sequential execution.
   source. The wallet lacked actual 5-USDT balance and router allowance, and
   Binance token audit reported unsupported. No trade or bStocks instrument
   was application-enabled. See the [bStocks route matrix](integrations/2026-09-27-bstocks-bsc.md).
-- Current full verification: 73/73 tests with PostgreSQL 16, strict
-  typecheck, build and Portable configuration checks pass. The database-free
-  `npm test` run passed 58 tests with two PostgreSQL suites skipped.
-- Next: finish bStocks-first P5.5 before P6. Implement a provider-specific
-  BEP-677 raw/UI quantity adapter and code/control review; establish current
+- P5.5b bStocks read-only adapter: `src/market-gate/bstocks-bsc.ts` pins the
+  exact NVDAB contract, BSC block, 18 raw decimals, BEP-677 current/pending
+  multiplier and proxy/beacon/implementation, compliance, pause-manager and
+  token-role fingerprints. A live 2026-09-27 probe succeeded at block 124352879
+  with no pending multiplier and `isTokenPaused=false`.
+  Scheduled changes and changed reviewed controls block review reuse. The
+  multiplier only converts raw amounts for display; no P5 reference-share
+  `QuantityEvidence`, clear audit, eligibility result or live registration is
+  produced. [ADR 0013](decisions/0013-bstocks-display-mapping-boundary.md)
+  records this boundary. Binance's FAQ mentions a jurisdiction API but gives
+  no endpoint in the reviewed public text; no speculative integration exists.
+- Current local verification: `./scripts/check.sh` passes 61 tests; two
+  PostgreSQL suites are skipped because `TEST_DATABASE_URL` is unavailable.
+  Strict typecheck, build and Portable configuration checks pass. The earlier
+  PostgreSQL-backed 73/73 result predates this adapter and does not cover it.
+- Next: finish bStocks-first P5.5 before P6. Review the issuer's economic
+  reference-share mapping and mutable controls beyond the new fingerprint; establish current
   wallet/jurisdiction eligibility, a supported token-risk policy, bStocks
   reference/session rules, issuer events and settlement bounds. Refresh and
   simulate the exact route after actual funding/allowance only within an
@@ -183,7 +195,7 @@ inspectable evidence and recoverable sequential execution.
 
 - Modular monolith; domain kernel in `src/domain/`, PostgreSQL ledger in
   `src/ledger/`, offline coordinator in `src/coordinator/` and pure market gate
-  plus separate read-only xStocks/Ondo/Chainlink P5.5 adapters and the dormant
+  plus separate read-only bStocks/xStocks/Ondo/Chainlink P5.5 adapters and the dormant
   Ondo owner-attestation verifier in `src/market-gate/`; no web runtime framework.
 - Node.js 22.x; TypeScript 5.9.3; Node types 22.18.6; pinned npm lockfile.
 - Native `bigint` accounting with explicit chain/token denomination; JSON base
@@ -210,7 +222,8 @@ inspectable evidence and recoverable sequential execution.
   (keyless BSC Chainlink source for the two-asset MVP), ADR 0009
   (versioned NYSE calendar), ADR 0010 (Ondo owner declaration and unsupported
   token-risk boundary), ADR 0011 (historical xStocks priority and wrapper
-  identity boundary), ADR 0012 (bStocks-first provider priority).
+  identity boundary), ADR 0012 (bStocks-first provider priority), ADR 0013
+  (bStocks display mapping boundary).
 
 ## Required verification
 
