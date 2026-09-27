@@ -384,3 +384,25 @@
 - Verification: PostgreSQL-backed baseline and post-change
   `./scripts/check.sh` passed 73/73 tests, strict typecheck/build/config;
   `git diff --check` passed. Eight wallet quotes were read-only.
+
+## 2026-09-27 — P5.5e BSC tokenized-stock liquidity survey
+
+- Agent/client: Codex.
+- Change: Added a dated report and 671-row per-token CSV of BSC stock-provider
+  inventory, direct USDT pool reserves, reported 24-hour pool volume, and
+  read-only 100/1,000/10,000-USDT wallet quotes. Updated the active P5.5e plan,
+  project state and phase/engineering logs. The report ranks the 20 deepest
+  quoteable bStocks equity USDT pools and explains why Ondo/xStocks lack a
+  defensible top 20 at the Sunday snapshot; five other feed records are
+  inventoried separately.
+- Reason: Provider listing and token deployment alone had masked a severe BSC
+  route-liquidity difference. Decisions need measured depth, quote behavior and
+  explicit market-hour limits instead of presumed liquidity.
+- Behavior/compatibility impact: Documentation and research data only; no
+  application code, provider priority, instrument registration, approval or
+  wallet state changed. Quote observations are not execution evidence.
+- Verification: PostgreSQL-backed baseline, report-only, expanded-inventory
+  and post-documentation `./scripts/check.sh` runs passed 73/73 tests plus
+  strict typecheck, build and Portable configuration. Read-only wallet and
+  pool queries covered the listed scope; `git diff --check` and CSV/report
+  consistency checks passed.

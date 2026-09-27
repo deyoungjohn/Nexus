@@ -1,6 +1,6 @@
 # Project state
 
-Last updated: 2026-09-26
+Last updated: 2026-09-27
 
 ## Objective
 
@@ -138,6 +138,16 @@ inspectable evidence and recoverable sequential execution.
   poor quote versus an indicative public price. No xStocks instrument is live-
   registered. See [the xStocks matrix](integrations/2026-09-26-xstocks-bsc.md)
   and [ADR 0011](decisions/0011-xstocks-first-bsc-provider.md).
+- P5.5e BSC liquidity survey: a 2026-09-27 read-only snapshot covered all
+  671 Binance-listed BSC securities records, including 458 Ondo, 128 xStocks,
+  80 bStocks and five separately classified records. Among the three main
+  providers' equity-scoped tokens, 100-USDT wallet quotes succeeded for
+  23/329 Ondo, 4/96 xStocks and 66/67 bStocks. A direct-USDT-pool and
+  100/10,000-USDT quote test supports a provisional bStocks top 20; Sunday
+  market-hour blocks and absent/thin routes prevent defensible Ondo or
+  xStocks top-20 liquidity ranks. The provider-priority ADR is unchanged;
+  no trade or application execution adapter was enabled. See the
+  [dated report and full CSV](research/2026-09-27-bsc-stock-liquidity.md).
 - Current full verification: 73/73 tests with PostgreSQL 16, strict
   typecheck, build and Portable configuration checks pass. The database-free
   `npm test` run passed 58 tests with two PostgreSQL suites skipped.

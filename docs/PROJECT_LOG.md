@@ -309,3 +309,19 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   economically implausible quote against Binance's indicative token price;
   it was not substituted into the MVP. Venue liquidity and independent
   reference-price validation remain a release gate.
+
+## 2026-09-27 — P5.5e BSC stock-liquidity survey
+
+- Ran a read-only, dated survey of all 671 BSC tokenized-securities records
+  in the Binance Web3 listing. The [report and full CSV](research/2026-09-27-bsc-stock-liquidity.md)
+  separate direct USDT pool reserves from actual-size wallet quotes.
+- Among equity-scoped Ondo/xStocks/bStocks listings, 100-USDT quotes worked for
+  23/329, 4/96 and 66/67 respectively. bStocks alone supported a credible
+  direct-USDT-pool top 20 with successful 100- and 10,000-USDT quotes. Ondo's
+  Sunday market-hour blocks and xStocks' absent/thin routes prevent a
+  defensible top 20 for either provider now. Four Paimon SPV tokens and one
+  separately classified BNC4 token were also tested and identified separately.
+- P5.5 remains open. This is evidence for a possible provider-priority review,
+  not a pivot or permission to trade. Exact executable route, fair reference
+  price, risk review, eligibility, simulation and P7 approval/recovery gates
+  remain outstanding. No wallet state changed.

@@ -880,3 +880,45 @@ evidence supports them; do not invent failures to populate the log.
   and [ADR 0011](decisions/0011-xstocks-first-bsc-provider.md) record the
   finding. Final `./scripts/check.sh` and diff verification are recorded in
   the corresponding changelog entry.
+
+## 2026-09-27 — P5.5e — BSC issuer liquidity survey
+
+- Agent/client: Codex. Read the blueprint, active phase plan, state, recent logs,
+  relevant ADR and integration notes; searched supplementary project memory.
+  PostgreSQL-backed `./scripts/check.sh` passed 73/73 before documentation.
+  Wallet skill/CLI preflight reported current versions and a connected session.
+- Inventory step: Binance's BSC tokenized-securities feed returned 671 records:
+  458 Ondo, 128 xStocks, 80 bStocks, four Paimon pre-IPO SPV records and one
+  separately classified BNC4 record. Equity-scoped cohorts were 329/96/67;
+  the classification includes 17 bStocks equity tickers with omitted
+  `assetType`. Paimon and BNC4 were tested but kept outside the three-provider
+  equity ranking. No wallet identifiers or credentials were recorded.
+- Pool step: read-only DEX Screener pair queries covered every listed address.
+  For each instrument the snapshot selected its largest direct token/USDT
+  pool by USDT-side reserve; this is a depth proxy, not an execution promise.
+  Quote step: 100-USDT Agentic Wallet read-only quotes covered all 671 entries;
+  1,000- and 10,000-USDT quotes covered 100-USDT successes. One bStocks 429
+  response was retried successfully; it was not counted as missing liquidity.
+  No transaction, approval, signature or wallet-state change occurred.
+- Observation: equity 100-USDT quotes succeeded for 23/329 Ondo, 4/96
+  xStocks and 66/67 bStocks. All 306 unsuccessful Ondo equity responses cited
+  stock-market opening hours. Only 12 Ondo equities had a visible direct
+  USDT pool; five of those quoted. xStocks had two dust-sized direct USDT
+  pools; three of its four equity quotes deteriorated by more than 56% from
+  100 to 10,000 USDT, and MSTRx returned dust-sized output. bStocks had 34
+  direct USDT equity pools. Its deepest 20 all quoted at both sizes with
+  no more than 0.42% observed quote deterioration; their direct USDT reserves
+  spanned about 76,818 to 1,492,287 USDT.
+- Decision/lesson: do not rank absent liquidity or weekend-blocked Ondo
+  assets as if measured. A successful quote, especially a dust-priced one,
+  does not prove a fair or executable route. The dated [report and full CSV](research/2026-09-27-bsc-stock-liquidity.md)
+  preserve contracts, method and per-token evidence. This survey recommends
+  bStocks route investigation but does not change [ADR 0011](decisions/0011-xstocks-first-bsc-provider.md)
+  or enable a live provider. Re-test Ondo in regular hours; continue exact
+  route, independent price, audit, eligibility and simulation gates.
+- Verification: the report-only and expanded-inventory increments each passed
+  PostgreSQL-backed `./scripts/check.sh` (73/73 tests, typecheck, build and
+  Portable configuration). CSV staging initially used CRLF line endings;
+  `git diff --cached --check` flagged each row as trailing whitespace. The
+  snapshot was normalized to LF and the staged diff was rechecked. Final
+  documentation checks are in the matching changelog entry.
