@@ -922,3 +922,57 @@ evidence supports them; do not invent failures to populate the log.
   `git diff --cached --check` flagged each row as trailing whitespace. The
   snapshot was normalized to LF and the staged diff was rechecked. Final
   documentation checks are in the matching changelog entry.
+
+## 2026-09-27 — P5.5b/P5.5e — bStocks priority and price-bounded V3 route
+
+- Agent/client: Codex. Owner explicitly directed the bStocks-first switch after
+  the 671-record survey showed xStocks thin routes. Read `AGENTS.md`, blueprint,
+  P5 specification, plan, state, logs and ADR 0011; searched supplementary
+  memory. Baseline PostgreSQL-backed `./scripts/check.sh` passed 73/73,
+  typecheck/build/config. Wallet skill 1.12.0 and CLI 1.10.0 preflight passed;
+  session was connected and not near expiry. No existing P3/P4/P5 interface or
+  test behavior was changed.
+- P5.5b source/decision: Binance's `type=3` BSC list resolved the exact NVDAB
+  contract, and official bStocks/BEP-677 documents distinguish raw ERC-20
+  amounts from displayed amounts multiplied by `uiMultiplier()`. [ADR 0012](decisions/0012-bstocks-first-bsc-provider.md)
+  makes bStocks the first live-provider target; ADR 0011 retains its xStocks
+  technical findings but no longer sets priority. No bStocks adapter was
+  prematurely registered. A separate raw/UI mapping, scheduled multiplier
+  and proxy-control review remain work items.
+- P5.5e pool step: official PancakeSwap BSC factory, QuoterV2 and V3 router
+  addresses were rechecked. At block 124347223, the NVDAB/USDT pool's
+  `token0/token1/factory/fee` and factory `getPool` agreed on direct pool
+  `0x8FB4243b553aC29BA088aCf00B9B7dA24bD6690C`, fee 2500. Both tokens
+  reported 18 decimals. Read-only QuoterV2 buy/sell probes at 5/100/1,000/
+  10,000 USDT succeeded; the 5-USDT round trip lost about 0.50% before gas.
+  A separate Agentic Wallet 5-USDT quote succeeded but omitted exact route.
+- P5.5e exact-bound step: at pinned block 124348179, a 5-USDT direct quote
+  returned `22176198062689502` raw NVDAB. An `exactInputSingle` call fixed
+  the connected wallet as recipient, fee 2500, exact input 5e18, zero native
+  value/price limit, 50-bps minimum `22065317072376054` raw units and a
+  10-minute on-chain deadline. Nexus's V3 decoder matched the encoded fields.
+  On-chain multiplier was `1.000778223752807865`, pending value identical,
+  `effectiveAt=0`. Against a contemporaneous Binance bStocks spot best ask
+  of 224.84 USDT/displayed unit, the route quote implied 225.29 (0.20%
+  premium) and the minimum bound implied 226.42 (0.70% premium). The spot
+  response has no source-origin timestamp and is not independent underlying
+  stock evidence, so this is screening, not production P5 reference approval.
+- P5.5e simulation/negative tests: pinned `eth_call` with temporary exact
+  5-USDT balance/allowance state overrides returned the quoted output; gas
+  estimation returned 182,595. Raising the minimum to one raw unit above the
+  quote reverted; an expired deadline reverted. The actual connected wallet
+  lacked both sufficient USDT and exact router allowance, so this is a
+  **conditional route proof**, not a ready-to-send wallet transaction. No
+  approval, signature, swap, on-chain state change or personal wallet address
+  was stored in project records. The dated [bStocks matrix](integrations/2026-09-27-bstocks-bsc.md)
+  captures the exact public fields and remaining gates.
+- P5.5d risk check: the read-only Binance audit for this exact contract
+  returned `hasResult=false, isSupported=false`; no risk level is inferred.
+  Binance's bStocks FAQ also requires eligibility and allows address controls.
+  Lesson: strong liquidity and successful conditional simulation do not clear
+  issuer eligibility, risk or independent price requirements. The route's
+  deadline expired after the probe and cannot be reused.
+- Documentation increment: updated the implementation plan, project state,
+  Market Gate specification, project log, ADR status and CHANGELOG while
+  preserving the issuer-neutral modular architecture. Post-change checks are
+  recorded in the matching changelog entry.

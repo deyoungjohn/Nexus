@@ -1,6 +1,6 @@
 # ADR 0011: Integrate xStocks first through an exact BSC wrapper boundary
 
-- Status: accepted for P5.5 integration priority; live execution remains blocked
+- Status: superseded for P5.5 provider priority by [ADR 0012](0012-bstocks-first-bsc-provider.md); xStocks technical findings retained
 - Date: 2026-09-26
 - Owners: project owner (provider priority); Codex (implementation)
 

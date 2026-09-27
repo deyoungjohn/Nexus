@@ -15,9 +15,9 @@ inspectable evidence and recoverable sequential execution.
   observations were retrieved successfully through `open_nodes` on 2026-09-25.
 - P0 (roadmap), P1 (domain foundation), P2 (integration feasibility), P3
   (durable ledger), P4 (Portfolio Coordinator) and P5 (offline Market Gate)
-  are complete. P5.5 now targets xStocks first; live-readiness remains active
+  are complete. P5.5 now targets bStocks first; live-readiness remains active
   before P6. The completed P2 Ondo trade is historical feasibility evidence,
-  not proof of an xStocks route. See
+  not proof of a bStocks route. See
   [the implementation plan](IMPLEMENTATION_PLAN.md) for all phases and exit gates.
 - P2 read-only evidence: chain 56, BSC USDT and three Ondo candidate token
   contracts (NVDAon, AMDon, AAPLon); public metadata/status and RPC `decimals()`
@@ -126,7 +126,7 @@ inspectable evidence and recoverable sequential execution.
   activated. The [issuer-event runbook](runbooks/issuer-event-review.md)
   records a manual direct-source process and treats inaccessible/dynamic
   pages as uncertain, not as proof of no event.
-- Owner-directed provider pivot: xStocks is the first live-integration target;
+- Earlier owner-directed provider pivot: xStocks was the first live-integration target;
   Ondo adapters remain available but dormant. A new read-only BSC adapter
   checks exact issuer-listed NVDAx/AAPLx native tokens and current v2 wrappers,
   then pins code, `asset()`, decimals and multiplier/conversion at one block.
@@ -145,17 +145,33 @@ inspectable evidence and recoverable sequential execution.
   23/329 Ondo, 4/96 xStocks and 66/67 bStocks. A direct-USDT-pool and
   100/10,000-USDT quote test supports a provisional bStocks top 20; Sunday
   market-hour blocks and absent/thin routes prevent defensible Ondo or
-  xStocks top-20 liquidity ranks. The provider-priority ADR is unchanged;
+  xStocks top-20 liquidity ranks. At the time of that survey the
+  provider-priority ADR was unchanged;
   no trade or application execution adapter was enabled. See the
   [dated report and full CSV](research/2026-09-27-bsc-stock-liquidity.md).
+- Owner-directed P5.5 pivot to bStocks: [ADR 0012](decisions/0012-bstocks-first-bsc-provider.md)
+  supersedes xStocks-first priority while retaining the xStocks and Ondo
+  adapters as dormant modules. A direct 5-USDT USDT-to-NVDAB PancakeSwap V3
+  fee-2500 route was verified against the official factory and exact contracts
+  at BSC block 124348179. Its 50-bps minimum output and deadline were decoded;
+  a read-only swap simulation with temporary exact balance/allowance overrides
+  succeeded, while deliberately too-high minimum and expired-deadline calls
+  reverted. On-chain BEP-677 multiplier reconciled the raw quote to a
+  contemporaneous bStocks spot ask within about 0.20%; the minimum implied a
+  0.70% premium. This is route screening, not a production independent price
+  source. The wallet lacked actual 5-USDT balance and router allowance, and
+  Binance token audit reported unsupported. No trade or bStocks instrument
+  was application-enabled. See the [bStocks route matrix](integrations/2026-09-27-bstocks-bsc.md).
 - Current full verification: 73/73 tests with PostgreSQL 16, strict
   typecheck, build and Portable configuration checks pass. The database-free
   `npm test` run passed 58 tests with two PostgreSQL suites skipped.
-- Next: finish xStocks-first P5.5 before P6. Establish a bound BSC xStocks
-  execution route and current venue status, provider-specific eligibility,
-  wrapper/corporate-action review, regular-session reference freshness,
-  issuer-event checks, settlement and token-risk policy. Existing BSC price,
-  quantity and settlement sources are read-only; no instrument is live-registered.
+- Next: finish bStocks-first P5.5 before P6. Implement a provider-specific
+  BEP-677 raw/UI quantity adapter and code/control review; establish current
+  wallet/jurisdiction eligibility, a supported token-risk policy, bStocks
+  reference/session rules, issuer events and settlement bounds. Refresh and
+  simulate the exact route after actual funding/allowance only within an
+  owner-approved plan. Existing BSC price, quantity and settlement sources
+  are read-only; no instrument is live-registered.
   P7 must still add approval binding, pre-leg revalidation, idempotent
   submission, receipt recovery and reorg handling. Nexus live automation
   remains disabled.
@@ -193,8 +209,8 @@ inspectable evidence and recoverable sequential execution.
   (source-timestamped reference and on-chain share mapping), ADR 0008
   (keyless BSC Chainlink source for the two-asset MVP), ADR 0009
   (versioned NYSE calendar), ADR 0010 (Ondo owner declaration and unsupported
-  token-risk boundary), ADR 0011 (xStocks-first provider priority and wrapper
-  identity boundary).
+  token-risk boundary), ADR 0011 (historical xStocks priority and wrapper
+  identity boundary), ADR 0012 (bStocks-first provider priority).
 
 ## Required verification
 

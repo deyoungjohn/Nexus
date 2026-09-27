@@ -115,7 +115,7 @@ checks are still required. [ADR 0008](../decisions/0008-keyless-bsc-market-refer
 records the keyless source pivot; this specification's fail-closed boundary
 and no-execution status remain in force.
 
-The xStocks-first P5.5 pivot adds a separate read-only BSC current-wrapper
+The earlier xStocks-first P5.5 pivot added a separate read-only BSC current-wrapper
 identity/quantity adapter. It verifies exact expected issuer-listed addresses,
 chain, deployed token/wrapper code, `asset()`, decimals and pinned-block
 `getCurrentMultiplier()`/`convertToAssets(10^18)` equality. Its
@@ -124,3 +124,12 @@ xStocks. It supplies quantity evidence only. The issuer's non-halted flag does
 not establish an executable venue, and no xStocks route is currently accepted
 by P5. [ADR 0011](../decisions/0011-xstocks-first-bsc-provider.md) and the
 [xStocks matrix](../integrations/2026-09-26-xstocks-bsc.md) record the gates.
+
+The later [bStocks-first decision](../decisions/0012-bstocks-first-bsc-provider.md)
+supersedes that provider priority, not the xStocks adapter or this gate's
+fail-closed behavior. A bStock requires its own pinned BEP-677 raw/UI
+multiplier mapping, code/control revision and eligibility evidence before
+registration. The [direct NVDAB BSC route probe](../integrations/2026-09-27-bstocks-bsc.md)
+matched this specification's V3 calldata shape and passed a conditional
+read-only simulation with temporary balance/allowance overrides. It did not
+produce a production P5 evidence bundle or enable an execution route.

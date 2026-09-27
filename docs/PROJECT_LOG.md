@@ -325,3 +325,22 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   not a pivot or permission to trade. Exact executable route, fair reference
   price, risk review, eligibility, simulation and P7 approval/recovery gates
   remain outstanding. No wallet state changed.
+
+## 2026-09-27 — P5.5b/P5.5e bStocks-first provider switch and bounded route
+
+- The owner switched the first live-provider target from xStocks to bStocks
+  after the [BSC liquidity survey](research/2026-09-27-bsc-stock-liquidity.md)
+  exposed xStocks' missing or economically poor routes. [ADR 0012](decisions/0012-bstocks-first-bsc-provider.md)
+  supersedes ADR 0011 for provider priority only; Ondo and xStocks modules
+  remain separate and dormant. No automatic provider substitution was added.
+- A read-only [NVDAB BSC route probe](integrations/2026-09-27-bstocks-bsc.md)
+  verified the exact USDT/NVDAB PancakeSwap V3 fee-2500 pool, a 5-USDT quote,
+  encoded minimum output and deadline, Nexus route decoding, successful
+  conditional `eth_call`, gas estimate and negative bound/deadline simulations.
+  The connected wallet's actual settlement balance and allowance were below
+  the test amount, and no transaction was submitted.
+- P5.5 remains open for bStocks quantity/control, eligibility, reference and
+  settlement evidence, unsupported token audit, issuer events and full market
+  gate integration. P7 owner approval and recovery remain absent. The route
+  proof is time-specific and its deadline has expired; Nexus live automation
+  remains disabled.

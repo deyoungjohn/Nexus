@@ -406,3 +406,29 @@
   strict typecheck, build and Portable configuration. Read-only wallet and
   pool queries covered the listed scope; `git diff --check` and CSV/report
   consistency checks passed.
+
+## 2026-09-27 — P5.5 bStocks-first pivot and bounded BSC route
+
+- Agent/client: Codex, following the owner's provider switch.
+- Change: Superseded xStocks-first priority with [ADR 0012](decisions/0012-bstocks-first-bsc-provider.md),
+  updated the implementation plan and project state, and added a
+  [bStocks BSC route matrix](integrations/2026-09-27-bstocks-bsc.md).
+  Updated the Market Gate specification and both phase logs. A pinned-block
+  5-USDT direct PancakeSwap V3 route to the exact NVDAB contract was quoted,
+  encoded with a minimum output/deadline, decoded by Nexus and simulated
+  read-only. High-minimum and expired-deadline negative simulations reverted.
+- Reason: The 671-record BSC liquidity survey found sparse or economically
+  poor xStocks routes, while bStocks provided materially deeper direct USDT
+  pools and size-stable wallet quotes. A usable exact route format needed
+  verification before treating bStocks as the first live-provider target.
+- Behavior/compatibility impact: Documentation and read-only evidence only.
+  Ondo/xStocks modules and all application interfaces remain intact. No
+  bStocks quantity adapter, instrument registration, signer, approval, trade
+  or production market-evidence exception was enabled. The route requires a
+  fresh quote and actual funding/allowance; audit and eligibility remain open.
+- Verification: PostgreSQL-backed baseline and post-change
+  `./scripts/check.sh` passed 73/73 tests, typecheck, build and Portable
+  configuration. Official factory/pool/token reads, 5/100/1,000/10,000-USDT
+  QuoterV2 probes, on-chain BEP-677 multiplier read, price screening,
+  conditional `eth_call`, gas estimate and negative bounds were recorded.
+  `git diff --check` passed; no wallet state changed.
