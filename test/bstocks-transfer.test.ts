@@ -22,7 +22,10 @@ const snapshot: BStocksBscQuantitySnapshot = {
     implementationCodeHash: "implementation-code", beaconOwner: "owner",
     compliance, complianceCodeHash: "compliance-code", pauseManager,
     pauseManagerCodeHash: "pause-code", adminMembersHash: "admin-roles",
-    issuerMembersHash: "issuer-roles" }
+    issuerMembersHash: "issuer-roles", complianceAdminMembersHash: "compliance-admins",
+    complianceOpsMembersHash: "compliance-ops", complianceMembersHash: "compliance-role",
+    pauseAdminMembersHash: "pause-admins", pauseOpsMembersHash: "pause-ops",
+    mintEnabled: true, burnEnabled: true }
 };
 const request = { wallet, side: "buy" as const, snapshot,
   reviewedControl: snapshot.control, rpcUrl: "https://example.invalid/rpc",

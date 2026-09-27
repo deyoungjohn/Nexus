@@ -1068,3 +1068,24 @@ evidence supports them; do not invent failures to populate the log.
   audit, independent timely price/settlement rules, issuer events and P7
   approval/recovery. No private address or signed data was stored in project
   records. No wallet state changed.
+
+## 2026-09-27 — P5.5d — extend bStocks control-revision coverage
+
+- Agent/client: Codex. Baseline was the passing P5.5c `./scripts/check.sh`
+  (64 tests, two PostgreSQL suites skipped). Verified source showed that the
+  external compliance and pause managers have independent mutable roles, and
+  the token has admin-controlled mint/burn enable flags. The prior fingerprint
+  covered manager code and pointers but not those role sets or flags.
+- Updated the P5.5b snapshot to hash compliance admin/operations/compliance
+  role sets and pause-manager admin/operations role sets, and to bind the
+  token's current mint/burn switches. A changed role set or flag now fails
+  reviewed-control matching. Empty optional compliance roles are valid;
+  missing administrator roles or malformed member lists fail closed. No
+  policy interprets `mintEnabled` or `burnEnabled` as safe.
+- Extended existing regression tests for external role changes and mint-flag
+  changes. A live read-only BSC probe at block 124354706 (15:12:39 UTC)
+  returned both switches enabled, no pending multiplier and token not paused.
+  `./scripts/check.sh` passed 64 tests, two database suites skipped, plus
+  typecheck/build/config. This is control-revision evidence, not a security
+  audit or eligibility result. The compliance and pause lists can change
+  without a code or role change; the P5.5c/P7 preflight must remain fresh.

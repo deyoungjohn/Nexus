@@ -17,13 +17,16 @@ const tokenAbi = new Interface([
   "function pauseManager() view returns (address)",
   "function DEFAULT_ADMIN_ROLE() view returns (bytes32)",
   "function ISSUER_ROLE() view returns (bytes32)",
-  "function getRoleMembers(bytes32) view returns (address[])"
+  "function getRoleMembers(bytes32) view returns (address[])",
+  "function mintEnabled() view returns (bool)",
+  "function burnEnabled() view returns (bool)"
 ]);
 const beaconAbi = new Interface([
   "function implementation() view returns (address)",
   "function owner() view returns (address)"
 ]);
 const pauseAbi = new Interface(["function isTokenPaused(address) view returns (bool)"]);
+const rolesAbi = new Interface(["function getRoleMembers(bytes32) view returns (address[])"]);
 const address = (value: unknown): value is string =>
   typeof value === "string" && /^0x[0-9a-fA-F]{40}$/.test(value);
 const code = (value: unknown): value is string =>
@@ -53,6 +56,13 @@ export interface BStocksBscControlFingerprint {
   readonly pauseManagerCodeHash: string;
   readonly adminMembersHash: string;
   readonly issuerMembersHash: string;
+  readonly complianceAdminMembersHash: string;
+  readonly complianceOpsMembersHash: string;
+  readonly complianceMembersHash: string;
+  readonly pauseAdminMembersHash: string;
+  readonly pauseOpsMembersHash: string;
+  readonly mintEnabled: boolean;
+  readonly burnEnabled: boolean;
 }
 
 export interface BStocksBscQuantitySnapshot {
@@ -118,7 +128,7 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
     const token = BSTOCKS_BSC_NVDAB;
     const [tokenCode, beaconWord, implementationWord, decimals, core, extension, scheduledExtension,
       current, next, effective, hasPending, pending, complianceResult, pauseResult,
-      adminRoleResult, issuerRoleResult] = await Promise.all([
+      adminRoleResult, issuerRoleResult, mintEnabledResult, burnEnabledResult] = await Promise.all([
       rpc("eth_getCode", [token, block]), rpc("eth_getStorageAt", [token, BEACON_SLOT, block]),
       rpc("eth_getStorageAt", [token, IMPLEMENTATION_SLOT, block]),
       call(token, tokenAbi, "decimals", [], block),
@@ -133,7 +143,9 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
       call(token, tokenAbi, "compliance", [], block),
       call(token, tokenAbi, "pauseManager", [], block),
       call(token, tokenAbi, "DEFAULT_ADMIN_ROLE", [], block),
-      call(token, tokenAbi, "ISSUER_ROLE", [], block)
+      call(token, tokenAbi, "ISSUER_ROLE", [], block),
+      call(token, tokenAbi, "mintEnabled", [], block),
+      call(token, tokenAbi, "burnEnabled", [], block)
     ]);
     const beacon = slotAddress(beaconWord);
     const compliance = complianceResult[0], pauseManager = pauseResult[0];
@@ -144,10 +156,13 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
       || typeof current[0] !== "bigint" || current[0] <= 0n
       || typeof next[0] !== "bigint" || next[0] <= 0n
       || typeof effective[0] !== "bigint" || typeof hasPending[0] !== "boolean"
+      || typeof mintEnabledResult[0] !== "boolean" || typeof burnEnabledResult[0] !== "boolean"
       || !nonzeroAddress(compliance) || !nonzeroAddress(pauseManager)
       || adminRole !== `0x${"0".repeat(64)}` || issuerRole !== ethersId("ISSUER_ROLE")) return null;
     const [beaconCode, implementationResult, ownerResult, complianceCode,
-      pauseCode, pausedResult, adminMembersResult, issuerMembersResult] = await Promise.all([
+      pauseCode, pausedResult, adminMembersResult, issuerMembersResult,
+      complianceAdminResult, complianceOpsResult, complianceRoleResult,
+      pauseAdminResult, pauseOpsResult] = await Promise.all([
       rpc("eth_getCode", [beacon, block]),
       call(beacon, beaconAbi, "implementation", [], block),
       call(beacon, beaconAbi, "owner", [], block),
@@ -155,22 +170,33 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
       rpc("eth_getCode", [pauseManager, block]),
       call(pauseManager, pauseAbi, "isTokenPaused", [token], block),
       call(token, tokenAbi, "getRoleMembers", [adminRole], block),
-      call(token, tokenAbi, "getRoleMembers", [issuerRole], block)
+      call(token, tokenAbi, "getRoleMembers", [issuerRole], block),
+      call(compliance, rolesAbi, "getRoleMembers", [adminRole], block),
+      call(compliance, rolesAbi, "getRoleMembers", [ethersId("OPS_ROLE")], block),
+      call(compliance, rolesAbi, "getRoleMembers", [ethersId("COMPLIANCE_ROLE")], block),
+      call(pauseManager, rolesAbi, "getRoleMembers", [adminRole], block),
+      call(pauseManager, rolesAbi, "getRoleMembers", [ethersId("OPS_ROLE")], block)
     ]);
     const implementation = implementationResult[0], owner = ownerResult[0];
     if (!code(beaconCode) || !nonzeroAddress(implementation) || !nonzeroAddress(owner)
       || !code(complianceCode) || !code(pauseCode)
       || typeof pausedResult[0] !== "boolean"
       || implementation.toLowerCase() === beacon || implementation.toLowerCase() === token) return null;
-    const members = (result: readonly unknown[]): string[] | null => {
+    const members = (result: readonly unknown[], allowEmpty = false): string[] | null => {
       const list = result[0];
-      if (!Array.isArray(list) || list.length === 0 || list.length > 64
+      if (!Array.isArray(list) || (!allowEmpty && list.length === 0) || list.length > 64
         || !list.every(nonzeroAddress)) return null;
       const normalized = list.map((entry: string) => entry.toLowerCase()).sort();
       return new Set(normalized).size === normalized.length ? normalized : null;
     };
     const admins = members(adminMembersResult), issuers = members(issuerMembersResult);
-    if (!admins || !issuers) return null;
+    const complianceAdmins = members(complianceAdminResult);
+    const complianceOps = members(complianceOpsResult, true);
+    const complianceMembers = members(complianceRoleResult, true);
+    const pauseAdmins = members(pauseAdminResult);
+    const pauseOps = members(pauseOpsResult, true);
+    if (!admins || !issuers || !complianceAdmins || !complianceOps
+      || !complianceMembers || !pauseAdmins || !pauseOps) return null;
     const implementationCode = await rpc("eth_getCode", [implementation, block]);
     if (!code(implementationCode)) return null;
     const pendingNow = hasPending[0];
@@ -179,6 +205,8 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
         || effective[0] !== pending[1]) return null;
     } else if (effective[0] !== 0n || next[0] !== current[0]
       || pending[0] !== 0n || pending[1] !== 0n) return null;
+    const roleHash = (values: readonly string[]): string =>
+      keccak256(AbiCoder.defaultAbiCoder().encode(["address[]"], [values]));
     const control: BStocksBscControlFingerprint = {
       token, tokenCodeHash: keccak256(tokenCode), beacon,
       beaconCodeHash: keccak256(beaconCode),
@@ -187,8 +215,13 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
       beaconOwner: owner.toLowerCase(),
       compliance: compliance.toLowerCase(), complianceCodeHash: keccak256(complianceCode),
       pauseManager: pauseManager.toLowerCase(), pauseManagerCodeHash: keccak256(pauseCode),
-      adminMembersHash: keccak256(AbiCoder.defaultAbiCoder().encode(["address[]"], [admins])),
-      issuerMembersHash: keccak256(AbiCoder.defaultAbiCoder().encode(["address[]"], [issuers]))
+      adminMembersHash: roleHash(admins), issuerMembersHash: roleHash(issuers),
+      complianceAdminMembersHash: roleHash(complianceAdmins),
+      complianceOpsMembersHash: roleHash(complianceOps),
+      complianceMembersHash: roleHash(complianceMembers),
+      pauseAdminMembersHash: roleHash(pauseAdmins),
+      pauseOpsMembersHash: roleHash(pauseOps),
+      mintEnabled: mintEnabledResult[0], burnEnabled: burnEnabledResult[0]
     };
     const observedAt = new Date(Number(blockMs)).toISOString();
     return { instrumentId: input.instrumentId, source: `bstocks-bsc:${token}`,
@@ -208,7 +241,9 @@ export function matchesReviewedBStocksControl(snapshot: BStocksBscQuantitySnapsh
   return snapshot.pendingMultiplier === null && !snapshot.tokenPaused
     && (["token", "tokenCodeHash", "beacon", "beaconCodeHash", "implementation",
       "implementationCodeHash", "beaconOwner", "compliance", "complianceCodeHash",
-      "pauseManager", "pauseManagerCodeHash", "adminMembersHash", "issuerMembersHash"] as const)
+      "pauseManager", "pauseManagerCodeHash", "adminMembersHash", "issuerMembersHash",
+      "complianceAdminMembersHash", "complianceOpsMembersHash", "complianceMembersHash",
+      "pauseAdminMembersHash", "pauseOpsMembersHash", "mintEnabled", "burnEnabled"] as const)
       .every(key => snapshot.control[key] === reviewed[key]);
 }
 

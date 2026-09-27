@@ -28,7 +28,9 @@ const abi = new Interface([
   "function DEFAULT_ADMIN_ROLE() view returns (bytes32)",
   "function ISSUER_ROLE() view returns (bytes32)",
   "function getRoleMembers(bytes32) view returns (address[])",
-  "function isTokenPaused(address) view returns (bool)"
+  "function isTokenPaused(address) view returns (bool)",
+  "function mintEnabled() view returns (bool)",
+  "function burnEnabled() view returns (bool)"
 ]);
 const request = { instrumentId: "nvdab", tokenAddress: token,
   rpcUrl: "https://example.invalid/rpc", maxBlockAgeMs: 10_000, now };
@@ -39,7 +41,9 @@ type Change = { chain?: string; blockSeconds?: bigint; tokenCode?: string;
   pending?: readonly [bigint, bigint]; beaconWord?: string; implementationWord?: string;
   blockHeaderNumber?: string; compliance?: string; pauseManager?: string;
   complianceCode?: string; pauseCode?: string; paused?: boolean;
-  adminMembers?: readonly string[]; issuerMembers?: readonly string[] };
+  adminMembers?: readonly string[]; issuerMembers?: readonly string[];
+  complianceOpsMembers?: readonly string[]; mintEnabled?: boolean;
+  burnEnabled?: boolean };
 const rpcReply = (change: Change = {}): typeof fetch => (async (_url, init) => {
   const body = JSON.parse(String(init?.body)) as { id: number; method: string;
     params: Array<{ to: string; data: string } | string> };
@@ -82,9 +86,15 @@ const rpcReply = (change: Change = {}): typeof fetch => (async (_url, init) => {
                         : name === "pauseManager" ? [change.pauseManager ?? pauseManager]
                           : name === "DEFAULT_ADMIN_ROLE" ? [`0x${"0".repeat(64)}`]
                             : name === "ISSUER_ROLE" ? [ethersId("ISSUER_ROLE")]
-                              : name === "getRoleMembers" ? [parsed.args[0] === ethersId("ISSUER_ROLE")
-                                ? change.issuerMembers ?? [owner] : change.adminMembers ?? [owner]]
-                                : [change.paused ?? false];
+                              : name === "getRoleMembers" ? [call.to.toLowerCase() === token
+                                ? parsed.args[0] === ethersId("ISSUER_ROLE")
+                                  ? change.issuerMembers ?? [owner] : change.adminMembers ?? [owner]
+                                : parsed.args[0] === ethersId("OPS_ROLE")
+                                  ? change.complianceOpsMembers ?? [owner]
+                                  : parsed.args[0] === ethersId("COMPLIANCE_ROLE") ? [] : [owner]]
+                                : name === "mintEnabled" ? [change.mintEnabled ?? true]
+                                  : name === "burnEnabled" ? [change.burnEnabled ?? true]
+                                    : [change.paused ?? false];
     result = abi.encodeFunctionResult(name, value);
   }
   return new Response(JSON.stringify({ jsonrpc: "2.0", id: body.id, result }), { status: 200 });
@@ -102,6 +112,8 @@ test("P5.5b bStocks pins raw/UI mapping, proxy controls and exact token", async 
   assert.equal(snapshot.control.compliance, compliance);
   assert.equal(snapshot.control.pauseManager, pauseManager);
   assert.equal(snapshot.tokenPaused, false);
+  assert.equal(snapshot.control.mintEnabled, true);
+  assert.equal(snapshot.control.burnEnabled, true);
   assert.ok(matchesReviewedBStocksControl(snapshot, snapshot.control));
   assert.equal(bStocksDisplayedRaw(22176198062689502n, snapshot), 22193456106768858n);
   assert.equal(await fetchBStocksBscQuantity({ ...request,
@@ -151,6 +163,13 @@ test("P5.5b rejects stale, wrong-chain, nonconforming and changed controls", asy
     rpcReply({ pauseManager: "0x0000000000000000000000000000000000000001" }));
   assert.ok(changedManager);
   assert.equal(matchesReviewedBStocksControl(changedManager, baseline.control), false);
+  const changedExternalRole = await fetchBStocksBscQuantity(request,
+    rpcReply({ complianceOpsMembers: [owner, "0x0000000000000000000000000000000000000001"] }));
+  assert.ok(changedExternalRole);
+  assert.equal(matchesReviewedBStocksControl(changedExternalRole, baseline.control), false);
+  const changedMintFlag = await fetchBStocksBscQuantity(request, rpcReply({ mintEnabled: false }));
+  assert.ok(changedMintFlag);
+  assert.equal(matchesReviewedBStocksControl(changedMintFlag, baseline.control), false);
   assert.equal(await fetchBStocksBscQuantity(request, rpcReply({ adminMembers: [] })), null);
   const paused = await fetchBStocksBscQuantity(request, rpcReply({ paused: true }));
   assert.ok(paused);

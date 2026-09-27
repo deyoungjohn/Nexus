@@ -167,6 +167,9 @@ inspectable evidence and recoverable sequential execution.
   multiplier and proxy/beacon/implementation, compliance, pause-manager and
   token-role fingerprints. A live 2026-09-27 probe succeeded at block 124352879
   with no pending multiplier and `isTokenPaused=false`.
+  A later read at block 124354706 also pinned the external managers' role-set
+  hashes and found the token's mutable mint and burn switches enabled. This
+  broadens change detection but does not clear unsupported token risk.
   Scheduled changes and changed reviewed controls block review reuse. The
   multiplier only converts raw amounts for display; no P5 reference-share
   `QuantityEvidence`, clear audit, eligibility result or live registration is
@@ -185,7 +188,8 @@ inspectable evidence and recoverable sequential execution.
   Strict typecheck, build and Portable configuration checks pass. The earlier
   PostgreSQL-backed 73/73 result predates this adapter and does not cover it.
 - Next: finish bStocks-first P5.5 before P6. Review the issuer's economic
-  reference-share mapping and mutable controls beyond the new fingerprint;
+  reference-share mapping and the implications of the verified mutable
+  controls beyond their fingerprints;
   establish current
   wallet/jurisdiction eligibility, a supported token-risk policy, bStocks
   reference/session rules, issuer events and settlement bounds. Refresh and

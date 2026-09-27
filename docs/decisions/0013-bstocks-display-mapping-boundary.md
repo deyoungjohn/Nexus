@@ -22,7 +22,9 @@ chain 56, block time, 18 raw decimals, required BEP-677 interfaces, current and
 pending multiplier state, EIP-1967 beacon, implementation, code hashes and
 beacon owner. The verified implementation also exposes mutable compliance and
 pause-manager contracts and enumerable admin/issuer roles; pin their addresses,
-code hashes, token pause state and role-set hashes at the same block. Any
+code hashes, token pause state and role-set hashes at the same block. Also pin
+the external managers' enumerable administrator/operations/compliance role
+sets and the token's mutable mint/burn enable flags. Any
 inconsistent interface response fails closed. A scheduled
 multiplier is visible to reviewers but cannot pass the current control-review
 check. Keep raw token units canonical for balances, swap inputs and receipts;

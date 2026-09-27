@@ -83,6 +83,15 @@ read-only quotes were available at the same fee tier.
   changes, and transfers consult both pause and compliance contracts. A source-
   backed economic mapping and review of the external managers' internal
   controls remain open.
+- P5.5d control follow-up: the verified external [compliance contract](https://sourcify.dev/server/v2/contract/56/0x53dba7aabde774787a1f57236b235567da8e14f4?fields=all)
+  has per-token blocklists and a global sanctions list; the verified
+  [pause manager](https://sourcify.dev/server/v2/contract/56/0x9fc74be63f3589485b2423984a7a0557e0cf700a?fields=all)
+  can pause this token or all tokens. Both have mutable roles. The adapter now
+  hashes those role sets and pins the token's mint/burn switches. At block
+  124354706 (15:12:39 UTC), both switches were enabled and the token was not
+  paused. This identifies the control surface; it does not judge the issuer's
+  operation or replace an independent audit. Blocklists, sanctions and pause
+  state may change immediately, so P7 must recheck actual route participants.
 - A separate [on-chain transfer preflight](../../src/market-gate/bstocks-transfer.ts)
   now checks the exact validated pool/router and a supplied wallet against
   the token's compliance contract, plus token pause state, at the quantity

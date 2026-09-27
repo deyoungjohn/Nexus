@@ -42,6 +42,12 @@ documented production blockers. It does not enable the application to trade.
 P3–P5 are complete as durable ledger, offline coordinator and offline market gate. P5.5 is the active bStocks-first live-readiness follow-up before P6. The P2 Ondo trade is historical feasibility evidence, not a bStocks route. Live P5 evidence providers remain incomplete, and P7 must bind approvals and recovery before trading. P3–P7 provide a headless pipeline before P8 connects its screens. Interface
 sketches may precede P8, but screens must not imply unimplemented guarantees.
 
+P5.5d control review now tracks the current token's mint/burn switches and
+external compliance/pause-manager role-set revisions in the read-only bStocks
+snapshot. This is change detection, not a supported token audit or a risk
+exception. Geographic/account eligibility and timely reference/issuer-event
+evidence still block production registration.
+
 ## Scope preserved from the blueprint
 
 MVP: one portfolio, one settlement token, two or three verified equity

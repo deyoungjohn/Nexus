@@ -480,3 +480,19 @@
   skipped, plus typecheck/build/config. A live read-only BSC call passed for a
   synthetic address and public route contracts at block 124353819; no user
   eligibility or wallet state was established. `git diff --check` passed.
+
+## 2026-09-27 — P5.5d bStocks external-control fingerprint
+
+- Agent/client: Codex, continuing the bStocks-first integration.
+- Change: Extended the read-only bStocks fingerprint with external compliance/
+  pause-manager administrator role-set hashes and token mint/burn switches;
+  updated regression tests, ADR 0013, the route matrix, plan, state and logs.
+- Reason: Manager roles and token issuance switches can change independently of
+  code hashes and pointers, invalidating an earlier control review.
+- Behavior/compatibility impact: More complete change detection; no token is
+  marked audit-clear, no eligibility is inferred, and no live execution is
+  enabled. Existing provider and Market Gate behavior remains unchanged.
+- Verification: Baseline and post-change `./scripts/check.sh` passed 64 tests
+  with two PostgreSQL suites skipped, plus typecheck/build/config. A live
+  read-only BSC probe at block 124354706 confirmed both switches enabled,
+  no pending multiplier and token not paused. `git diff --check` passed.

@@ -374,3 +374,14 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   reviewed public FAQ gives no country-eligibility endpoint path. Current
   issuer-supported jurisdiction/account proof and actual-wallet preflight
   remain gates, along with P5.5 risk/price/event evidence and P7 recovery.
+
+## 2026-09-27 — P5.5d bStocks control review follow-up
+
+- Extended the read-only fingerprint to capture external compliance/pause
+  manager role sets and token mint/burn switches. Verified source shows these
+  controls can change; a live block-124354706 read found mint and burn enabled.
+  Existing tests now reject changed reviewed roles and flags. Local checks
+  pass 64 tests with two database suites skipped.
+- Unsupported token audit remains unresolved. Fingerprints detect revisions;
+  they do not judge contract safety or replace current transfer, eligibility,
+  price, event and execution-recovery gates.
