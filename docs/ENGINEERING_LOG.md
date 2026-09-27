@@ -1110,3 +1110,32 @@ evidence supports them; do not invent failures to populate the log.
   state changed; no new behavior test was needed for this record.
   Post-change `./scripts/check.sh` passed 64 tests with two PostgreSQL suites
   skipped, plus typecheck/build/config; `git diff --check` passed.
+
+## 2026-09-27 — P5.5c — bind provider notices in the Market Gate
+
+- Agent/client: Codex. Baseline was the passing 64-test documentation commit
+  `4c3bcb6`; two PostgreSQL suites were skipped because the local database
+  test URL is unavailable. Observable compatibility target: existing
+  non-bStocks offline evidence and adapter calls remain valid.
+- New evidence component: `ProviderEventEvidence` carries the exact
+  instrument, direct notice URL, independent revision, timestamps and
+  confirmation/blackout fields. `MarketEvidence` includes a nullable record;
+  the adapter seam accepts an optional provider notice source and converts
+  source errors to missing evidence. The pure gate requires this record for
+  canonical issuer ID `bstocks`, checks freshness and restrictions, and
+  includes it in the evidence hash. Other issuers can continue without it.
+- Bug fix: an invalid issuer-event confirmation string could previously pass
+  if all dates were null, and the HTTPS prefix check accepted a URL without
+  a host. The shared event validator now accepts only `none-confirmed` or a
+  valid out-of-blackout `confirmed` event, and both source URLs must parse as
+  HTTPS with a host and no embedded credentials or fragment. Regression
+  verification is in the Market Gate test.
+- Tests: synthetic bStocks evidence passes only with a fresh matching notice;
+  missing, stale, wrong-instrument, insecure URL, uncertain, active blackout
+  and provider adapter outage block. A future event outside its blackout may
+  pass; a notice revision changes the evidence hash. `./scripts/check.sh`
+  passed 66 tests with two PostgreSQL suites skipped, plus typecheck/build.
+- Remaining: no live provider-notice feed, no current issuer-event clearance,
+  no instrument registration and no P7 approval revalidation. A manually
+  asserted `none-confirmed` must be based on a reviewed current source; this
+  interface does not discover notices or certify their completeness.

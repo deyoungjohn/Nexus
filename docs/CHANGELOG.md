@@ -514,3 +514,22 @@
   PostgreSQL suites skipped, plus typecheck/build/config. Post-change check
   also passed 64 tests with the same two skips, plus typecheck/build/config;
   `git diff --check` passed.
+
+## 2026-09-27 — P5.5c provider-event evidence gate
+
+- Agent/client: Codex, continuing the owner's bStocks-first integration.
+- Change: Added separately timed and revisioned `ProviderEventEvidence` to
+  the Market Gate collection seam and pure gate. Instruments with canonical
+  issuer ID `bstocks` require it; missing/stale/restricted records block and
+  notice revisions change the evidence hash. Added synthetic regression tests
+  and hardened issuer/provider notice URL and confirmation validation. Updated
+  ADR 0015, specification, plan, state, route matrix and logs.
+- Reason: A bStocks-specific notice can affect token entitlement and services
+  while the underlying issuer calendar and spot status look unchanged.
+- Behavior/compatibility impact: bStocks metadata now has a fail-closed event
+  check. Other issuer fixture behavior and adapter implementations remain
+  compatible via the optional collection method. No live notice source or
+  instrument is registered; no wallet execution is enabled.
+- Verification: Baseline `./scripts/check.sh` passed 64 tests with two
+  PostgreSQL suites skipped. Post-change check passed 66 tests with the same
+  two skips, plus typecheck/build/config; `git diff --check` passed.

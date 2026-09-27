@@ -50,9 +50,11 @@ evidence still block production registration.
 
 P5.5c now requires two independently revisioned event sources for bStocks:
 the underlying company's announcements and token-specific issuer/venue
-notices. The current P5 `EventEvidence` represents only the former. Extend
-and test the evidence and approval invalidation before registering bStocks;
-manual review alone does not clear the gate. [ADR 0015](decisions/0015-bstocks-dual-event-review.md)
+notices. P5 now has a separate provider-event field and fail-closed check for
+the canonical `bstocks` issuer ID, with tests for missing/stale/restricted
+records and revision hashing. A reviewed production notice source, exact
+instrument registration and P7 approval invalidation remain open; manual
+review alone does not clear the gate. [ADR 0015](decisions/0015-bstocks-dual-event-review.md)
 and the [event runbook](runbooks/issuer-event-review.md) record the requirement.
 
 ## Scope preserved from the blueprint

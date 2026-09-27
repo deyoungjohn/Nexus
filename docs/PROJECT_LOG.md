@@ -398,3 +398,15 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   event evidence and approval invalidation, then resolve eligibility,
   economic quantity, supported token risk, independent pricing and settlement.
   P7 execution/recovery remains a separate prerequisite.
+
+## 2026-09-27 — P5.5c provider-event gate implementation
+
+- P5 now accepts a separate, revisioned bStocks provider notice record and
+  requires it for instruments with canonical `bstocks` issuer ID. Tests cover
+  absent, stale, mismatched, uncertain, blackout and adapter-failure cases,
+  plus evidence-hash change on notice revision. Existing other-provider
+  offline behavior remains available.
+- P5.5 remains open: this is an evidence interface, not a connected current
+  notice source or trade permission. Production event sourcing, eligibility,
+  economic quantity, supported risk and pricing evidence and P7 approval/
+  recovery are still required before live bStocks use.

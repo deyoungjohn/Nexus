@@ -150,9 +150,14 @@ refresh the check for the actual wallet and route. See
 [ADR 0014](../decisions/0014-bstocks-transfer-preflight-boundary.md).
 
 bStocks event evidence must bind both the underlying company's announcements
-and token-specific bStocks issuer/venue notices. The current single-source
-`EventEvidence` cannot represent both streams. Provider notices may change the
-UI multiplier or conversion/deposit/withdrawal availability while spot
-trading continues. Keep bStocks live use blocked until the schema and policy
-are extended and tested; see the [manual event runbook](../runbooks/issuer-event-review.md)
+and token-specific bStocks issuer/venue notices. `MarketEvidence.providerEvent`
+is separately timed, bound to the exact instrument, URL and revision, and
+included in the gate's evidence hash. Instruments with canonical issuer ID
+`bstocks` require this record. Missing/stale/uncertain/withdrawn or active
+blackout evidence blocks; a confirmed future event may pass before its
+blackout begins. The optional collection adapter fails closed on source error.
+Provider notices may change the UI multiplier or conversion/deposit/withdrawal
+availability while spot trading continues. Keep bStocks live use blocked until
+a reviewed production provider-notice source is connected and the other P5.5
+gates are met; see the [manual event runbook](../runbooks/issuer-event-review.md)
 and [ADR 0015](../decisions/0015-bstocks-dual-event-review.md).

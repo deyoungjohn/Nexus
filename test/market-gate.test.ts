@@ -50,6 +50,7 @@ function fixture(): GateRequest {
     event: { source: "issuer-ir", observedAt: "2026-09-28T13:59:00Z", expiresAt: "2026-09-28T14:10:00Z",
       underlyingId: "company", issuerSourceUrl: "https://issuer.example/ir", revision: "1",
       confirmation: "none-confirmed", eventAt: null, blackoutStart: null, blackoutEnd: null },
+    providerEvent: null,
     quote: { venueId: "v3", chainId: 56, sender: wallet, recipient: wallet, router, spender: router,
       tokenIn: cashToken, tokenOut: equityToken, inputRaw: 5n * unit, expectedOutputRaw: 25n * unit / 1000n,
       minimumOutputRaw: 24n * unit / 1000n, additionalFeeSettlement: 0n, networkFeeSettlement: unit / 10000n,
@@ -125,6 +126,8 @@ test("P5 exchange timezone handles daylight saving and supplied holiday record",
 test("P5 changed mapping, uncertain event, and halt block plans", () => {
   assert.equal(reason(withEvidence({ quantity: { ...fixture().evidence.quantity!, mappingRevision: "map-2" } })), "QUANTITY_CHANGED");
   assert.equal(reason(withEvidence({ event: { ...fixture().evidence.event!, confirmation: "uncertain" } })), "EVENT_RESTRICTED");
+  assert.equal(reason(withEvidence({ event: { ...fixture().evidence.event!, confirmation: "invalid" as "confirmed" } })), "EVENT_RESTRICTED");
+  assert.equal(reason(withEvidence({ event: { ...fixture().evidence.event!, issuerSourceUrl: "https://" } })), "EVENT_RESTRICTED");
   assert.equal(reason(withEvidence({ tokenStatus: { ...fixture().evidence.tokenStatus!, state: "halted" } })), "TOKEN_HALTED");
   assert.equal(reason(withEvidence({ audit: { ...fixture().evidence.audit!, state: "unsupported" } })), "AUDIT_UNSUPPORTED");
   const f = fixture();
@@ -133,6 +136,49 @@ test("P5 changed mapping, uncertain event, and halt block plans", () => {
   assert.equal(reason(withEvidence({ event: { ...f.evidence.event!, confirmation: "confirmed",
     eventAt: "2026-09-28T15:00:00Z", blackoutStart: "2026-09-28T13:00:00Z",
     blackoutEnd: "2026-09-28T16:00:00Z" } })), "EVENT_RESTRICTED");
+});
+
+function bStocksFixture(): GateRequest {
+  const base = fixture();
+  const bStock = createInstrument({ ...base.instrument, issuerId: "bstocks" });
+  return { ...base, instrument: bStock,
+    proposal: { ...base.proposal, instrumentId: bStock.instrumentId },
+    snapshot: { ...base.snapshot, positions: [{ ...base.snapshot.positions[0]!, instrument: bStock,
+      raw: amount(0n, bStock), reservedRaw: amount(0n, bStock) }] },
+    evidence: { ...base.evidence,
+      eligibility: { ...base.evidence.eligibility!, instrumentId: bStock.instrumentId },
+      quantity: { ...base.evidence.quantity!, instrumentId: bStock.instrumentId },
+      tokenStatus: { ...base.evidence.tokenStatus!, instrumentId: bStock.instrumentId },
+      audit: { ...base.evidence.audit!, instrumentId: bStock.instrumentId },
+      providerEvent: { source: "bstocks-announcements", observedAt: "2026-09-28T13:59:00Z",
+        expiresAt: "2026-09-28T14:10:00Z", instrumentId: bStock.instrumentId,
+        providerSourceUrl: "https://provider.example/nvdab", revision: "notice-1",
+        confirmation: "none-confirmed", eventAt: null, blackoutStart: null, blackoutEnd: null } } };
+}
+
+test("P5.5c bStocks requires independently bound provider-event evidence", () => {
+  const f = bStocksFixture();
+  const clean = evaluateMarketGate(f);
+  assert.equal(clean.allowed, true);
+  const p = f.evidence.providerEvent!;
+  assert.equal(reason({ ...f, evidence: { ...f.evidence, providerEvent: null } }), "MISSING_EVIDENCE");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence, providerEvent: { ...p, observedAt: "2026-09-28T13:00:00Z" } } }), "STALE_EVIDENCE");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence, providerEvent: { ...p, instrumentId: "other" } } }), "EVENT_RESTRICTED");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence, providerEvent: { ...p, providerSourceUrl: "http://provider.example" } } }), "EVENT_RESTRICTED");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence, providerEvent: { ...p, providerSourceUrl: "https://" } } }), "EVENT_RESTRICTED");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence, providerEvent: { ...p, providerSourceUrl: "https://user:secret@provider.example/nvdab" } } }), "EVENT_RESTRICTED");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence, providerEvent: { ...p, providerSourceUrl: "https://provider.example/nvdab#old" } } }), "EVENT_RESTRICTED");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence, providerEvent: { ...p, confirmation: "uncertain" } } }), "EVENT_RESTRICTED");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence, providerEvent: { ...p, confirmation: "confirmed",
+    eventAt: "2026-09-28T15:00:00Z", blackoutStart: "2026-09-28T13:00:00Z",
+    blackoutEnd: "2026-09-28T16:00:00Z" } } }), "EVENT_RESTRICTED");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence, providerEvent: { ...p, confirmation: "confirmed",
+    eventAt: "2026-09-29T15:00:00Z", blackoutStart: "2026-09-29T13:00:00Z",
+    blackoutEnd: "2026-09-29T16:00:00Z" } } }), "ALLOWED");
+  const changed = evaluateMarketGate({ ...f, evidence: { ...f.evidence, providerEvent: { ...p, revision: "notice-2" } } });
+  assert.equal(changed.allowed, true);
+  if (clean.allowed && changed.allowed) assert.notEqual(clean.evidenceHash, changed.evidenceHash);
+  assert.equal(reason(fixture()), "ALLOWED");
 });
 
 test("P5 decoded route rejects recipient and spender substitution", () => {
@@ -197,5 +243,15 @@ test("P5 adapter outage becomes missing evidence", async () => {
     Parameters<typeof collectMarketEvidence>[0];
   adapters.reference = async () => { throw new Error("feed unavailable"); };
   const evidence = await collectMarketEvidence(adapters);
+  assert.equal(reason({ ...f, evidence }), "MISSING_EVIDENCE");
+});
+
+test("P5.5c provider-event adapter outage blocks bStocks", async () => {
+  const f = bStocksFixture();
+  const adapters = Object.fromEntries(Object.entries(f.evidence).map(([key, value]) => [key, async () => value])) as unknown as
+    Parameters<typeof collectMarketEvidence>[0];
+  adapters.providerEvent = async () => { throw new Error("provider notices unavailable"); };
+  const evidence = await collectMarketEvidence(adapters);
+  assert.equal(evidence.providerEvent, null);
   assert.equal(reason({ ...f, evidence }), "MISSING_EVIDENCE");
 });

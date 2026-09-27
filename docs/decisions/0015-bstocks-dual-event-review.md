@@ -23,18 +23,26 @@ and effective times, and service impact. A conflicting, inaccessible or
 unresolved provider notice blocks live use. A scheduled or changed on-chain
 multiplier triggers a new review but does not replace the provider notice.
 
-The current P5 `EventEvidence` binds one underlying issuer source and cannot
+At the time of this decision, P5 `EventEvidence` bound one underlying issuer source and could not
 represent the additional provider event stream. The manual process documents
 the requirement, but cannot clear the live gate until the evidence schema,
 policy and tests bind both sources. A past dividend is not evidence that no
 future provider event exists. P7 must invalidate an approval when either
 source revision changes.
 
+Implementation follow-up on 2026-09-27: `MarketEvidence` now has a separate
+`providerEvent` record. The pure gate requires and validates it for instruments
+with the canonical `bstocks` issuer ID, then hashes it with the full evidence
+bundle. This resolves the schema/policy/test gap for that registered identity,
+but no production provider notice adapter or bStocks instrument registration
+exists. An instrument registry review must preserve that issuer ID. P7 approval
+invalidation remains future work.
+
 ## Consequences
 
-The bStocks-first path has an explicit provider-event evidence gap. Existing
-offline P5 behavior and other provider adapters remain unchanged. The live
-route stays disabled until this gap and the other P5.5/P7 gates are resolved.
+The bStocks-first path has an explicit provider-notice sourcing gap. Existing
+offline P5 behavior for other providers remains unchanged. The live route
+stays disabled until a reviewed source and the other P5.5/P7 gates are resolved.
 
 ## Sources
 

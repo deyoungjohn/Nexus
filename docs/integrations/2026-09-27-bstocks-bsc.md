@@ -119,9 +119,11 @@ read-only quotes were available at the same fee tier.
   specified a holder snapshot, on-chain multiplier adjustment and temporary
   conversion/deposit/withdrawal pauses while spot trading continued. It is
   historical evidence that provider-specific events matter, not current
-  event clearance. P5's single-source `EventEvidence` cannot bind both
-  streams; [ADR 0015](../decisions/0015-bstocks-dual-event-review.md) keeps
-  the live gate closed until the schema, policy and tests are extended.
+  event clearance. P5 now includes a separate `providerEvent` record required
+  for the canonical `bstocks` issuer ID and hashes its notice revision.
+  No production provider-notice adapter or current clearance exists;
+  [ADR 0015](../decisions/0015-bstocks-dual-event-review.md) keeps the live
+  gate closed until a reviewed source and the other P5.5/P7 gates are met.
 - Fund and approve only after a fresh owner-reviewed plan; then refresh the
   quote, deadline, exact calldata, real-state wallet preview and simulation.
   P7 approval binding, submission recovery and reconciliation are still absent.

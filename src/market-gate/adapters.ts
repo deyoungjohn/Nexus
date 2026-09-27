@@ -11,6 +11,8 @@ export interface EvidenceAdapters {
   tokenStatus(): Promise<MarketEvidence["tokenStatus"]>;
   audit(): Promise<MarketEvidence["audit"]>;
   event(): Promise<MarketEvidence["event"]>;
+  /** Optional for existing providers; the gate requires it for bStocks. */
+  providerEvent?(): Promise<MarketEvidence["providerEvent"]>;
   quote(): Promise<MarketEvidence["quote"]>;
   simulation(quote: NonNullable<MarketEvidence["quote"]>): Promise<MarketEvidence["simulation"]>;
 }
@@ -20,16 +22,16 @@ export async function collectMarketEvidence(adapters: EvidenceAdapters): Promise
   const read = async <T>(fetch: () => Promise<T>): Promise<T | null> => {
     try { return await fetch(); } catch { return null; }
   };
-  const [eligibility, quantity, reference, settlement, portfolioValuations, session, tokenStatus, audit, event] = await Promise.all([
+  const [eligibility, quantity, reference, settlement, portfolioValuations, session, tokenStatus, audit, event, providerEvent] = await Promise.all([
     read(() => adapters.eligibility()), read(() => adapters.quantity()), read(() => adapters.reference()),
     read(() => adapters.settlement()), read(() => adapters.portfolioValuations()),
     read(() => adapters.session()), read(() => adapters.tokenStatus()), read(() => adapters.audit()),
-    read(() => adapters.event())
+    read(() => adapters.event()), adapters.providerEvent ? read(() => adapters.providerEvent!()) : Promise.resolve(null)
   ]);
   const quote = await read(() => adapters.quote());
   const simulation = quote ? await read(() => adapters.simulation(quote)) : null;
   return { eligibility, quantity, reference, settlement, portfolioValuations,
-    session, tokenStatus, audit, event, quote, simulation };
+    session, tokenStatus, audit, event, providerEvent, quote, simulation };
 }
 
 /** Only a provider-origin timestamp is accepted; observedAt is just receipt metadata. */

@@ -186,12 +186,14 @@ inspectable evidence and recoverable sequential execution.
 - P5.5c event review found a separate bStocks provider stream. Binance's
   historical NVDAB dividend notice specified an on-chain multiplier adjustment
   and conversion/deposit/withdrawal pauses while spot trading would continue.
-  The current P5 `EventEvidence` binds only an underlying-company source, so the provider
-  notice cannot yet be represented in a live evidence bundle. The updated
+  P5 now has a separate `providerEvent` record for instruments using the
+  canonical `bstocks` issuer ID. The gate requires a fresh exact-instrument,
+  direct-URL, revisioned notice record and binds it into the evidence hash.
+  Missing, stale, uncertain or in-blackout records block. The updated
   [runbook](runbooks/issuer-event-review.md) and
-  [ADR 0015](decisions/0015-bstocks-dual-event-review.md) require both streams;
-  schema, policy and tests remain open. No current event clearance was inferred.
-- Current local verification: `./scripts/check.sh` passes 64 tests; two
+  [ADR 0015](decisions/0015-bstocks-dual-event-review.md) require both streams.
+  No production notice adapter, current clearance or live registration exists.
+- Current local verification: `./scripts/check.sh` passes 66 tests; two
   PostgreSQL suites are skipped because `TEST_DATABASE_URL` is unavailable.
   Strict typecheck, build and Portable configuration checks pass. The earlier
   PostgreSQL-backed 73/73 result predates this adapter and does not cover it.
@@ -200,7 +202,8 @@ inspectable evidence and recoverable sequential execution.
   controls beyond their fingerprints;
   establish current
   wallet/jurisdiction eligibility, a supported token-risk policy, bStocks
-  reference/session rules, dual-source issuer/provider events and settlement
+  reference/session rules, a production dual-source issuer/provider event
+  adapter and settlement
   bounds. Refresh and simulate the exact route after actual funding/allowance
   only within an owner-approved plan. Existing BSC price, quantity and settlement sources
   are read-only; no instrument is live-registered.

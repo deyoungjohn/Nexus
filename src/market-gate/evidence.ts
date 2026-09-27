@@ -80,6 +80,17 @@ export interface EventEvidence extends TimedEvidence {
   readonly blackoutEnd: string | null;
 }
 
+/** A token provider's notice is separate from the underlying company's IR. */
+export interface ProviderEventEvidence extends TimedEvidence {
+  readonly instrumentId: string;
+  readonly providerSourceUrl: string;
+  readonly revision: string;
+  readonly confirmation: "none-confirmed" | "confirmed" | "uncertain" | "withdrawn";
+  readonly eventAt: string | null;
+  readonly blackoutStart: string | null;
+  readonly blackoutEnd: string | null;
+}
+
 export interface RouteQuote {
   readonly venueId: string;
   readonly chainId: number;
@@ -132,6 +143,7 @@ export interface MarketEvidence {
   readonly tokenStatus: TokenStatusEvidence | null;
   readonly audit: AuditEvidence | null;
   readonly event: EventEvidence | null;
+  readonly providerEvent: ProviderEventEvidence | null;
   readonly quote: RouteQuote | null;
   readonly simulation: SimulationEvidence | null;
 }

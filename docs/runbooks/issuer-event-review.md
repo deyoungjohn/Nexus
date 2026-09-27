@@ -11,9 +11,14 @@ addition to the underlying company's notices. Record the direct notice URL,
 retrieval time, revision or digest, token, record and effective times, any
 multiplier adjustment, and any conversion, deposit, withdrawal or trading
 restriction. Conflicting, inaccessible or uncertain notices block live use.
+A notice that promises service resumption without a confirmed time does not
+establish a blackout end; require a current service-status check before
+clearing that restriction.
 A scheduled or changed on-chain multiplier triggers re-review. The current P5
-`EventEvidence` cannot bind both event streams, so this manual record alone
-cannot authorize live use. See [ADR 0015](../decisions/0015-bstocks-dual-event-review.md).
+evidence bundle has a separate `providerEvent` field for bStocks, but no
+production notice adapter is connected. Manual notes alone cannot authorize
+live use; both fresh records must pass the Market Gate. See
+[ADR 0015](../decisions/0015-bstocks-dual-event-review.md).
 
 1. Open the official [NVIDIA events](https://investor.nvidia.com/events-and-presentations/events-and-presentations/default.aspx)
    and [financial reports](https://investor.nvidia.com/financial-info/financial-reports/default.aspx),

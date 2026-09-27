@@ -3,7 +3,7 @@ import { amount, assertSameDenomination } from "../domain/amount.js";
 import { coordinatePortfolio, type Proposal } from "../coordinator/plan.js";
 import { regularSessionOpen } from "./session.js";
 import { decodeV3ExactInputSingle, routeMatchesCalldata } from "./route.js";
-import type { GateRequest, TimedEvidence } from "./evidence.js";
+import type { EventEvidence, GateRequest, ProviderEventEvidence, TimedEvidence } from "./evidence.js";
 
 export type GateReason = "MISSING_EVIDENCE" | "INVALID_CLOCK" | "STALE_EVIDENCE" |
   "INSTRUMENT_MISMATCH" | "ELIGIBILITY_BLOCKED" | "QUANTITY_CHANGED" |
@@ -25,6 +25,12 @@ const at = (value: string): number => typeof value === "string"
   && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(value)
   ? Date.parse(value) : NaN;
 const address = (value: string): boolean => typeof value === "string" && /^0x[0-9a-fA-F]{40}$/.test(value);
+const httpsSource = (value: string): boolean => {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && url.hostname.length > 0 && !url.username && !url.password && !url.hash;
+  } catch { return false; }
+};
 const same = (left: string, right: string): boolean => left.toLowerCase() === right.toLowerCase();
 const bps = (value: number): boolean => Number.isInteger(value) && value >= 0 && value <= 10_000;
 const canonical = (value: unknown): unknown => {
@@ -40,6 +46,16 @@ function timely(value: TimedEvidence, now: number, maxAge: number): boolean {
   return typeof value.source === "string" && value.source.length > 0
     && Number.isFinite(observed) && Number.isFinite(expiry) && observed <= now
     && now < expiry && expiry > observed && now - observed <= maxAge;
+}
+
+function eventAllowed(event: EventEvidence | ProviderEventEvidence, now: number): boolean {
+  if (!event.revision || (event.confirmation !== "none-confirmed" && event.confirmation !== "confirmed")) return false;
+  if (event.confirmation === "confirmed") {
+    const start = at(event.blackoutStart ?? ""), end = at(event.blackoutEnd ?? ""), eventAt = at(event.eventAt ?? "");
+    return Number.isFinite(start) && Number.isFinite(end) && Number.isFinite(eventAt)
+      && start <= eventAt && eventAt <= end && !(now >= start && now <= end);
+  }
+  return event.eventAt === null && event.blackoutStart === null && event.blackoutEnd === null;
 }
 
 const ceil = (num: bigint, den: bigint): bigint => (num + den - 1n) / den;
@@ -61,13 +77,15 @@ function evaluateChecked(input: GateRequest): GateResult {
     || !e.session || !e.tokenStatus || !e.audit || !e.event || !e.quote || !e.simulation)
     return deny("MISSING_EVIDENCE");
   const { eligibility, quantity, reference, settlement, portfolioValuations,
-    session, tokenStatus, audit, event, quote, simulation } = e;
+    session, tokenStatus, audit, event, providerEvent, quote, simulation } = e;
   if (![p.maxReferenceAgeMs, p.maxStatusAgeMs, p.maxQuoteAgeMs, p.maxSimulationAgeMs, p.maxQuoteLifetimeMs].every((n) => Number.isSafeInteger(n) && n > 0)
     || p.maxBlockLag < 0n || p.maxNetworkFeeSettlement < 0n || p.maxAdditionalFeeSettlement < 0n
     || ![p.maxPriceDeviationBps, p.maxPriceImpactBps, p.maxSpreadBps, p.maxPositiveFillBufferBps, p.maxSlippageBps].every(bps))
     return deny("INVALID_CLOCK");
   if (![eligibility, quantity, settlement, session, tokenStatus, audit, event].every((item) => timely(item, now, p.maxStatusAgeMs)))
     return deny("STALE_EVIDENCE");
+  if (instrument.issuerId === "bstocks" && !providerEvent) return deny("MISSING_EVIDENCE");
+  if (providerEvent && !timely(providerEvent, now, p.maxStatusAgeMs)) return deny("STALE_EVIDENCE");
   if (eligibility.instrumentId !== instrument.instrumentId || !same(eligibility.wallet, wallet)
     || !eligibility.transferPermitted || !eligibility.allowedSides.includes(proposal.side)
     || !instrument.eligibilityRequirements.every((r) => eligibility.verifiedRequirements.includes(r)))
@@ -105,14 +123,11 @@ function evaluateChecked(input: GateRequest): GateResult {
   if (tokenStatus.instrumentId !== instrument.instrumentId || tokenStatus.source !== instrument.statusSource
     || tokenStatus.state !== "open") return deny("TOKEN_HALTED");
   if (audit.instrumentId !== instrument.instrumentId || audit.state !== "clear") return deny("AUDIT_UNSUPPORTED");
-  if (event.underlyingId !== instrument.underlyingId || !/^https:\/\//.test(event.issuerSourceUrl)
-    || !event.revision || event.confirmation === "uncertain" || event.confirmation === "withdrawn")
-    return deny("EVENT_RESTRICTED");
-  if (event.confirmation === "confirmed") {
-    const start = at(event.blackoutStart ?? ""), end = at(event.blackoutEnd ?? ""), eventAt = at(event.eventAt ?? "");
-    if (!Number.isFinite(start) || !Number.isFinite(end) || !Number.isFinite(eventAt)
-      || start > eventAt || eventAt > end || (now >= start && now <= end)) return deny("EVENT_RESTRICTED");
-  } else if (event.eventAt !== null || event.blackoutStart !== null || event.blackoutEnd !== null) return deny("EVENT_RESTRICTED");
+  if (event.underlyingId !== instrument.underlyingId || !httpsSource(event.issuerSourceUrl)
+    || !eventAllowed(event, now)) return deny("EVENT_RESTRICTED");
+  if (providerEvent && (providerEvent.instrumentId !== instrument.instrumentId
+    || !httpsSource(providerEvent.providerSourceUrl)
+    || !eventAllowed(providerEvent, now))) return deny("EVENT_RESTRICTED");
 
   const settlementMatch = /^eip155:(\d+)\/erc20:(0x[0-9a-f]{40})$/.exec(snapshot.confirmedCash.assetId);
   const settlementToken = settlementMatch?.[2];
