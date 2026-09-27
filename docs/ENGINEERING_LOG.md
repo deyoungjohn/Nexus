@@ -1089,3 +1089,24 @@ evidence supports them; do not invent failures to populate the log.
   typecheck/build/config. This is control-revision evidence, not a security
   audit or eligibility result. The compliance and pause lists can change
   without a code or role change; the P5.5c/P7 preflight must remain fresh.
+
+## 2026-09-27 — P5.5c — identify bStocks provider-event evidence gap
+
+- Agent/client: Codex. Baseline `./scripts/check.sh` passed 64 tests with two
+  PostgreSQL suites skipped, plus typecheck/build/config.
+- Discovery: Binance's official 2026-09-04 NVDAB dividend notice specified a
+  2026-09-10 holder snapshot, on-chain multiplier adjustment and temporary
+  conversion/deposit/withdrawal pauses while spot trading remained available.
+  This event would not be fully represented by checking NVIDIA investor
+  relations alone or by a successful DEX quote.
+- Decision: [ADR 0015](decisions/0015-bstocks-dual-event-review.md) and the
+  updated [event runbook](runbooks/issuer-event-review.md) require direct,
+  independently revisioned underlying and provider notices for the exact
+  bStock. The current P5 `EventEvidence` has only an underlying source;
+  schema, policy and approval-invalidation tests remain necessary before live
+  registration. No historical event was treated as current clearance.
+- Documentation-only step: updated the Market Gate specification, P5.5 plan,
+  bStocks route matrix and project state. No application behavior or wallet
+  state changed; no new behavior test was needed for this record.
+  Post-change `./scripts/check.sh` passed 64 tests with two PostgreSQL suites
+  skipped, plus typecheck/build/config; `git diff --check` passed.

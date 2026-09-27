@@ -148,3 +148,11 @@ issuer-backed jurisdiction and account-level permission. Any restriction,
 RPC failure, changed control or stale block returns no evidence. P7 must
 refresh the check for the actual wallet and route. See
 [ADR 0014](../decisions/0014-bstocks-transfer-preflight-boundary.md).
+
+bStocks event evidence must bind both the underlying company's announcements
+and token-specific bStocks issuer/venue notices. The current single-source
+`EventEvidence` cannot represent both streams. Provider notices may change the
+UI multiplier or conversion/deposit/withdrawal availability while spot
+trading continues. Keep bStocks live use blocked until the schema and policy
+are extended and tested; see the [manual event runbook](../runbooks/issuer-event-review.md)
+and [ADR 0015](../decisions/0015-bstocks-dual-event-review.md).

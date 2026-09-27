@@ -496,3 +496,21 @@
   with two PostgreSQL suites skipped, plus typecheck/build/config. A live
   read-only BSC probe at block 124354706 confirmed both switches enabled,
   no pending multiplier and token not paused. `git diff --check` passed.
+
+## 2026-09-27 — P5.5c bStocks dual-event review requirement
+
+- Agent/client: Codex, continuing the owner's bStocks-first integration.
+- Change: Added [ADR 0015](decisions/0015-bstocks-dual-event-review.md),
+  updated the issuer-event runbook, Market Gate specification, P5.5 plan,
+  bStocks route matrix, project state and phase/engineering logs.
+- Reason: Binance's historical NVDAB dividend notice shows token-provider
+  multiplier and service changes that an underlying-company event check or
+  open spot market would miss.
+- Behavior/compatibility impact: Documentation and live-readiness requirement
+  only. The existing single-source P5 gate remains unchanged; bStocks live
+  registration remains blocked pending schema/policy/tests and other gates.
+  No wallet or application state changed.
+- Verification: Baseline `./scripts/check.sh` passed 64 tests with two
+  PostgreSQL suites skipped, plus typecheck/build/config. Post-change check
+  also passed 64 tests with the same two skips, plus typecheck/build/config;
+  `git diff --check` passed.

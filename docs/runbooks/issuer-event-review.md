@@ -6,6 +6,15 @@ earnings feed. A reviewer must repeat it before each execution leg when the
 record expires or the issuer changes a date. No date-dependent live rule is
 currently enabled.
 
+For bStocks, repeat this review for the exact token's issuer/venue notices in
+addition to the underlying company's notices. Record the direct notice URL,
+retrieval time, revision or digest, token, record and effective times, any
+multiplier adjustment, and any conversion, deposit, withdrawal or trading
+restriction. Conflicting, inaccessible or uncertain notices block live use.
+A scheduled or changed on-chain multiplier triggers re-review. The current P5
+`EventEvidence` cannot bind both event streams, so this manual record alone
+cannot authorize live use. See [ADR 0015](../decisions/0015-bstocks-dual-event-review.md).
+
 1. Open the official [NVIDIA events](https://investor.nvidia.com/events-and-presentations/events-and-presentations/default.aspx)
    and [financial reports](https://investor.nvidia.com/financial-info/financial-reports/default.aspx),
    or Apple's [investor relations](https://investor.apple.com/investor-relations/default.aspx)
@@ -35,3 +44,10 @@ its latest reported quarter and its events page exposed no machine-readable
 next earnings date through the text view. Apple's investor page also relies
 on dynamic sections. This was **not** converted into a `none-confirmed`
 record. No issuer-event evidence currently authorizes live use.
+
+Historical provider example reviewed 2026-09-27: Binance's
+[NVDAB dividend notice](https://www.binance.com/en/support/announcement/detail/eba63ef89a68449088dd16725a2e5a0d)
+named a 2026-09-10 00:00 UTC holder snapshot, on-chain multiplier adjustment,
+temporary NVDAB conversion/deposit/withdrawal pauses and continued spot
+trading. This is evidence of a provider-specific event type, not a current
+event clearance or a next-event `none-confirmed` record.

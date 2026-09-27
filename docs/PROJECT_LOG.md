@@ -385,3 +385,16 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
 - Unsupported token audit remains unresolved. Fingerprints detect revisions;
   they do not judge contract safety or replace current transfer, eligibility,
   price, event and execution-recovery gates.
+
+## 2026-09-27 — P5.5c bStocks provider-event review
+
+- The official NVDAB dividend notice demonstrated a provider-specific event
+  stream: it specified a multiplier adjustment and temporary conversion,
+  deposit and withdrawal pauses while spot trading would continue. The P5
+  event schema binds only underlying-company announcements.
+  [ADR 0015](decisions/0015-bstocks-dual-event-review.md)
+  and the runbook now require both sources for bStocks.
+- P5.5 remains open. Before live registration, implement and test dual-source
+  event evidence and approval invalidation, then resolve eligibility,
+  economic quantity, supported token risk, independent pricing and settlement.
+  P7 execution/recovery remains a separate prerequisite.

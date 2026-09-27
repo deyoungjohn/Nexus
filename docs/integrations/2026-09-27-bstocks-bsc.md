@@ -114,6 +114,14 @@ read-only quotes were available at the same fee tier.
   ask alone cannot settle that policy. The FAQ mentions a public country-
   eligibility API but does not specify its endpoint; no unverified endpoint
   has been wired into Nexus.
+- Review both underlying-company events and bStocks issuer/venue notices.
+  Binance's [September NVDAB dividend notice](https://www.binance.com/en/support/announcement/detail/eba63ef89a68449088dd16725a2e5a0d)
+  specified a holder snapshot, on-chain multiplier adjustment and temporary
+  conversion/deposit/withdrawal pauses while spot trading continued. It is
+  historical evidence that provider-specific events matter, not current
+  event clearance. P5's single-source `EventEvidence` cannot bind both
+  streams; [ADR 0015](../decisions/0015-bstocks-dual-event-review.md) keeps
+  the live gate closed until the schema, policy and tests are extended.
 - Fund and approve only after a fresh owner-reviewed plan; then refresh the
   quote, deadline, exact calldata, real-state wallet preview and simulation.
   P7 approval binding, submission recovery and reconciliation are still absent.

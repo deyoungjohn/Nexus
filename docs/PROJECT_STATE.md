@@ -183,6 +183,14 @@ inspectable evidence and recoverable sequential execution.
   owner's wallet or issuer/jurisdiction eligibility. [ADR 0014](decisions/0014-bstocks-transfer-preflight-boundary.md)
   keeps this result separate from P5 `EligibilityEvidence`. No official
   country endpoint path or current account permission was established.
+- P5.5c event review found a separate bStocks provider stream. Binance's
+  historical NVDAB dividend notice specified an on-chain multiplier adjustment
+  and conversion/deposit/withdrawal pauses while spot trading would continue.
+  The current P5 `EventEvidence` binds only an underlying-company source, so the provider
+  notice cannot yet be represented in a live evidence bundle. The updated
+  [runbook](runbooks/issuer-event-review.md) and
+  [ADR 0015](decisions/0015-bstocks-dual-event-review.md) require both streams;
+  schema, policy and tests remain open. No current event clearance was inferred.
 - Current local verification: `./scripts/check.sh` passes 64 tests; two
   PostgreSQL suites are skipped because `TEST_DATABASE_URL` is unavailable.
   Strict typecheck, build and Portable configuration checks pass. The earlier
@@ -192,9 +200,9 @@ inspectable evidence and recoverable sequential execution.
   controls beyond their fingerprints;
   establish current
   wallet/jurisdiction eligibility, a supported token-risk policy, bStocks
-  reference/session rules, issuer events and settlement bounds. Refresh and
-  simulate the exact route after actual funding/allowance only within an
-  owner-approved plan. Existing BSC price, quantity and settlement sources
+  reference/session rules, dual-source issuer/provider events and settlement
+  bounds. Refresh and simulate the exact route after actual funding/allowance
+  only within an owner-approved plan. Existing BSC price, quantity and settlement sources
   are read-only; no instrument is live-registered.
   P7 must still add approval binding, pre-leg revalidation, idempotent
   submission, receipt recovery and reorg handling. Nexus live automation
@@ -236,7 +244,8 @@ inspectable evidence and recoverable sequential execution.
   (versioned NYSE calendar), ADR 0010 (Ondo owner declaration and unsupported
   token-risk boundary), ADR 0011 (historical xStocks priority and wrapper
   identity boundary), ADR 0012 (bStocks-first provider priority), ADR 0013
-  (bStocks display mapping boundary), ADR 0014 (on-chain transfer boundary).
+  (bStocks display mapping boundary), ADR 0014 (on-chain transfer boundary),
+  ADR 0015 (dual event review).
 
 ## Required verification
 
