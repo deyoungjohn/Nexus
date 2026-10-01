@@ -14,6 +14,16 @@ required_files=(
   docs/IMPLEMENTATION_PLAN.md
   docs/PROJECT_LOG.md
   docs/ENGINEERING_LOG.md
+  scripts/inspect-bstocks-governance.mjs
+  scripts/inspect-bstocks-governance.test.mjs
+  scripts/verify-bstocks-governance-sources.mjs
+  docs/decisions/0027-local-source-recovery-governance-evidence.md
+  docs/integrations/2026-10-01-bstocks-governance.md
+  docs/integrations/2026-10-01-bstocks-governance.json
+  docs/research/bstocks-governance/README.md
+  docs/research/bstocks-governance/LICENSE.OpenZeppelin
+  docs/research/bstocks-governance/beacon-standard-input.json
+  docs/research/bstocks-governance/source-rebuilds.json
   docs/integrations/2026-09-25-phase-2.md
   docs/decisions/0001-cross-agent-memory.md
   docs/decisions/0002-domain-foundation.md
@@ -65,6 +75,7 @@ fi
 
 if [[ -f package.json ]]; then
   npm test --if-present
+  node --test scripts/inspect-bstocks-governance.test.mjs
   npm run lint --if-present
   npm run typecheck --if-present
   npm run build --if-present

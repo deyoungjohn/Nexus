@@ -1139,3 +1139,92 @@ evidence supports them; do not invent failures to populate the log.
   no instrument registration and no P7 approval revalidation. A manually
   asserted `none-confirmed` must be based on a reviewed current source; this
   interface does not discover notices or certify their completeness.
+
+## 2026-10-01 — P5.5d public source recovery and governance inspection
+
+- Scope: recover the NVDAB beacon source and inspect the two privileged contracts;
+  preserve current trading/security/recovery behavior and empty risk-review registry.
+  Read project state, plan, recent logs and ADRs 0010/0013/0025/0026 plus security
+  specification; retrieved relevant shared Nexus memory.
+- Pre-existing baseline failure: PostgreSQL-backed `./scripts/check.sh` returned
+  129 passed / 13 failed because every database suite encountered ECONNREFUSED
+  at 127.0.0.1:5432. Local PostgreSQL binaries are absent; Docker socket access is
+  denied by OS permissions and noninteractive sudo requires a password. These
+  infrastructure failures preceded all repository edits and are unrelated to
+  this research. Database-free baseline `./scripts/check.sh` passed 129 tests,
+  zero failures, 13 database suites skipped, typecheck and both builds.
+
+- P5.5d source recovery: Sourcify beacon record unavailable, explorer HTTP 403,
+  IPFS gateway 429/payment/timeouts. Downloaded official OpenZeppelin v5.2.0 MIT
+  source; isolated solc 0.8.24/0.8.4 under /tmp, preserving project dependencies.
+  Initial beacon compile matched all executable bytes but not metadata. Reused
+  published token-proxy compiler layout: Cancun, optimizer 200, viaIR=false,
+  lib/openzeppelin-contracts paths/remappings and IPFS metadata. Final beacon
+  rebuild matches all 644 deployed bytes and metadata. Preserved standard input,
+  license and result hashes; no remote verification submission or paid service.
+- P5.5d governance: decoded both transparent proxies' EIP-1967 implementation/
+  administrator slots. Resolved OperatorWallet and BurnWallet. Fresh Sourcify
+  source rebuilt all five scoped runtimes: beacon and OperatorWallet exact;
+  both wrappers and BurnWallet executable-only, metadata differs. Compared
+  observed bytecode before compiling. Remote personal absolute developer paths
+  remain transient; stored results retain source URLs, input digests, sanitized
+  labels/layouts and runtime hashes without those paths or personal data.
+- P5.5d permission/state evidence: source-derived owner/operator/private storage
+  agrees with getters; initialized flags set, pending owners empty, operator
+  wallet unpaused, two hot wallets. Confirmed stock beacon and both wallet issuer
+  memberships. Sentio and Blast agree at canonical block 125081086 / recorded
+  2026-10-01T10:02:41Z on the full observation. Each runs 12 ephemeral eth_call
+  probes: five authorized successes, seven execution reverts, including proxy
+  admin fallback rejection. No signing, persistent upgrade, mint/burn spending,
+  broadcast or user-wallet query. This is dated research, not fresh trade evidence.
+- P5.5d research components: added read-only inspection/source rebuild scripts,
+  full public JSON, dated report and reproduction README. Inspector bounds
+  anonymous request load/read retries, pins one canonical hash, checks storage/
+  getters/roles, rejects partial/mismatched proofs and rechecks the block header.
+  Boolean-returning permission probes must return true; transport/internal RPC
+  errors cannot masquerade as authorization denial. Compiler verification keeps
+  exact matches distinct from executable-only metadata differences.
+- P5.5d troubleshooting: reproduced HTTP 429 and Node connection timeouts;
+  increasing the network-family connection-attempt timeout to 2000 ms restored
+  sampled transport. Added bounded whole-body read retries with backoff and source/
+  method diagnostics to the research script. BNB returned missing trie node;
+  Blockmachine passed a code probe but later lacked same-block storage state.
+  Replayed the initial observation block and used Blast for a complete comparison;
+  recovery application/configuration unchanged. Lesson: chain-ID/code/interface
+  success does not prove complete archival state; never mix partial providers or
+  convert unavailable state into a successful negative permission test.
+- P5.5d/P7.1 decision/lesson: ADR 0027 separates source correspondence from
+  independent review and risk acceptance. Owner/admin single-address upgrade
+  powers have no verified on-chain timelock/threshold in these paths; off-chain
+  MPC/key identity is unknown. Outer proxy hashes alone cannot detect inner logic
+  upgrades. Production source/governance adapter work, scanner gaps, qualified
+  reviews and policy acceptance remain gates. Preserved the empty review registry
+  and application/security/recovery interfaces; no risk exception or live enablement.
+- Empirical verification: two canonical snapshots match; 24 caller-specific
+  probe outcomes match expectations. Five source rebuilds pass executable byte
+  comparisons; beacon and OperatorWallet also pass full metadata comparison.
+  Stored compiled/deployed Keccak hashes, block bindings and privacy assertions
+  pass. Both new scripts pass node --check. Final repository check follows below.
+- Regression coverage: added three offline research tests for unavailable state/
+  rate-limit errors being rejected as denials, false inner execution being rejected
+  despite successful outer eth_call, malformed return data, unexpected outsider
+  success, and unsafe endpoint/invalid replay block rejection. The final validator
+  also accepts all 24 captured real expected permission outcomes. Required research
+  artifacts and the three tests are included in ./scripts/check.sh; no network or
+  extra compiler dependency is required for normal repository checks.
+- Check-run correction/lesson: expanded check.sh required-files while a check
+  process was still executing. Tests/typecheck/builds passed, then that process
+  reached a stale file offset and reported unexpected ')' at the end. bash -n
+  passes on the completed file; rerun after stabilizing all script edits. This was
+  an agent workflow error, not an application regression. Do not edit a running
+  shell check script; validate its final syntax and rerun the complete check.
+- Supplementary memory: three non-secret dated findings saved to Nexus and
+  retrieved successfully; versioned evidence remains authoritative.
+- Final stable-file verification: database-free ./scripts/check.sh passed
+  129 application tests (zero failures, 13 PostgreSQL suites skipped), three
+  research regressions (zero failures/skips), strict typecheck, headless and
+  production web builds plus configuration/artifact checks. Full PostgreSQL
+  verification is unavailable because the baseline database refuses connections;
+  no current 171-test PostgreSQL success is claimed. node --check, bash -n,
+  stored source/hash/block/privacy assertions, all 24 real permission-result
+  assertions, git diff --check and supplementary memory retrieval passed.

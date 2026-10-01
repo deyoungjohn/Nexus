@@ -533,3 +533,34 @@
 - Verification: Baseline `./scripts/check.sh` passed 64 tests with two
   PostgreSQL suites skipped. Post-change check passed 66 tests with the same
   two skips, plus typecheck/build/config; `git diff --check` passed.
+
+## 2026-10-01 — Codex — Recover public beacon source and inspect wallet governance
+
+- Change/reason: resolved the NVDAB beacon source gap locally with a full deployed
+  runtime/metadata match from public OpenZeppelin source. Identified both privileged
+  proxies as OperatorWallet/BurnWallet with a shared upgrade administrator. Added
+  reproducible read-only scripts, dated public RPC/compiler artifacts, retained MIT
+  source/license, ADR 0027, three offline research regressions and required check
+  artifacts. Updated implementation plan, project state and both work logs.
+- Findings: five local rebuilds match executable bytes; beacon and OperatorWallet
+  also match metadata. Sentio/Blast agree at recorded block 125081086 on complete
+  observations and 12 permission probes per source. Single-address owner/admin
+  upgrade powers remain review findings, with no on-chain threshold/delay verified.
+  Partial/failed source reads and failed inner calls cannot prove authorization.
+- Compatibility: no application code, security clearance, review-registry entry,
+  risk exception, production recovery source change, signing, broadcast or remote
+  source publication. Dated research does not satisfy fresh live-trade evidence,
+  unsupported scanner coverage or independent review. Existing pending work kept.
+- Verification: source rebuild/Keccak/block/privacy checks, 24 expected real probe
+  results and three research regressions passed; both script syntax checks and
+  git diff --check passed. PostgreSQL baseline failed before edits (129 passed,
+  13 failed, ECONNREFUSED); database-free baseline passed 129 with 13 skipped.
+  Final stable-file repository check result is logged below.
+- Final stable-file verification: database-free ./scripts/check.sh passed
+  129 application tests (zero failures, 13 PostgreSQL suites skipped), three
+  research regressions (zero failures/skips), strict typecheck, headless and
+  production web builds plus configuration/artifact checks. Full PostgreSQL
+  verification is unavailable because the baseline database refuses connections;
+  no current 171-test PostgreSQL success is claimed. node --check, bash -n,
+  stored source/hash/block/privacy assertions, all 24 real permission-result
+  assertions, git diff --check and supplementary memory retrieval passed.

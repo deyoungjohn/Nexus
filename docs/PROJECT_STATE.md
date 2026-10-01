@@ -1,6 +1,6 @@
 # Project state
 
-Last updated: 2026-09-27
+Last updated: 2026-10-01
 
 ## Objective
 
@@ -10,6 +10,23 @@ inspectable evidence and recoverable sequential execution.
 
 ## Current status
 
+- P5.5d/P7.1 public source/governance research completed: recovered the NVDAB
+  beacon with an exact local runtime/metadata rebuild; resolved the two contract
+  authorities to upgradeable OperatorWallet/BurnWallet proxies. Sentio/Blast
+  agree at recorded block 125081086, including 12 permission probes per source.
+  Centralized owner/admin upgrade powers remain review findings. Local evidence
+  is not yet consumed by the production security collector; scanner coverage,
+  independent reviews and approved risk policy remain open. No application code,
+  review-registry or live-execution change. See the
+  [report](integrations/2026-10-01-bstocks-governance.md) and
+  [ADR 0027](decisions/0027-local-source-recovery-governance-evidence.md).
+  Current PostgreSQL baseline fails with ECONNREFUSED; the database-free baseline
+  passes 129 tests and skips 13 database suites. The September 30 full 171-test
+  PostgreSQL result below is historical, not current database validation.
+  Final stable-file `./scripts/check.sh` passed 129 application tests plus three
+  research regressions, with 13 database suites skipped; strict typecheck and
+  both builds passed. Public five-source rebuild/hash and 24 probe assertions
+  passed; supplementary memory write/retrieval and `git diff --check` passed.
 - Cross-agent workspace initialized.
 - Shared MCP memory initialized with the `Nexus` project entity; all four initial
   observations were retrieved successfully through `open_nodes` on 2026-09-25.

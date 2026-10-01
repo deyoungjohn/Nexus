@@ -73,3 +73,24 @@ Read `PROJECT_STATE.md`, this plan, the latest engineering/changelog entries and
 applicable ADRs; search shared memory; establish the check baseline. Select the
 first unfinished item whose prerequisites are satisfied. Never mark a live
 integration or recovery gate complete from mocks. Update this table at exits.
+
+## 2026-10-01 — P5.5d/P7.1 public source and governance follow-up
+
+Completed public source recovery and governance inspection; see
+[dated report](integrations/2026-10-01-bstocks-governance.md) and
+[ADR 0027](decisions/0027-local-source-recovery-governance-evidence.md).
+The missing NVDAB beacon is reproduced exactly, including metadata, from public
+OpenZeppelin source. The two privileged proxies resolve to OperatorWallet and
+BurnWallet; source rebuilds and Sentio/Blast same-block code/storage/roles plus
+12 permission probes per source validate their current permissions. Shared proxy
+administrator and beacon owner have immediate upgrade powers without an on-chain
+threshold/delay in these paths. Off-chain key controls are not established.
+
+Next P5.5d increment: integrate trusted locally recovered source provenance and
+fresh inner proxy implementation/admin/owner/operator state into the security
+collector, rejecting changes/unavailable views. This dated research is not a
+qualified independent audit or a risk-review entry. Supported scanner coverage,
+independent contract-scope reviews and explicitly approved risk policy remain
+open; no scanner finding or centralized governance risk was silently accepted.
+P5.5/P7 live gates remain open. Production recovery configuration is unchanged;
+Blast passed these research reads, not complete recovery qualification.

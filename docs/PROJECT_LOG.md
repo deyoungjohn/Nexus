@@ -410,3 +410,34 @@ Repository documents remain authoritative; shared MCP memory is supplementary.
   notice source or trade permission. Production event sourcing, eligibility,
   economic quantity, supported risk and pricing evidence and P7 approval/
   recovery are still required before live bStocks use.
+
+## 2026-10-01 — P5.5d/P7.1 public source/governance research completed
+
+Recovered the NVDAB beacon from public OpenZeppelin source and reproduced its
+entire deployed runtime including metadata. Resolved the two previously unknown
+privileged proxies to OperatorWallet/BurnWallet, verified their sources, inner
+implementations, administrators, owners/operator and source-derived storage.
+Sentio and Blast agree at the task's recorded observation block, with 12
+permission probes per source (five successes/seven reverts). Evidence and
+reproduction commands are in the [dated report](integrations/2026-10-01-bstocks-governance.md)
+and ADR 0027. No independent audit or off-chain key-control attestation is claimed.
+
+Public recovery research is complete; production source/governance integration,
+scanner coverage, independent reviews and approved risk policy remain P5.5d gates.
+Centralized upgrade powers are findings to review. Current token-security policy,
+review registry, application code and production recovery sources stay unchanged;
+P5.5/P7 live readiness remains open. Blast is qualified for sampled research
+reads only. No transaction, provider pivot or live asset enablement.
+
+The PostgreSQL baseline failed before edits with ECONNREFUSED at 127.0.0.1:5432
+(129 passed/13 failed). Database-free baseline passed 129 tests with 13 database
+suites skipped, strict typecheck and both builds. Historical September 30
+171-test PostgreSQL success is not represented as current validation.
+- Final stable-file verification: database-free ./scripts/check.sh passed
+  129 application tests (zero failures, 13 PostgreSQL suites skipped), three
+  research regressions (zero failures/skips), strict typecheck, headless and
+  production web builds plus configuration/artifact checks. Full PostgreSQL
+  verification is unavailable because the baseline database refuses connections;
+  no current 171-test PostgreSQL success is claimed. node --check, bash -n,
+  stored source/hash/block/privacy assertions, all 24 real permission-result
+  assertions, git diff --check and supplementary memory retrieval passed.
