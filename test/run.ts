@@ -17,11 +17,11 @@ import "./ondo-beacon-risk.test.js";
 import "./xstocks-bsc.test.js";
 import "./bstocks-bsc.test.js";
 import "./bstocks-transfer.test.js";
-import "./security-collector.test.js";
-
 import "./bstocks-access.test.js";
 import "./token-security.test.js";
+import "./security-collector.test.js";
 import "./production-execution.test.js";
+import "./rules.test.js";
 import "./eoa.test.js";
 import "./recovery.test.js";
 import "./execution-store.test.js";
@@ -32,3 +32,13 @@ import "./bsc-recovery.test.js";
 import "./recovery-worker.test.js";
 import "./recovery-contracts.test.js";
 import "./receipt-effects.test.js";
+import "./web-workflow.test.js";
+import "./rule-store.test.js";
+import "./rule-planning.test.js";
+
+import "./workspace.test.js";
+
+import "./saved-workflow.test.js";
+
+import "./bstocks-route.test.js";
+import "./execution-wallet.test.js";

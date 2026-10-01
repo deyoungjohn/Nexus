@@ -604,3 +604,22 @@
   skips, strict typecheck and both builds. Full synthetic send-to-recovery flow,
   concurrent claims, authentication races, unknown outcomes and repeat-fill prevention
   covered. P5.5/P7/P8 production qualification remains open; ADR 0029 records choices.
+
+## 2026-10-01 — Codex — bStocks route adapters and exact web EOA approval
+
+- Change/reason: replace unresolved route/simulation seams with canonical actual-size
+  USDT/NVDAB direct-V3 adapters; connect saved web review to guarded P7 execution.
+  Add application service/API, operator configuration and separate approval/store/
+  submit UI, browser-safe signing schema and explicit signed-byte import fallback.
+- Behavior/compatibility: venue code/config, fee feeds, actual funds/allowance/gas and
+  canonical state fail closed. Signed bytes persist before one send; changed payload,
+  wallet/session/expiry blocks. Existing EOA exports, explicit provider ports, saved
+  rules and recovery remain compatible. Default configuration absent, broadcast off,
+  qualified access/economic/event/valuation and security/risk evidence still required.
+- Verification: PostgreSQL-backed baseline 205 tests; final ./scripts/check.sh passed
+  213 application and three research tests, zero failures/skips, strict typecheck and
+  both builds. All 14 Chromium cases passed, including stored-leg reload and real
+  origin/body/session guards. Public adapter quote succeeded; unfunded simulation
+  correctly blocked. Test-fixture corrections documented; no actual wallet operation.
+  ADR 0030 preserves decisions; direct pending web/rule prerequisites included while
+  unrelated work remains untouched.

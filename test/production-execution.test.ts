@@ -9,6 +9,7 @@ import { migrate } from "../src/ledger/migrate.js";
 import { EoaExecutionStore } from "../src/execution/store.js";
 import { runBscRecoveryOnce } from "../src/execution/recovery-worker.js";
 import { parseRecoveryConfig } from "../src/execution/recovery-config.js";
+import { ExecutionApplication } from "../src/application/execution.js";
 import { SessionStore } from "../src/application/session.js";
 import { ProductionEoaExecutor, type ExecutionDeployment } from "../src/execution/production.js";
 import { revalidateExecutionMarket } from "../src/execution/market-revalidation.js";
@@ -123,13 +124,12 @@ async function seed(pool:Pool){
     blockNumber:103n,blockHash:`0x${"a".repeat(64)}`,balances:assets.map(asset=>{
       const b=[base.snapshot.confirmedCash,base.snapshot.nativeGas,...base.snapshot.positions.map(p=>p.raw)].find(b=>b.assetId===asset.assetId)!;
       return{...b,units:b.units+(b.assetId===base.snapshot.confirmedCash.assetId?balanceDelta:0n)};
-    })};},async send(claim){sends++;const rows=await pool.query("SELECT state,signed_transaction,tx_hash FROM eoa_execution_legs WHERE id=$1",[reviewId]);
+    })};},async send(claim){sends++;const rows=await pool.query("SELECT state,signed_transaction,tx_hash FROM eoa_execution_legs WHERE tx_hash=$1",[claim.hash]);
     assert.equal(rows.rows[0]?.state,"unknown");assert.equal(rows.rows[0]?.signed_transaction,claim.rawSignedTransaction);
     assert.equal(rows.rows[0]?.tx_hash,claim.hash);if(timeout)throw Error("Simulated send timeout/crash");return"accepted";}};
   const executor=(override:Partial<ExecutionDeployment>={})=>new ProductionEoaExecutor(pool,sessions,{...deployment,...override},market,chain,()=>now);
-  let reviewId="";
   async function review(){const result=await executor().prepare({sessionToken:session.token,planId:"plan",legIndex:0});
-    assert.ok(result.kind==="review");reviewId=result.reviewId;return result;}
+    assert.ok(result.kind==="review");return result;}
   async function signatures(approval:EoaLegApproval){const typed=eoaApprovalTypedData(approval);
     return{ownerSignature:await owner.signTypedData(typed.domain,typed.types,typed.value),
       rawSignedTransaction:await owner.signTransaction({type:2,chainId:56,nonce:approval.transactionNonce,
@@ -340,4 +340,29 @@ test("P7 PostgreSQL outcome-write failure preserves the committed unknown claim 
   assert.equal((await s.pool.query("SELECT state FROM eoa_execution_legs")).rows[0].state,"unknown");
   assert.equal((await s.executor().broadcast({sessionToken:s.session.token,reviewId:r.reviewId})).outcome,"already-claimed");
   assert.equal(s.sendCount(),1);
+}));
+
+
+test("P8 PostgreSQL execution application projects owned legs and persists/signs through guarded service",pgOptions,async()=>withPortfolio(async s=>{
+  const app=new ExecutionApplication(s.pool,s.sessions,s.executor(),true),now=new Date(originalNow);
+  const initial=await app.read(s.session.token,now,"portfolio");assert.equal(initial.legs.length,1);
+  assert.equal(initial.legs[0]?.inputUnits,"5000000000000000000");
+  const r=await app.command(s.session.token,now,{kind:"prepare",planId:"plan",legIndex:0});assert.ok("kind" in r && r.kind==="review");
+  if(!("approval" in r) || !r.approval || !r.reviewId)throw Error("Expected review");
+  const approval=decodeExecutionJson<EoaLegApproval>(r.approval),signed=await s.signatures(approval);
+  await app.command(s.session.token,now,{kind:"persist",reviewId:r.reviewId,...signed});
+  const stored=await app.read(s.session.token,now,"portfolio");assert.equal(stored.legs[0]?.transactionState,"signed");
+  const exported=JSON.stringify(stored);assert.ok(!exported.includes(signed.rawSignedTransaction));assert.ok(!exported.includes(signed.ownerSignature));
+  await assert.rejects(app.command(s.session.token,now,{kind:"prepare",planId:"plan",legIndex:0,evidence:{state:"clear"}}),{code:"INVALID_COMMAND"});
+  const sent=await app.command(s.session.token,now,{kind:"broadcast",reviewId:r.reviewId});assert.ok("outcome" in sent);assert.equal(sent.outcome,"accepted");
+  assert.equal((await app.read(s.session.token,now,"portfolio")).legs[0]?.transactionState,"unknown");assert.equal(s.sendCount(),1);
+}));
+
+test("P8 PostgreSQL execution application authenticates unavailable deployments and foreign records",pgOptions,async()=>withPortfolio(async s=>{
+  const app=new ExecutionApplication(s.pool,s.sessions,null),now=new Date(originalNow);
+  assert.equal((await app.read(s.session.token,now,"portfolio")).configured,false);
+  await assert.rejects(app.command(s.session.token,now,{kind:"prepare",planId:"plan",legIndex:0}),{code:"EXECUTION_UNCONFIGURED"});
+  await assert.rejects(app.command("invalid",now,{kind:"prepare",planId:"plan",legIndex:0}),{code:"SESSION_REQUIRED"});
+  await assert.rejects(app.read(s.session.token,now,"foreign"),{code:"PORTFOLIO_UNAVAILABLE"});
+  assert.equal((await s.pool.query("SELECT count(*) FROM eoa_execution_reviews")).rows[0].count,"0");
 }));

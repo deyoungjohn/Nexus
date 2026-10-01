@@ -205,3 +205,10 @@ security evidence blocks. `authorizationHash` optionally records stable bStocks 
 policy/revision facts; existing `accessHash` still binds the transfer block. The new
 production executor requires that stable hash and dual original/current P5 checks;
 it never extends a review's earliest source lease. See [ADR 0029](../decisions/0029-production-eoa-evidence-orchestration.md).
+
+
+2026-10-01 P5.5e/P8 follow-up: built-in canonical USDT/NVDAB route quote and
+real-state simulation ports plus authenticated web exact-approval/persist/submit
+are implemented. Route configuration is bound to execution policy; missing source
+qualification/real funds or allowance still blocks. See [ADR 0030](../decisions/0030-bstocks-route-and-web-approval.md)
+and [execution runbook](../runbooks/eoa-execution.md).

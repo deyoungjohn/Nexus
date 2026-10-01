@@ -13,6 +13,10 @@ coverage/
 dist/
 dist-test/
 build/
+.next/
+*.tsbuildinfo
+playwright-report/
+test-results/
 .pytest_cache/
 __pycache__/
 *.pyc

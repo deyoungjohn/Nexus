@@ -96,7 +96,7 @@ async function lockedPortfolio(client: QueryClient, id: string): Promise<{ revis
 export class Ledger {
   constructor(private readonly pool: Pool) {}
 
-  async createPortfolio(input: PortfolioInput): Promise<void> {
+  async createPortfolio(input: PortfolioInput, existingClient?: PoolClient): Promise<void> {
     identifier(input.id);
     chainId(input.chainId);
     validateDenomination(input.settlement);
@@ -112,7 +112,7 @@ export class Ledger {
         await client.query(`INSERT INTO balances(portfolio_id, asset_id, decimals, confirmed_units)
           VALUES ($1, $2, $3, $4)`, [input.id, balance.assetId, balance.decimals, balance.units.toString()]);
       }
-    });
+    }, existingClient);
   }
 
   async reservePlan(input: ReservePlanInput, transactionClient?: PoolClient): Promise<{ id: string; replay: boolean }> {

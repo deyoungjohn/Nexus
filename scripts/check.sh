@@ -33,8 +33,12 @@ required_files=(
   docs/specifications/0001-domain-foundation.md
   docs/specifications/0002-durable-ledger.md
   docs/specifications/0003-portfolio-coordinator.md
+  docs/specifications/0007-web-workflow.md
+  docs/decisions/0021-fixture-web-boundary.md
   migrations/0001_ledger.sql
   migrations/0002_coordinator.sql
+  migrations/0007_recovery_worker.sql
+  config/bsc-recovery.json
   config/token-security-reviews.json
   src/security/token-security.ts
   src/security/bsc-token-security.ts
@@ -51,31 +55,49 @@ required_files=(
   docs/decisions/0026-full-token-security-evidence.md
   docs/specifications/0008-token-security.md
   docs/runbooks/token-security.md
-  migrations/0003_eoa_execution.sql
-  migrations/0004_eoa_receipt_effects.sql
-  migrations/0006_web_sessions.sql
-  migrations/0007_recovery_worker.sql
+  docs/integrations/2026-09-30-full-token-security.md
+  docs/integrations/2026-09-30-full-token-security.json
   migrations/0008_eoa_execution_reviews.sql
-  src/application/session.ts
+  src/market-gate/bstocks-route.ts
+  src/execution/signing-payload.ts
+  src/application/execution.ts
+  test/bstocks-route.test.ts
+  test/execution-wallet.test.ts
+  web/components/execution-panel.tsx
+  web/lib/execution-wallet.ts
+  web/server/execution.ts
+  web/app/api/execution/route.ts
+  web/e2e/execution.spec.ts
+  docs/decisions/0030-bstocks-route-and-web-approval.md
+  docs/integrations/2026-10-01-bstocks-route-adapter.md
+  docs/integrations/2026-10-01-bstocks-route-adapter.json
   src/execution/production.ts
   src/execution/bstocks-runtime.ts
   src/execution/bsc-execution-chain.ts
   src/execution/execution-json.ts
   src/execution/market-revalidation.ts
-  src/execution/recovery-worker.ts
-  src/execution/recovery-contracts.ts
-  src/market-gate/bstocks-access.ts
   src/market-gate/bstocks-production.ts
-  config/bsc-recovery.json
   test/production-execution.test.ts
   test/production-execution-fixture.ts
   docs/decisions/0029-production-eoa-evidence-orchestration.md
   docs/runbooks/eoa-execution.md
+  src/execution/recovery-worker.ts
+  src/execution/recovery-contracts.ts
+  docs/integrations/2026-09-30-token-recovery-semantics.md
+  docs/integrations/2026-09-30-token-recovery-semantics.json
+  docs/decisions/0025-reviewed-bsc-raw-transfer-recovery.md
+  docs/decisions/0024-production-recovery-worker.md
+  docs/runbooks/bsc-recovery-worker.md
   package.json
   package-lock.json
   tsconfig.json
   tsconfig.test.json
   test/run.ts
+  web/app/page.tsx
+  web/lib/workflow.ts
+  web/tsconfig.json
+  web/e2e/workflow.spec.ts
+  playwright.config.ts
   .mcp.json
   .agents/mcp_config.json
   .codex/config.toml
@@ -95,7 +117,7 @@ bash -n scripts/check.sh scripts/memory-mcp.sh
 
 node -e '
   const fs = require("fs");
-  for (const file of [".mcp.json", ".agents/mcp_config.json", "opencode.json"]) {
+  for (const file of [".mcp.json", ".agents/mcp_config.json", "opencode.json", "config/bsc-recovery.json", "config/token-security-reviews.json"]) {
     JSON.parse(fs.readFileSync(file, "utf8"));
   }
 '
@@ -115,6 +137,7 @@ if [[ -f package.json ]]; then
   npm run lint --if-present
   npm run typecheck --if-present
   npm run build --if-present
+  npm run web:build --if-present
 fi
 
 echo "All configured project checks passed."

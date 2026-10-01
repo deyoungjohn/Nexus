@@ -1404,3 +1404,77 @@ evidence supports them; do not invent failures to populate the log.
   untouched. Full workspace separately passed 205 application tests and web build.
   Three durable non-secret findings saved to Nexus MCP and retrieved successfully;
   Git docs remain authoritative. Workspace and staged diff whitespace checks passed.
+
+## 2026-10-01 — P5.5e/P7.1/P8.3 exact route adapters and web approval
+
+- Scope/read: inspected project state/plan/recent logs, ADRs 0023/0029, P5/P7/P8
+  specifications, route/recovery runbooks and supplementary Nexus memory. Read
+  web/AGENTS.md and local Next.js route-handler/client-component guides.
+- Baseline: PostgreSQL-backed ./scripts/check.sh passed 205 application and three
+  research tests, zero failures/skips, strict typecheck and both builds.
+- Compatibility: preserve server-derived authority, immutable reviews and exact
+  signed bytes before send; no fixture evidence promoted to live use. Real-state
+  simulation must require actual funds/allowance with no overrides. Keep broadcasting
+  disabled by default, existing rules/sign-in/export behavior and recovery accounting.
+- Design: pin exact Pancake V3 venue/code and canonical quantity frame; implement
+  actual accepted-size buy/sell quotes, conservative gas valuation and exact-byte
+  simulation. Web approval uses owner-scoped reviews and two explicit signatures;
+  wallets lacking raw transaction signing need an explicit import path, never a
+  silent eth_sendTransaction fallback. Primary Pancake addresses/ABI and Ethereum
+  RPC documentation were checked; document provenance in ADR 0030.
+
+- P5.5e/P7.1: added canonical route ports, four venue code pins, factory/pool/pair/
+  decimals/fee/liquidity checks, exact-size raw buy/sell quotes, integer impact and
+  bounded minimum/deadline. Full gas ceiling uses same-block Chainlink BNB/USDT
+  valuation with freshness/depeg/uncertainty checks. Exact-byte simulation requires
+  actual allowance, token/native funds, successful call and bounded gas estimate;
+  no overrides or sends. Runtime auto-wiring binds route configuration digest.
+- P8.3/P8.4: execution application service, strict safe HTTP DTO/commands and
+  /api/execution route; operator configuration reload with unresolved sources null.
+  Browser-safe canonical signing-schema extraction preserves existing EOA exports.
+  Added separate review/sign/store/submit panel, exact-payload/raw validation,
+  explicit import fallback and account/chain/session/expiry invalidation. Persisted
+  signed legs are visible after reload without exposing signatures/bytes.
+- Test corrections: sell fixture lacked mandatory flag and union result needed
+  narrowing; signature mock queried a review ID only initialized by its old helper,
+  so query exact tx_hash instead. Positive quote fixture inherited venue `v3` and
+  a $0.001 gas cap: explicitly use the test venue and realistic synthetic gas budget;
+  production limits unchanged. Browser selectors matched Next's empty announcer
+  alert; scope by text. HTTP fixture glob omitted query strings, causing refresh
+  to hit real unauthenticated API and hide stored transaction; include query strings.
+  These fixture errors were reproduced, corrected and regressed, not bypassed.
+- Increment verification: PostgreSQL npm test passed 213 application tests, zero
+  failures/skips; all 14 Chromium cases passed, including existing fixture/saved
+  workflows. Added actual execution HTTP origin/extra-field/foreign/revoked-session
+  assertions for final browser run. Real application gateway PG tests cover
+  owner-scoped prepare/persist/once-only submit and secret-free read projection.
+- Live read-only smoke: observed four public venue code hashes and the application
+  quote succeeded at canonical block 125153134. Unfunded synthetic-wallet simulation
+  returned null as required. Initial moving-head probe returned no quantity; final
+  probe pinned head/hash before clock capture. Preserved empirical JSON/report;
+  observed identity hashes and relaxed smoke fee age are not qualified live policy.
+- ADR 0030 records route/capability/trust decisions. Updated specifications, plan,
+  state, runbook and README. Production access/economic/events/valuations, scanner/
+  reviews/risk policy and mainnet/chain-initialization/repair gates remain open.
+
+- Added reload regression: stored signed leg remains submit-ready after reload,
+  with no second approval/signing request. Initial assertion incorrectly read the
+  reset synthetic wallet-call log after reload; capture before/after separately.
+  No application error was found. Final Chromium run passed all 14 cases including
+  new real HTTP guards, explicit import, unknown outcomes and reload/no-resigning.
+- Included directly required saved-workspace/rule foundation files and their prior
+  regression suites in the focused web integration, preserving unrelated pending
+  source-research/config changes. Do not build two web artifacts concurrently;
+  headless and browser checks must retain independent build ownership.
+
+- Final verification: PostgreSQL-backed ./scripts/check.sh passed 213 application
+  plus three research tests, zero failures/skips, strict typecheck and both builds.
+  Final Chromium run passed all 14 cases. Workspace/staged whitespace checks pass.
+  No live qualification or phase completion beyond this implementation is claimed.
+
+- Focused-tree portability check: exported the staged tree without unrelated pending
+  configuration/research work. PostgreSQL-backed ./scripts/check.sh passed the same
+  213 application plus three research tests, zero failures/skips, strict typecheck
+  and both builds. Included direct prior web/rule dependencies; preserved unrelated
+  work. Three durable non-secret findings were saved to Nexus MCP and retrieved;
+  repository documentation remains authoritative. Whitespace checks passed.

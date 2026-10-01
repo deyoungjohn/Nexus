@@ -23,6 +23,7 @@ export interface ExecutionDeployment {
   readonly version: string;
   readonly broadcastEnabled: boolean;
   readonly recoveryConfigurationHash: string;
+  readonly routeConfigurationHash?: string;
   readonly marketPolicy: MarketGatePolicy;
   readonly mappingRevisions: Readonly<Record<string, string>>;
   readonly maxGasLimit: bigint;
@@ -52,6 +53,7 @@ export class ProductionEoaExecutor {
     private readonly chain: ExecutionChainPort, private readonly clock: () => Date = () => new Date()) {
     identifier(deployment.version);
     requireInput(typeof deployment.broadcastEnabled === "boolean" && /^[0-9a-f]{64}$/.test(deployment.recoveryConfigurationHash)
+      && (deployment.routeConfigurationHash === undefined || /^[0-9a-f]{64}$/.test(deployment.routeConfigurationHash))
       && deployment.maxGasLimit > 0n
       && deployment.maxFeePerGas > 0n && Number.isSafeInteger(deployment.approvalLifetimeMs)
       && deployment.approvalLifetimeMs > 0 && deployment.approvalLifetimeMs <= 300_000,

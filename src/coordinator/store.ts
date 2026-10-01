@@ -24,7 +24,8 @@ function digest(value: unknown): string {
   return createHash("sha256").update(JSON.stringify(canonical(value))).digest("hex");
 }
 
-async function inTransaction<T>(pool: Pool, action: (client: PoolClient) => Promise<T>): Promise<T> {
+async function inTransaction<T>(pool: Pool, action: (client: PoolClient) => Promise<T>, existingClient?: PoolClient): Promise<T> {
+  if (existingClient) return action(existingClient);
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -185,7 +186,7 @@ export class CoordinatorStore {
     });
   }
 
-  async coordinateAndReserve(input: CoordinationRequest): Promise<StoredCoordination> {
+  async coordinateAndReserve(input: CoordinationRequest, existingClient?: PoolClient): Promise<StoredCoordination> {
     for (const id of [input.portfolioId, input.planId, input.occurrenceId, input.idempotencyKey]) identifier(id);
     requireInput(input.expectedRevision >= 0n, "INVALID_REVISION", "Expected revision must be nonnegative.");
     const requestHash = digest({ planId: input.planId, snapshot: input.snapshot, proposals: input.proposals,
@@ -235,7 +236,7 @@ export class CoordinatorStore {
       await client.query(`INSERT INTO coordination_occurrences(portfolio_id, occurrence_id, plan_id, decision_record_id)
         VALUES ($1, $2, $3, $4)`, [input.portfolioId, input.occurrenceId, input.planId, decisionId]);
       return { result, replay: false, reservedPlanId };
-    });
+    }, existingClient);
   }
 }
 

@@ -1,3 +1,5 @@
+import { createBStocksRoutePorts, type BStocksRouteConfig } from "../market-gate/bstocks-route.js";
+import { securityDigest } from "../security/token-security.js";
 import type { Pool } from "pg";
 import type { ExecutionSessions, ExecutionDeployment } from "./production.js";
 import { ProductionEoaExecutor } from "./production.js";
@@ -11,18 +13,24 @@ export function createBStocksExecutionRuntime(input: {
   readonly pool: Pool; readonly sessions: ExecutionSessions;
   readonly deployment: Omit<ExecutionDeployment, "broadcastEnabled" | "recoveryConfigurationHash"> & { readonly broadcastEnabled?: boolean };
   readonly rpcUrl: string;
+  readonly route?: BStocksRouteConfig;
   readonly recoveryConfig: RecoveryConfig;
   readonly securityReviews: readonly TokenSecurityReview[];
   readonly settlementMaxAgeMs: number;
   readonly settlementUncertaintyBps: number;
   readonly settlementMaxPegDeviationBps: number;
-}, reviews: BStocksProductionReviewPorts, fetcher: typeof fetch = fetch) {
+}, reviews: Omit<BStocksProductionReviewPorts,"quote"|"simulation"> & Partial<Pick<BStocksProductionReviewPorts,"quote"|"simulation">>, fetcher: typeof fetch = fetch) {
   const recovery = parseRecoveryConfig(input.recoveryConfig);
   if (!recovery.sources.some(s => s.rpcUrl === input.rpcUrl)) throw Error("Execution source is not in the reviewed recovery configuration.");
-  const collector = createBStocksProductionCollector(input, reviews, fetcher);
+  if (input.route && (input.route.maxGasLimit !== input.deployment.maxGasLimit
+    || input.route.maxFeePerGas !== input.deployment.maxFeePerGas)) throw Error("Route/deployment gas ceilings differ.");
+  const route=input.route ? createBStocksRoutePorts(input.rpcUrl,input.route,fetcher) : null;
+  const collector = createBStocksProductionCollector(input, { ...reviews,
+    quote: route?.quote ?? reviews.quote ?? (async () => null),
+    simulation: route?.simulation ?? reviews.simulation ?? (async () => null) }, fetcher);
   const chain = createBscExecutionChain(input.rpcUrl, input.deployment.marketPolicy.maxStatusAgeMs, fetcher);
   return new ProductionEoaExecutor(input.pool, input.sessions,
-    { ...input.deployment, recoveryConfigurationHash: recoveryConfigurationRecord(recovery).hash,
+    { ...input.deployment, ...(input.route ? {routeConfigurationHash:securityDigest(input.route)} : {}), recoveryConfigurationHash: recoveryConfigurationRecord(recovery).hash,
       broadcastEnabled: input.deployment.broadcastEnabled ?? false }, collector, {
       async state(wallet, assets, now) {
         if (!assets.every(a => recovery.assets.some(r => r.assetId === a.assetId && r.decimals === a.decimals

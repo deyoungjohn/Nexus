@@ -89,3 +89,9 @@ The guarded EOA server service now connects immutable PostgreSQL reviews to fres
 Market Gate evidence, exact signed-byte persistence, one-time send and historical
 recovery. Broadcasting defaults to disabled; production source/risk qualification
 and browser approval wiring remain open. See [the execution runbook](docs/runbooks/eoa-execution.md).
+
+The saved Review tab now supports exact EOA approval, raw transaction signing/import,
+durable storage and separate guarded submission. The built-in bStocks route adapter
+uses canonical real-state checks. Operator execution configuration and qualified
+sources are required; default live submission remains disabled. See
+[ADR 0030](docs/decisions/0030-bstocks-route-and-web-approval.md).

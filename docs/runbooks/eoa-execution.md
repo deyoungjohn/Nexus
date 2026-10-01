@@ -13,12 +13,12 @@ gas ceilings, an approval lifetime of at most five minutes, reviewed recovery co
 security review registry and the chosen public HTTPS RPC. The RPC must appear in
 that recovery config; every tracked ERC20 needs matching decimals and reviewed
 runtime/beacon code pins. Source or registry changes invalidate prior reviews.
-The factory defaults `broadcastEnabled` to false. There is no new web trade endpoint.
+The factory defaults `broadcastEnabled` to false. The authenticated web trade endpoint is now `/api/execution`; see the web increment below.
 
 Provide `BStocksProductionReviewPorts` for authenticated jurisdiction/country/product
 sources and reviewed transfer controls, qualified economic share mapping, complete
-portfolio valuations, underlying and token-provider events, an actual-size verified
-venue quote, and exact-byte simulation against real balances/allowance. State overrides
+portfolio valuations, underlying and token-provider events, qualified route configuration (or compatible explicit quote/simulation ports).
+Built-in route ports simulate exact bytes against real balances/allowance. State overrides
 or display multipliers do not qualify. Nullable or failed sources stay blocked. Built-in
 public readers collect canonical quantity/control snapshots, Chainlink stock/settlement
 prices, reviewed NYSE sessions, Binance trading status and full token-security evidence.
@@ -66,3 +66,37 @@ Set `TEST_DATABASE_URL` for the local PostgreSQL test database, then run
 prices, events, random wallets and mocked RPCs in isolated temporary schemas.
 They test orchestration and recovery, not live token clearance or a real trade.
 Never place session tokens, private keys or personal eligibility data in logs/memory.
+
+
+## Route and web increment (2026-10-01)
+
+Set an operator-owned `NEXUS_EXECUTION_CONFIG` JSON path to connect web review.
+Leave it unset until configuration is reviewed: the panel reports unconfigured and
+POST prepare cannot issue signing authority. JSON fields match the runtime input:
+`rpcUrl`, `deployment` (version, optional default-false broadcastEnabled, marketPolicy,
+mappingRevisions, maxGasLimit, maxFeePerGas, approvalLifetimeMs), `route` (version,
+codeHashes for factory/pool/router/quoter, slippageBps, lifetimeMs, maxGasLimit,
+maxFeePerGas, feeFeedMaxAgeMs, feeUncertaintyBps, maxSettlementPegDeviationBps),
+and settlementMaxAgeMs/settlementUncertaintyBps/settlementMaxPegDeviationBps.
+Use canonical decimal strings for bigint quantities. Gas ceilings must agree.
+Recovery/reviews are loaded separately from NEXUS_RECOVERY_CONFIG and
+NEXUS_TOKEN_SECURITY_REVIEWS. Reloading configuration invalidates changed authority.
+Observed code hashes in the smoke report require operator review; observation is not
+permission. Do not copy historical quotes or relax feed/risk policy to clear a gate.
+
+`web/server/execution.ts` explicitly leaves access, entitlement, event and valuation
+sources unconfigured. Qualified integrations must implement these server ports;
+JSON or browser terms acceptance cannot manufacture them. Missing sources block.
+Existing portfolios still need trusted chain initialization and a reserved P4 leg.
+
+In `/workspace` Review, select an accepted leg and review tokens/base units, minimum,
+recipient/router, nonce, gas ceilings, expiry and evidence hash. Confirm bounds;
+click Sign trade approval, then Sign transaction and store. Submission is a separate
+button enabled only under deployment permission. A wallet lacking eth_signTransaction
+must export the reviewed raw transaction through a compatible signing workflow, then
+use explicit import; no private keys or automatic send fallback. Session/account/
+chain changes invalidate outstanding UI work. Activity/recovery establish the fill.
+
+`npm run web:e2e` additionally verifies Chromium behavior; TEST_DATABASE_URL enables
+real authenticated saved-workspace HTTP/PostgreSQL cases. Synthetic execution browser
+responses are test-only interceptions and do not authorize the production server.

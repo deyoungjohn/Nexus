@@ -481,3 +481,21 @@ P5.5/P7 remain open for qualified sources/scanner/reviews/risk policy, browser e
 approval and chain initialization, operational repair and mainnet acceptance evidence.
 See [ADR 0029](decisions/0029-production-eoa-evidence-orchestration.md) and
 [the execution runbook](runbooks/eoa-execution.md).
+
+## 2026-10-01 — P5.5e/P7.1/P8.3/P8.4 route and exact web approval
+
+Codex implemented canonical actual-size USDT/NVDAB quotes and real-state simulation
+with reviewed venue identity/code, fee-feed/gas, actual allowance/funds and reorg
+checks. The saved web Review panel connects server-owned exact review, explicit
+EIP-712 approval, raw signing/import, durable storage and separate guarded submission.
+Account/chain/session/expiry changes block stale actions; reload does not repeat
+signing for a stored leg. Existing saved rules/records and recovery remain compatible.
+
+Verification: PostgreSQL-backed ./scripts/check.sh passed 213 application plus three
+research tests, zero failures/skips, strict typecheck and both builds. All 14 Chromium
+cases pass, including actual authenticated HTTP guards and explicit synthetic trade
+flows. A public 5-USDT quote succeeded at block 125153134; an unfunded synthetic
+simulation returned no evidence. No allowance, signature or mainnet send was made.
+Production sources/scanner/reviews/risk policy, trusted chain initialization and funded
+mainnet/operational gates remain open. Broadcasting defaults disabled. See ADR 0030,
+the execution runbook and dated route-adapter evidence.

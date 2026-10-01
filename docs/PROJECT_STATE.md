@@ -10,6 +10,22 @@ inspectable evidence and recoverable sequential execution.
 
 ## Current status
 
+- P5.5e/P7.1/P8.3/P8.4 route/web binding implemented: actual-size USDT/NVDAB
+  quotes and exact-byte real-state simulations pin venue code/identity, canonical
+  blocks, gas/feed bounds and actual allowance/balances. `/api/execution` and the
+  web Review panel connect explicit typed approval, signed-byte storage and
+  separate guarded submission, with raw import for unsupported signing wallets.
+  Default web execution configuration is absent; production access/economic/
+  event/valuation ports remain unconfigured and broadcasting disabled. A public
+  5-USDT quote smoke succeeded; an unfunded synthetic simulation stayed blocked.
+  Current sources/reviews/scanner/risk policy, trusted chain initialization and
+  funded-wallet mainnet/operational gates remain open. Final check passed 213
+  application plus three research tests, zero failures/skips, strict typecheck
+  and both builds; all 14 Chromium cases passed. See
+  [ADR 0030](decisions/0030-bstocks-route-and-web-approval.md) and
+  [route evidence](integrations/2026-10-01-bstocks-route-adapter.md).
+
+
 - P5.5/P7.1/P7.2/P7.5 production execution composition is implemented: the
   USDT/NVDAB public evidence assembly feeds server-owned PostgreSQL reviews,
   exact signed-byte persistence and a one-time guarded EOA broadcaster. Active
@@ -252,27 +268,42 @@ inspectable evidence and recoverable sequential execution.
 ## Architecture
 
 - Modular monolith; domain kernel in `src/domain/`, PostgreSQL ledger in
-  `src/ledger/`, offline coordinator in `src/coordinator/` and pure market gate
-  plus separate read-only bStocks quantity/transfer and xStocks/Ondo/Chainlink
+  `src/ledger/`, offline coordinator in `src/coordinator/`, compiler and
+  durable rule store in `src/rules/`, EOA verifier/store in `src/execution/` and pure market gate
+  plus separate read-only bStocks quantity/transfer, fail-closed bStocks access
+  composer and xStocks/Ondo/Chainlink
   P5.5 adapters and the dormant
-  Ondo owner-attestation verifier in `src/market-gate/`; no web runtime framework.
-- Node.js 22.x; TypeScript 5.9.3; Node types 22.18.6; pinned npm lockfile.
+  Ondo owner-attestation verifier in `src/market-gate/`; owner-authenticated
+  application service in `src/application/`; separate fixture and saved
+  Next.js App Router interfaces with server-only routes in `web/`.
+- Node.js 22.x; TypeScript 5.9.3; Node types 22.18.6; Next.js 16.3.7 and
+  React 19.3.0 for P8; pinned npm lockfile.
 - Native `bigint` accounting with explicit chain/token denomination; JSON base
   units are strings. Identity never uses ticker symbols as execution keys.
 - Runtime database driver: `pg` 8.23.0; types 8.23.1. Numbered SQL migrations
-  in `migrations/` (P4 adds `0002_coordinator.sql`); `DATABASE_URL` is required
-  for `npm run db:migrate`.
+  in `migrations/` (0001–0008); `DATABASE_URL` is required
+  for `npm run db:migrate`. Recovery additionally requires the operator-owned
+  `NEXUS_RECOVERY_CONFIG` file for `npm run recovery:once`; see the runbook.
 - Tests: Node's built-in runner via explicit `test/run.ts` imports; new suites
   must be registered there. `test/` compiles into ignored `dist-test/`. Set
   `TEST_DATABASE_URL` to run the real PostgreSQL integration suite; without it,
   the suite is reported as skipped.
-- Build: TypeScript into ignored `dist/`. `npm run demo` runs synthetic data.
+- Build: TypeScript into ignored `dist/`; `next build web --webpack` into ignored
+  `web/.next/`. `npm run demo` runs synthetic data. `npm run web:dev` serves
+  `/` fixture and `/workspace` saved UI; `npm run web:start` serves a
+  production build locally. Saved state needs migrated `DATABASE_URL` and
+  exact `NEXUS_APP_ORIGIN` (default local origin, HTTPS elsewhere). Webpack
+  extension aliases resolve shared headless NodeNext `.js` imports.
+  `npm run web:e2e` runs Chromium interaction tests after
+  `npx playwright install chromium`; `TEST_DATABASE_URL` enables isolated
+  PostgreSQL saved-workspace/browser tests. Playwright 1.63.0 is a pinned dev dependency.
 - `npm --silent run attestation -- challenge ...` generates a 24-hour EIP-712 request;
   `npm --silent run attestation -- verify ...` checks a local signature and revocation
   list. `ethers` 6.17.0 is pinned for typed-data verification and BSC code
   hashing. Keep signed records under ignored `.agent-memory/`.
-- Planned: P6 rules, Next.js application and verified live EVM/wallet adapters.
-  No frontend, signing or application trade execution exists yet.
+- Planned: trusted P6 inputs/allocation refresh, remaining P7 recovery and
+  funded-wallet approval qualification, bStocks access/session composition and verified live sources; Agentic Wallet may be added
+  later. No Nexus-controlled signing exists. Guarded application submission is implemented but disabled pending qualification.
 - Decisions: ADR 0001 (shared memory), ADR 0002 (domain kernel and allocation),
   ADR 0003 (Phase 2 integration gates and quantity semantics), ADR 0004
   (PostgreSQL ledger and leased outbox), ADR 0005 (staged conservative planning),
@@ -283,7 +314,11 @@ inspectable evidence and recoverable sequential execution.
   token-risk boundary), ADR 0011 (historical xStocks priority and wrapper
   identity boundary), ADR 0012 (bStocks-first provider priority), ADR 0013
   (bStocks display mapping boundary), ADR 0014 (on-chain transfer boundary),
-  ADR 0015 (dual event review).
+  ADR 0015 (dual event review), ADR 0016 (EOA-first wallet priority),
+  ADR 0017 (exact EOA leg approval), ADR 0018 (bStocks access evidence),
+  ADR 0019 (persist-before-broadcast execution), ADR 0020 (receipt-effect
+  proof), ADR 0021 (fixture web trust boundary), ADR 0022 (atomic durable
+  rule scheduling), ADR 0023 (owner-authenticated saved workspace).
 
 ## Required verification
 
@@ -295,7 +330,8 @@ Run:
 
 Install pinned dependencies with `npm ci` on Node 22.x first. The script validates
 required project records, shell and MCP config syntax, then runs tests, strict
-type checking and build. It remains the single entry point for required checks.
+type checking, headless build and Next.js web build. It remains the single
+entry point for required checks.
 For full P3/P4 evidence, run it with `TEST_DATABASE_URL` pointing to an isolated
 PostgreSQL test database. A database-free run skips their integration suites.
 
