@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "registryVersion": "bsc-raw-transfer-review-2026-09-30",
+  "finalityBlocks": "12",
+  "sources": [
+    {
+      "id": "sentio-bsc",
+      "rpcUrl": "https://bsc.rpc.sentio.xyz"
+    },
+    {
+      "id": "blockmachine-bsc",
+      "rpcUrl": "https://rpc-bsc.blockmachine.io"
+    }
+  ],
+  "assets": [
+    {
+      "assetId": "eip155:56/native",
+      "decimals": 18,
+      "semantics": "native-gas",
+      "review": "p7-native-gas-0020"
+    },
+    {
+      "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+      "decimals": 18,
+      "semantics": "erc20-transfer-net",
+      "review": "usdt-raw-transfer-2026-09-30",
+      "contract": {
+        "kind": "runtime",
+        "codeHash": "0x97a48aa4c129657440dafdacd4c836389734d28cc4a0ca7403e68da660a74a59"
+      }
+    },
+    {
+      "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+      "decimals": 18,
+      "semantics": "erc20-transfer-net",
+      "review": "nvdab-raw-transfer-2026-09-30",
+      "contract": {
+        "kind": "beacon",
+        "codeHash": "0xdf946913977a2ed76735b4b2e66f2272d1a76af911c4e520655888c9e32269f9",
+        "beacon": "0x156d6dce9a4f6139a3406f1f021f1a4880de93a3",
+        "beaconCodeHash": "0x80fbad22136c0abdce6e0f3cc46cd0572318e01b92dbd5b4d5795ef6e8808711",
+        "implementation": "0xcfed6c4679297ea4889f8183bc057b4a86c64e46",
+        "implementationCodeHash": "0x060dc28d4dd8d9bb8a381d4009bccbac129ce743a10b3d8aa0ffef5034b50544"
+      }
+    }
+  ]
+}

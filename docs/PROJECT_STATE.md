@@ -10,6 +10,24 @@ inspectable evidence and recoverable sequential execution.
 
 ## Current status
 
+- P5.5/P7.1/P7.2/P7.5 production execution composition is implemented: the
+  USDT/NVDAB public evidence assembly feeds server-owned PostgreSQL reviews,
+  exact signed-byte persistence and a one-time guarded EOA broadcaster. Active
+  owner/session/policy/registry/revision checks are atomic at persistence/claim;
+  reviewed recovery configuration and full approved gas cost are bound. Both
+  original and newly collected P5 evidence must pass within the original lease.
+  Synthetic PostgreSQL tests span review → persistence → send → receipt-effect
+  recovery → repeat monitoring without duplicate fills. Broadcasting defaults
+  to disabled; no actual wallet trade or new web trade endpoint was enabled.
+  Qualified access/economic/event/valuation/quote/simulation sources, complete
+  scanner coverage, current independent reviews and approved risk policy remain
+  open. Exact P8 approval/chain initialization and operational repair gates also
+  remain. Final PostgreSQL-backed ./scripts/check.sh passed 205 application
+  and three research tests, zero failures/skips, strict typecheck and both builds.
+  See [ADR 0029](decisions/0029-production-eoa-evidence-orchestration.md)
+  and [execution runbook](runbooks/eoa-execution.md).
+
+
 - P5.5d/P7.1 recovered source/governance integration implemented: immutable
   source certificates and canonical OperatorWallet/BurnWallet adapters now resolve
   all nine NVDAB execution components and eleven current authorities. Sentio and
@@ -33,7 +51,7 @@ inspectable evidence and recoverable sequential execution.
 - P0 (roadmap), P1 (domain foundation), P2 (integration feasibility), P3
   (durable ledger), P4 (Portfolio Coordinator) and P5 (offline Market Gate)
   are complete. P5.5 now targets bStocks first; live-readiness remains active
-  before P6. The completed P2 Ondo trade is historical feasibility evidence,
+  while non-live P7 advances. The completed P2 Ondo trade is historical feasibility evidence,
   not proof of a bStocks route. See
   [the implementation plan](IMPLEMENTATION_PLAN.md) for all phases and exit gates.
 - P2 read-only evidence: chain 56, BSC USDT and three Ondo candidate token

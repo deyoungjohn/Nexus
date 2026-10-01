@@ -1,7 +1,7 @@
 # Nexus implementation plan
 
 Source: [Nexus blueprint](../Nexus.md), version 1.0, September 25, 2026.
-Last updated: 2026-09-27. Owner/client for the current work: Codex.
+Last updated: 2026-10-01. Owner/client for the current work: Codex.
 
 ## Delivery rules
 
@@ -32,7 +32,7 @@ memory. The versioned documents remain authoritative across agents.
 | P5 — Market Gate and data adapters | P5.1 eligibility and quantity compatibility; P5.2 separate reference/session/quote clocks; P5.3 event and corporate-action restrictions; P5.4 actual-size quote, cost-aware constraints and simulation evidence | Pure fail-closed gate and read-only adapter seam, full-size P4 recheck, decoded direct-V3 route, hash binding; missing/stale/mapping/holiday/DST/recipient/spender tests. See [specification 0004](specifications/0004-market-gate.md) and [ADR 0006](decisions/0006-market-evidence-boundary.md). Production evidence providers remain unavailable | Complete as offline gate; live blocked |
 | P5.5 — Live evidence readiness | P5.5a source-timestamped equity feed; P5.5b provider-specific on-chain quantity and corporate-action checks, now BEP-677 bStocks first; P5.5c wallet/venue/provider eligibility, exchange calendar and issuer events; P5.5d settlement valuation, token-risk policy and end-to-end live evidence verification; P5.5e exact selected-provider BSC venue/route feasibility | Production input for every P5 field, verified under the approved market-session policy; provider failures and unavailable eligibility block. [Live-readiness matrix](integrations/2026-09-26-live-readiness.md), [bStocks BSC route matrix](integrations/2026-09-27-bstocks-bsc.md), [BSC liquidity snapshot](research/2026-09-27-bsc-stock-liquidity.md), [issuer-event runbook](runbooks/issuer-event-review.md), [ADR 0012](decisions/0012-bstocks-first-bsc-provider.md), [ADR 0013](decisions/0013-bstocks-display-mapping-boundary.md) and [ADR 0014](decisions/0014-bstocks-transfer-preflight-boundary.md) | In progress: direct NVDAB/USDT V3 route quoted, bounded and simulated read-only. Separate read-only BEP-677 and route-party transfer-control adapters pin raw/UI mapping, controls, pause state and compliance checks at one block. They do not establish P5 reference-share exposure, geographic/account eligibility or a token audit. Supported risk evidence, timely reference/settlement policy, issuer events and full Market Gate integration remain open. Wallet funding/allowance and P7 approval/recovery remain absent; no trade or application live adapter is enabled. Ondo/xStocks modules remain dormant |
 | P6 — Rules and scheduling | P6.1 strict rule schema and deterministic validation; P6.2 basket schedule and occurrence IDs with IANA timezone; P6.3 typed conditional rule; P6.4 earnings freeze/reduction and allocation scope; P6.5 optional LLM drafting boundary | Unknown fields/tokens/signals rejected; no invented parameters; activation distinct from approval; schedule retries and DST do not duplicate proposals; shifted/unconfirmed events suspend dependent rules | Not started |
-| P7 — Sequential execution and reconciliation | P7.1 exact owner approval binding and pre-leg checks; P7.2 persisted transaction identity before submission where supported; P7.3 included/confirmed/replaced/unknown states; P7.4 sell-confirm-replan-buy; P7.5 partial baskets, recovery and reorgs | Timeout never causes blind resubmission; crash after fill cannot duplicate; $75/$25 partial example; stale approval, policy change, pause and external wallet change tests | Not started |
+| P7 — Sequential execution and reconciliation | P7.1 exact owner approval binding and pre-leg checks; P7.2 persisted transaction identity before submission where supported; P7.3 included/confirmed/replaced/unknown states; P7.4 sell-confirm-replan-buy; P7.5 partial baskets, recovery and reorgs | Timeout never causes blind resubmission; crash after fill cannot duplicate; $75/$25 partial example; stale approval, policy change, pause and external wallet change tests | In progress: server-owned P5/EOA review, exact signed-leg persistence, once-only guarded broadcaster and historical receipt-effect recovery implemented with PostgreSQL tests. Broadcast disabled by default; live sources/risk clearance, P8 approval UX and operational gates remain. See ADR 0029 and specification 0006 |
 | P8 — Web product workflow | P8.1 Next.js shell and wallet discovery; P8.2 Overview and Plan; P8.3 Review with bounds/evidence/expiry and explicit approval; P8.4 Activity receipts, recovery, settings and pause | End-to-end setup → interpreted rule → preview → approval → reconciled receipt; clear fixture/live labels; downloadable records; usable keyboard/error/loading states | Not started |
 | P9 — Release validation and demonstration | P9.1 adversarial integration suite; P9.2 source and secret review; P9.3 operational runbooks; P9.4 authorized small-value mainnet demonstration; P9.5 four-minute demo and factual limitations | Blueprint section 11 scenarios mapped to passing tests or explicit release blockers; actual chain evidence; measured duplicate/unaccounted/stale execution counts; reproducible setup | Not started |
 | P10 — Optional account/atomic milestone | P10.1 compatibility decision; P10.2 non-upgradeable account and narrow swap adapter; P10.3 signatures, replay, bounds, pause and withdrawal invalidation; P10.4 review and explicit owner migration | Foundry adversarial/fuzz/fork tests for exact routes and tokens; independent security review before production custody; otherwise retain wallet-native MVP | Deferred |
@@ -113,3 +113,22 @@ recovery and software integration are complete for this profile, while external
 review/coverage and risk acceptance are not. Other P5.5 economic/access/reference/
 session/event and P7 guarded-runtime/production exit gates remain unchanged.
 Building and PostgreSQL recovery testing can continue without enabling live trades.
+
+## 2026-10-01 — P5.5/P7.1/P7.2/P7.5 production execution composition
+
+Implemented the trusted USDT/NVDAB evidence assembly, immutable PostgreSQL reviews,
+server-derived plan/policy/owner/registry/amount checks, exact signature persistence
+and one-time raw broadcast after a committed unknown claim. Recovery configuration
+is bound into policy and must cover every tracked denomination and ERC20 code path.
+Stable access revision plus original/current complete gates allow receipt/head refresh
+within the original lease; changed approval facts require a new signature. Actual
+simulated fills and full signed gas ceilings are checked. Synthetic PostgreSQL flow
+now spans review, persistence, send, historical receipt-effect recovery and repeat
+monitoring without double-counting. See [ADR 0029](decisions/0029-production-eoa-evidence-orchestration.md)
+and [runbook](runbooks/eoa-execution.md).
+
+Next gates: qualify production quote/real-state simulation and portfolio/event/access/
+economic sources; obtain qualified current independent reviews and complete scanner
+coverage; approve a reviewed governance-risk policy; wire exact approval UX and chain
+initialization into P8; complete operational/manual repair and authorized mainnet
+acceptance evidence. Broadcasting remains disabled by default. P5.5/P7 are not closed.

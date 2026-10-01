@@ -3,12 +3,14 @@ import { amount, assertSameDenomination } from "../domain/amount.js";
 import { coordinatePortfolio, type Proposal } from "../coordinator/plan.js";
 import { regularSessionOpen } from "./session.js";
 import { decodeV3ExactInputSingle, routeMatchesCalldata } from "./route.js";
+import { BSTOCKS_BSC_V3_POOL, BSTOCKS_BSC_V3_ROUTER } from "./bstocks-transfer.js";
+import { verifyTokenSecurityBundle } from "../security/token-security.js";
 import type { EventEvidence, GateRequest, ProviderEventEvidence, TimedEvidence } from "./evidence.js";
 
 export type GateReason = "MISSING_EVIDENCE" | "INVALID_CLOCK" | "STALE_EVIDENCE" |
   "INSTRUMENT_MISMATCH" | "ELIGIBILITY_BLOCKED" | "QUANTITY_CHANGED" |
   "REFERENCE_UNAVAILABLE" | "SESSION_CLOSED" | "TOKEN_HALTED" |
-  "AUDIT_UNSUPPORTED" | "EVENT_RESTRICTED" | "ROUTE_UNSUPPORTED" | "QUOTE_MISMATCH" |
+  "AUDIT_UNSUPPORTED" | "TOKEN_SECURITY_BLOCKED" | "EVENT_RESTRICTED" | "ROUTE_UNSUPPORTED" | "QUOTE_MISMATCH" |
   "QUOTE_COST" | "PRICE_DEVIATION" | "SIMULATION_MISMATCH" |
   "PORTFOLIO_LIMIT";
 
@@ -90,6 +92,16 @@ function evaluateChecked(input: GateRequest): GateResult {
     || !eligibility.transferPermitted || !eligibility.allowedSides.includes(proposal.side)
     || !instrument.eligibilityRequirements.every((r) => eligibility.verifiedRequirements.includes(r)))
     return deny("ELIGIBILITY_BLOCKED");
+  if (instrument.issuerId === "bstocks") {
+    const access = eligibility.accessControl;
+    if (eligibility.source !== "bstocks-access:v1" || !access
+      || !/^[0-9a-f]{64}$/.test(access.accessHash)
+      || access.side !== proposal.side || !same(access.token, instrument.tokenAddress)
+      || !same(access.pool, BSTOCKS_BSC_V3_POOL)
+      || !same(access.router, BSTOCKS_BSC_V3_ROUTER)
+      || access.transferBlock !== quantity.sourceBlock || !access.transferRevision)
+      return deny("ELIGIBILITY_BLOCKED");
+  }
   if (quantity.instrumentId !== instrument.instrumentId || quantity.quantityModel !== instrument.quantityModel
     || quantity.adapterVersion !== instrument.adapterVersion || quantity.mappingRevision !== input.expectedMappingRevision
     || !quantity.mappingRevision || quantity.shareUnitsNumerator <= 0n || quantity.shareUnitsDenominator <= 0n
@@ -123,6 +135,11 @@ function evaluateChecked(input: GateRequest): GateResult {
   if (tokenStatus.instrumentId !== instrument.instrumentId || tokenStatus.source !== instrument.statusSource
     || tokenStatus.state !== "open") return deny("TOKEN_HALTED");
   if (audit.instrumentId !== instrument.instrumentId || audit.state !== "clear") return deny("AUDIT_UNSUPPORTED");
+  if (!verifyTokenSecurityBundle({ bundle: e.tokenSecurity,
+    assets: [{ assetId: instrument.assetId, decimals: instrument.decimals },
+      { assetId: snapshot.confirmedCash.assetId, decimals: snapshot.confirmedCash.decimals }],
+    sourceBlock: quantity.sourceBlock, now: nowText, maxAgeMs: p.maxStatusAgeMs }))
+    return deny("TOKEN_SECURITY_BLOCKED");
   if (event.underlyingId !== instrument.underlyingId || !httpsSource(event.issuerSourceUrl)
     || !eventAllowed(event, now)) return deny("EVENT_RESTRICTED");
   if (providerEvent && (providerEvent.instrumentId !== instrument.instrumentId
@@ -136,6 +153,8 @@ function evaluateChecked(input: GateRequest): GateResult {
     || !same(quote.recipient, wallet) || !same(quote.router, quote.spender)
     || !p.approvedVenues.includes(quote.venueId) || !p.approvedRouters.some((r) => same(r, quote.router))
     || eligibility.venueId !== quote.venueId) return deny("ROUTE_UNSUPPORTED");
+  if (instrument.issuerId === "bstocks" && !same(quote.router, eligibility.accessControl!.router))
+    return deny("ELIGIBILITY_BLOCKED");
   const tokenIn = proposal.side === "buy" ? settlementToken : instrument.tokenAddress;
   const tokenOut = proposal.side === "buy" ? instrument.tokenAddress : settlementToken;
   if (!same(quote.tokenIn, tokenIn) || !same(quote.tokenOut, tokenOut)

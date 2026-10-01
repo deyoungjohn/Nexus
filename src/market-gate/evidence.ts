@@ -1,5 +1,6 @@
 import type { Instrument } from "../domain/instrument.js";
 import type { CoordinatorPolicy, PortfolioSnapshot, Proposal } from "../coordinator/plan.js";
+import type { TokenSecurityEvidence } from "../security/token-security.js";
 
 export interface TimedEvidence {
   readonly source: string;
@@ -14,6 +15,18 @@ export interface EligibilityEvidence extends TimedEvidence {
   readonly allowedSides: readonly ("buy" | "sell")[];
   readonly verifiedRequirements: readonly string[];
   readonly transferPermitted: boolean;
+  /** Required only for canonical bStocks; produced by the trusted access adapter. */
+  readonly accessControl?: {
+    readonly accessHash: string;
+    /** Stable reviewed authorization facts; excludes only the transfer block. */
+    readonly authorizationHash?: string;
+    readonly side: "buy" | "sell";
+    readonly token: string;
+    readonly pool: string;
+    readonly router: string;
+    readonly transferBlock: bigint;
+    readonly transferRevision: string;
+  };
 }
 
 /** Ratio maps raw token base units to 10^18 reference-share base units. */
@@ -142,6 +155,8 @@ export interface MarketEvidence {
   readonly session: SessionEvidence | null;
   readonly tokenStatus: TokenStatusEvidence | null;
   readonly audit: AuditEvidence | null;
+  /** Both route assets, from trusted adapters. A plain audit label cannot replace this. */
+  readonly tokenSecurity?: readonly TokenSecurityEvidence[] | null;
   readonly event: EventEvidence | null;
   readonly providerEvent: ProviderEventEvidence | null;
   readonly quote: RouteQuote | null;

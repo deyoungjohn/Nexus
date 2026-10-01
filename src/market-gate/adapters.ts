@@ -10,6 +10,7 @@ export interface EvidenceAdapters {
   session(): Promise<MarketEvidence["session"]>;
   tokenStatus(): Promise<MarketEvidence["tokenStatus"]>;
   audit(): Promise<MarketEvidence["audit"]>;
+  tokenSecurity?(): Promise<MarketEvidence["tokenSecurity"]>;
   event(): Promise<MarketEvidence["event"]>;
   /** Optional for existing providers; the gate requires it for bStocks. */
   providerEvent?(): Promise<MarketEvidence["providerEvent"]>;
@@ -30,8 +31,9 @@ export async function collectMarketEvidence(adapters: EvidenceAdapters): Promise
   ]);
   const quote = await read(() => adapters.quote());
   const simulation = quote ? await read(() => adapters.simulation(quote)) : null;
+  const tokenSecurity = adapters.tokenSecurity ? await read(() => adapters.tokenSecurity!()) : null;
   return { eligibility, quantity, reference, settlement, portfolioValuations,
-    session, tokenStatus, audit, event, providerEvent, quote, simulation };
+    session, tokenStatus, audit, tokenSecurity: tokenSecurity ?? null, event, providerEvent, quote, simulation };
 }
 
 /** Only a provider-origin timestamp is accepted; observedAt is just receipt metadata. */

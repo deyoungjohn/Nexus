@@ -11,7 +11,7 @@ const compliance = "0x0000000000000000000000000000000000000002";
 const pauseManager = "0x0000000000000000000000000000000000000003";
 const now = "2026-09-27T15:00:02.000Z";
 const blockSeconds = BigInt(Date.parse("2026-09-27T15:00:00.000Z") / 1000);
-const snapshot: BStocksBscQuantitySnapshot = {
+export const snapshot: BStocksBscQuantitySnapshot = {
   instrumentId: "nvdab", source: `bstocks-bsc:${BSTOCKS_BSC_NVDAB}`,
   observedAt: "2026-09-27T15:00:00.000Z", expiresAt: "2026-09-27T15:00:10.000Z",
   sourceBlock: 256n, sourceBlockHash: `0x${"a".repeat(64)}`, rawDecimals: 18, uiMultiplier: 10n ** 18n,
@@ -35,12 +35,13 @@ const complianceAbi = new Interface(["function checkIsCompliant(address,address)
 const pauseAbi = new Interface(["function isTokenPaused(address) view returns (bool)"]);
 type Change = { chain?: string; timestamp?: bigint; paused?: boolean;
   blocked?: string; badResponse?: boolean; headerNumber?: string };
-const rpcReply = (change: Change = {}, seen: string[] = []): typeof fetch => (async (_url, init) => {
+export const rpcReply = (change: Change = {}, seen: string[] = []): typeof fetch => (async (_url, init) => {
   const body = JSON.parse(String(init?.body)) as { id: number; method: string;
     params: Array<{ to: string; data: string } | string> };
   let result: unknown;
   if (body.method === "eth_chainId") result = change.chain ?? "0x38";
   else if (body.method === "eth_getBlockByNumber") result = {
+    hash: `0x${"a".repeat(64)}`,
     number: change.headerNumber ?? "0x100",
     timestamp: `0x${(change.timestamp ?? blockSeconds).toString(16)}` };
   else {
@@ -61,6 +62,19 @@ const rpcReply = (change: Change = {}, seen: string[] = []): typeof fetch => (as
   return new Response(JSON.stringify({ jsonrpc: "2.0", id: body.id, result }), { status: 200 });
 }) as typeof fetch;
 
+test("P5.5d transfer restrictions must share the reviewed security block hash", async () => {
+  assert.equal(await fetchBStocksTransferPreflight({ ...request,
+    snapshot: { ...snapshot, sourceBlockHash: `0x${"f".repeat(64)}` } }, rpcReply()), null);
+  let headers = 0;
+  const reorg = (async (url, init) => {
+    const response = await rpcReply()(url, init), body = JSON.parse(String(init?.body));
+    if (body.method !== "eth_getBlockByNumber") return response;
+    const data = await response.json() as { result: { hash: string } };
+    if (++headers > 1) data.result.hash = `0x${"f".repeat(64)}`;
+    return new Response(JSON.stringify(data));
+  }) as typeof fetch;
+  assert.equal(await fetchBStocksTransferPreflight(request, reorg), null);
+});
 test("P5.5c bStocks preflight checks wallet, pool and router at one block", async () => {
   const seen: string[] = [];
   const result = await fetchBStocksTransferPreflight(request, rpcReply({}, seen));

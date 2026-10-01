@@ -1328,3 +1328,79 @@ evidence supports them; do not invent failures to populate the log.
   The full workspace additionally passes its PostgreSQL/P7/web suites and web
   build as reported above. Fourth non-secret publisher-provenance memory finding
   saved/retrieved; staged and workspace diff whitespace checks passed.
+
+## 2026-10-01 — P5.5/P7.1/P7.2/P7.5 production evidence and guarded EOA orchestration
+
+- Scope: connect canonical bStocks production evidence assembly to an authenticated,
+  PostgreSQL-derived exact-leg review/persist/one-time broadcast service. Preserve
+  strict token risk, economic mapping and access gates, existing EOA/store/recovery
+  APIs, and disabled web trading. No real wallet signing, approval or mainnet send.
+- Read state, plan, recent logs/changelog, Market Gate/EOA/security specifications
+  and ADRs 0013/0017/0019/0023/0024/0025/0028; searched supplementary Nexus memory.
+  Baseline PostgreSQL-backed check passed 186 application plus three research tests,
+  no failures/skips, strict typecheck and both builds. Existing pending work retained.
+- Identified compatibility requirements: raw amounts remain canonical; browser input
+  never supplies authoritative policies/snapshots/evidence; signed bytes persist
+  before network send; a lost response remains unknown; recovery stays independent.
+  A bStocks UI multiplier alone cannot create economic QuantityEvidence. Missing
+  reviewed issuer/venue sources must stay null rather than be fabricated.
+- Design requirement: transport receipt timestamps and head changes alone must not
+  require repeated signatures while an original review remains fresh. Revalidate
+  the current complete gate and stable approval facts against the original bundle;
+  retain its immutable signed hash only when all facts match and its original TTL
+  still passes. Price/control/review/access revisions must invalidate approval.
+
+- P5.5c/P5.5d component: production collector composes canonical quantity, current
+  detailed security at the same block/hash, free Chainlink prices, calendar and token
+  status with explicit reviewed entitlement/access/event/valuation/quote/simulation
+  ports. Failed/unconfigured ports remain null; no UI multiplier or allowance override.
+- P7.1/P7.2 components: bounded bigint persistence codec, migration 0008 immutable
+  reviews/network observations, server-owned executor and reviewed runtime factory.
+  PostgreSQL accepted legs, active policy/body/version, instruments, complete balances,
+  reservations, owner sessions and recovery/deployment hashes determine authority.
+  Optional existing-client store/ledger arguments compose those checks atomically.
+- P7.1 reproduced signature churn: fresh receipt clocks/security heads change the
+  byte-level evidence hash despite unchanged facts. Correction: require both complete
+  original/current gates, stable access-policy/revision hash and exact semantic facts,
+  within the original earliest lease. Never renew the signed packet; changed source
+  times cannot move backwards, changed prices/control/reviews invalidate it. Regression
+  covers refreshed receipts, changed facts, missing auth revision and expired leases.
+- P7.1 reproduced fill/gas bounds gaps: signed minimum alone permits a worse current
+  fill that exceeds fair-price limits; estimated native cost can be lower than approved
+  gas ceiling. Correction: evaluate current simulated output through P5 and positive
+  fill bounds, and require quoted gas cost >= maxGasLimit * maxFeePerGas. Regressions
+  block both cases before persistence/claim.
+- P7.2/P7.5 transport: canonical full-balance/mined+pending nonce and nondelegated EOA
+  reads, then one chain-56 raw-send attempt after durable unknown claim. A lost response
+  or network-result write cannot reopen the claim. Runtime source must belong to the
+  reviewed recovery configuration; tracked ERC20s must have code/decimals pins.
+  Trusted factory defaults broadcast disabled; browser flows remain trading disabled.
+- Tests: intermediate PostgreSQL run passed 198 application tests. Additional stored
+  context integrity, earliest-expiry, access-hash and full receipt recovery regressions
+  passed in a later 202-test run, zero failures/skips. Synthetic USDT/NVDAB metadata,
+  reviews/prices/events, random wallets and isolated chain-mode schemas are explicitly
+  fixtures, not mainnet eligibility or clearance. No real signing/broadcast occurred.
+- Fixture/type corrections: optional null guards needed explicit narrowing; actual
+  session API is SessionStore. Initial direct receipt test incorrectly expected worker
+  outcomes from reconcileBscLeg and skipped observation; TypeScript caught the wrong
+  result API. Replaced it with runBscRecoveryOnce: first run reconciles, repeat monitors,
+  revision advances once and submitted reservation is consumed. These are test wiring
+  errors, not observed production bugs. Added owner isolation, recovery-config change,
+  disabled runtime default and committed claim/result-write-failure regressions.
+- Decision and portability: ADR 0029 records server trust, lease semantics and claim
+  ordering. Updated P5/P7/security specifications, state/plan/README and execution
+  runbook; source qualification and P5.5/P7/P8 operational gates remain explicit.
+
+- Final workspace verification: PostgreSQL-backed ./scripts/check.sh passed 205
+  application plus three research tests, zero failures/skips, strict typecheck,
+  headless and web builds. Workspace/staged-tree whitespace checks are required
+  before commit; no live source clearance or production trading is claimed.
+
+- Focused portability verification: exported the staged tree without unrelated
+  pending rules/web workspace code. Its PostgreSQL-backed check passed 173 application
+  and three research tests, zero failures/skips, strict typecheck and headless build.
+  Includes previously pending EOA store/recovery/session/access prerequisites because
+  the guarded service directly depends on them; leaves other phase/config changes
+  untouched. Full workspace separately passed 205 application tests and web build.
+  Three durable non-secret findings saved to Nexus MCP and retrieved successfully;
+  Git docs remain authoritative. Workspace and staged diff whitespace checks passed.

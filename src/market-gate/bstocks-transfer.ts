@@ -50,7 +50,7 @@ export async function fetchBStocksTransferPreflight(input: BStocksTransferPrefli
       signal: AbortSignal.timeout(5000) });
     if (!response.ok) throw new Error("RPC unavailable");
     const body = await response.json() as Record<string, unknown>;
-    if (body.error || body.id !== requestId) throw new Error("RPC error");
+    if (body.jsonrpc !== "2.0" || body.error || body.id !== requestId) throw new Error("RPC error");
     return body.result;
   };
   try {
@@ -59,14 +59,17 @@ export async function fetchBStocksTransferPreflight(input: BStocksTransferPrefli
     const header = await rpc("eth_getBlockByNumber", [block, false]);
     if (!header || typeof header !== "object") return null;
     const fields = header as Record<string, unknown>;
-    if (fields.number !== block || !hex(fields.timestamp)) return null;
+    if (fields.number !== block || !hex(fields.timestamp)
+      || typeof fields.hash !== "string" || fields.hash !== input.snapshot.sourceBlockHash
+      || !/^0x[0-9a-f]{64}$/.test(fields.hash)) return null;
+    const blockRef = { blockHash: fields.hash, requireCanonical: true };
     const blockMs = BigInt(fields.timestamp) * 1000n;
     const nowMs = BigInt(input.now === undefined ? Date.now() : Date.parse(input.now));
     if (blockMs > nowMs || nowMs - blockMs > BigInt(input.maxBlockAgeMs)
       || new Date(Number(blockMs)).toISOString() !== input.snapshot.observedAt
       || Date.parse(input.snapshot.expiresAt) < Number(nowMs)) return null;
     const paused = await rpc("eth_call", [{ to: input.snapshot.control.pauseManager,
-      data: pauseAbi.encodeFunctionData("isTokenPaused", [BSTOCKS_BSC_NVDAB]) }, block]);
+      data: pauseAbi.encodeFunctionData("isTokenPaused", [BSTOCKS_BSC_NVDAB]) }, blockRef]);
     if (typeof paused !== "string"
       || pauseAbi.decodeFunctionResult("isTokenPaused", paused)[0] !== false) return null;
     // The verified token checks the sender and recipient, plus the caller of
@@ -76,8 +79,12 @@ export async function fetchBStocksTransferPreflight(input: BStocksTransferPrefli
     const results = await Promise.all(participants.map(user => rpc("eth_call", [{
       to: input.snapshot.control.compliance,
       data: complianceAbi.encodeFunctionData("checkIsCompliant", [BSTOCKS_BSC_NVDAB, user])
-    }, block])));
+    }, blockRef])));
     if (results.some(result => result !== "0x")) return null;
+    const finalHeader = await rpc("eth_getBlockByNumber", [block, false]);
+    if (!finalHeader || typeof finalHeader !== "object"
+      || (finalHeader as Record<string, unknown>).hash !== input.snapshot.sourceBlockHash
+      || (finalHeader as Record<string, unknown>).number !== block) return null;
     return { sourceBlock: input.snapshot.sourceBlock,
       observedAt: input.snapshot.observedAt,
       expiresAt: input.snapshot.expiresAt,

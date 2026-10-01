@@ -18,3 +18,17 @@ import "./xstocks-bsc.test.js";
 import "./bstocks-bsc.test.js";
 import "./bstocks-transfer.test.js";
 import "./security-collector.test.js";
+
+import "./bstocks-access.test.js";
+import "./token-security.test.js";
+import "./production-execution.test.js";
+import "./eoa.test.js";
+import "./recovery.test.js";
+import "./execution-store.test.js";
+import "./reconcile.test.js";
+import "./bsc-rpc-execution.test.js";
+import "./bsc-balances.test.js";
+import "./bsc-recovery.test.js";
+import "./recovery-worker.test.js";
+import "./recovery-contracts.test.js";
+import "./receipt-effects.test.js";

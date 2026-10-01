@@ -15,6 +15,7 @@
     "db:migrate": "npm run build && node dist/ledger/migrate-cli.js",
     "demo": "npm run build && node dist/demo.js",
     "attestation": "npm run build && node dist/market-gate/attestation-cli.js",
+    "recovery:once": "npm run build && node dist/execution/recovery-cli.js",
     "security:tokens": "npm run build && node dist/security/token-security-cli.js"
   },
   "devDependencies": {

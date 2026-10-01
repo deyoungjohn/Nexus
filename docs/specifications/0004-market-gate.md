@@ -4,6 +4,15 @@ Status: implemented as an offline, fail-closed P5 gate on 2026-09-26.
 Source: `Nexus.md` §5, implementation plan P5, P2 integration matrix.
 This specification does not grant live trading permission.
 
+2026-09-30 P5.5d hardening: `audit.state=clear` alone is insufficient. The gate
+requires current full-token security reports for the stock and settlement
+denominations at the quantity evidence block/hash, with exact profile/decimals,
+complete source/control coverage and qualified trusted review. It recomputes
+report state/hash and blocks absent/unsupported/risk evidence with
+`TOKEN_SECURITY_BLOCKED`. Reports enter the existing P5 evidence hash. See
+[specification 0008](0008-token-security.md) and
+[ADR 0026](../decisions/0026-full-token-security-evidence.md).
+
 ## Boundary and inputs
 
 `src/market-gate/` is a pure pre-approval module over one exact instrument and
@@ -144,10 +153,24 @@ multiplier or changed reviewed code/control fingerprint blocks reuse. See
 The bStocks read-only transfer preflight checks current pause state and the
 wallet, exact V3 pool and router against the verified compliance contract at
 the same pinned block. Its result is not P5 `EligibilityEvidence`: it lacks
-issuer-backed jurisdiction and account-level permission. Any restriction,
+provider-supported jurisdiction and applicable user/product permission. Any
+restriction,
 RPC failure, changed control or stale block returns no evidence. P7 must
 refresh the check for the actual wallet and route. See
 [ADR 0014](../decisions/0014-bstocks-transfer-preflight-boundary.md).
+
+P5.5c access-control implementation now composes five independent checks:
+active authenticated session with short-lived EOA binding, reviewed person and
+jurisdiction evidence, revision-pinned official country result, exact product/
+venue permission, and the existing pinned-block transfer preflight. It returns
+no eligibility on denied, missing, stale, conflicting or errored inputs. Its
+P5 result omits the personal country, but binds source revisions, side, exact
+token, pool/router and transfer block into an access hash. The pure gate
+requires that structure for canonical bStocks and includes it in its evidence
+hash. [ADR 0018](../decisions/0018-bstocks-access-evidence.md) and the
+[access runbook](../runbooks/bstocks-access-control.md) define the boundary.
+No production country endpoint/parser or reviewed jurisdiction source exists;
+synthetic passing tests do not create live eligibility.
 
 bStocks event evidence must bind both the underlying company's announcements
 and token-specific bStocks issuer/venue notices. `MarketEvidence.providerEvent`
@@ -161,3 +184,24 @@ availability while spot trading continues. Keep bStocks live use blocked until
 a reviewed production provider-notice source is connected and the other P5.5
 gates are met; see the [manual event runbook](../runbooks/issuer-event-review.md)
 and [ADR 0015](../decisions/0015-bstocks-dual-event-review.md).
+
+EOA-first clarification ([ADR 0016](../decisions/0016-eoa-first-wallet-execution.md)):
+`EligibilityEvidence` is scoped to the exact wallet, instrument, side and
+venue; its verified requirements depend on that provider and route. An EOA
+signature proves wallet control only. For direct bStocks DEX use, the reviewed
+FAQ calls for geographic restrictions in third-party applications and permits
+issuer address controls; it does not establish a universal Binance account
+status requirement. A current provider-supported country result, reliable
+user-jurisdiction evidence and exact-wallet transfer checks remain necessary
+under the reviewed policy. Account-specific status belongs only to a route or
+product whose applicable terms require it. Missing evidence still blocks.
+
+
+## Production execution collection (2026-10-01)
+
+`bstocks-production.ts` assembles public readers with trusted reviewed source ports
+for USDT/NVDAB. Missing access, entitlement, event, valuation, quote, simulation or
+security evidence blocks. `authorizationHash` optionally records stable bStocks access
+policy/revision facts; existing `accessHash` still binds the transfer block. The new
+production executor requires that stable hash and dual original/current P5 checks;
+it never extends a review's earliest source lease. See [ADR 0029](../decisions/0029-production-eoa-evidence-orchestration.md).

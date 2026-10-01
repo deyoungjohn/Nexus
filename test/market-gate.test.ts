@@ -4,8 +4,10 @@ import { amount, tokenAssetId, nativeAssetId } from "../src/domain/amount.js";
 import { createInstrument } from "../src/domain/instrument.js";
 import { adaptTimestampedReference, collectMarketEvidence } from "../src/market-gate/adapters.js";
 import { evaluateMarketGate } from "../src/market-gate/gate.js";
+import { BSTOCKS_BSC_V3_POOL, BSTOCKS_BSC_V3_ROUTER } from "../src/market-gate/bstocks-transfer.js";
 import { regularSessionOpen } from "../src/market-gate/session.js";
 import type { GateRequest, MarketEvidence, SessionEvidence } from "../src/market-gate/evidence.js";
+import { syntheticTokenSecurity } from "./token-security-fixture.js";
 
 const wallet = "0x1111111111111111111111111111111111111111";
 const cashToken = "0x2222222222222222222222222222222222222222";
@@ -26,10 +28,11 @@ function calldata(recipient = wallet, input = 5n * unit, minimum = 24n * unit / 
   return `0x414bf389${addr(tokenIn)}${addr(tokenOut)}${word(10000n)}${addr(recipient)}${word(BigInt(Date.parse("2026-09-28T14:05:00.000Z") / 1000))}${word(input)}${word(minimum)}${word(0n)}`;
 }
 
-function fixture(): GateRequest {
+export function fixture(testWallet = wallet): GateRequest {
   const evidence: MarketEvidence = {
+    tokenSecurity: [syntheticTokenSecurity(instrument.assetId), syntheticTokenSecurity(cashDenom.assetId)],
     eligibility: { source: "issuer", observedAt: "2026-09-28T13:59:00Z", expiresAt: "2026-09-28T14:10:00Z",
-      instrumentId: instrument.instrumentId, wallet, venueId: "v3", allowedSides: ["buy"],
+      instrumentId: instrument.instrumentId, wallet: testWallet, venueId: "v3", allowedSides: ["buy"],
       verifiedRequirements: ["owner-verified", "transfer-verified"], transferPermitted: true },
     quantity: { source: "chain-and-issuer", observedAt: "2026-09-28T13:59:00Z", expiresAt: "2026-09-28T14:10:00Z",
       instrumentId: instrument.instrumentId, quantityModel: "share-ratio", adapterVersion: "v1",
@@ -51,19 +54,19 @@ function fixture(): GateRequest {
       underlyingId: "company", issuerSourceUrl: "https://issuer.example/ir", revision: "1",
       confirmation: "none-confirmed", eventAt: null, blackoutStart: null, blackoutEnd: null },
     providerEvent: null,
-    quote: { venueId: "v3", chainId: 56, sender: wallet, recipient: wallet, router, spender: router,
+    quote: { venueId: "v3", chainId: 56, sender: testWallet, recipient: testWallet, router, spender: router,
       tokenIn: cashToken, tokenOut: equityToken, inputRaw: 5n * unit, expectedOutputRaw: 25n * unit / 1000n,
       minimumOutputRaw: 24n * unit / 1000n, additionalFeeSettlement: 0n, networkFeeSettlement: unit / 10000n,
       nativeFeeRaw: unit / 10000n,
-      priceImpactBps: 20, spreadBps: 20, calldata: calldata(), value: 0n,
+      priceImpactBps: 20, spreadBps: 20, calldata: calldata(testWallet), value: 0n,
       quotedAt: "2026-09-28T13:59:45Z", expiresAt: "2026-09-28T14:04:00Z",
       onchainDeadline: "2026-09-28T14:05:00.000Z" },
-    simulation: { chainId: 56, sender: wallet, recipient: wallet, router, spender: router,
-      tokenIn: cashToken, allowanceRaw: 5n * unit, calldata: calldata(), value: 0n,
+    simulation: { chainId: 56, sender: testWallet, recipient: testWallet, router, spender: router,
+      tokenIn: cashToken, allowanceRaw: 5n * unit, calldata: calldata(testWallet), value: 0n,
       inputRaw: 5n * unit, outputRaw: 25n * unit / 1000n, sourceBlock: 102n, source: "wallet-preview",
       simulatedAt: "2026-09-28T13:59:50Z", success: true }
   };
-  return { now, wallet, instrument, expectedMappingRevision: "map-1", evidence,
+  return { now, wallet: testWallet, instrument, expectedMappingRevision: "map-1", evidence,
     snapshot: { revision: 1n, sourceBlock: 100n, valuationUnit: "USD-18", confirmedCash: amount(100n * unit, cashDenom),
       reservedCash: amount(0n, cashDenom), cashValueLower: 100n * unit,
       nativeGas: amount(unit, { assetId: nativeAssetId(56), decimals: 18 }),
@@ -142,12 +145,19 @@ function bStocksFixture(): GateRequest {
   const base = fixture();
   const bStock = createInstrument({ ...base.instrument, issuerId: "bstocks" });
   return { ...base, instrument: bStock,
+    marketPolicy: { ...base.marketPolicy, approvedRouters: [BSTOCKS_BSC_V3_ROUTER] },
     proposal: { ...base.proposal, instrumentId: bStock.instrumentId },
     snapshot: { ...base.snapshot, positions: [{ ...base.snapshot.positions[0]!, instrument: bStock,
       raw: amount(0n, bStock), reservedRaw: amount(0n, bStock) }] },
     evidence: { ...base.evidence,
-      eligibility: { ...base.evidence.eligibility!, instrumentId: bStock.instrumentId },
+      eligibility: { ...base.evidence.eligibility!, source: "bstocks-access:v1",
+        instrumentId: bStock.instrumentId,
+        accessControl: { accessHash: "a".repeat(64), side: "buy", token: bStock.tokenAddress,
+          pool: BSTOCKS_BSC_V3_POOL, router: BSTOCKS_BSC_V3_ROUTER,
+          transferBlock: 101n, transferRevision: "control-1" } },
       quantity: { ...base.evidence.quantity!, instrumentId: bStock.instrumentId },
+      quote: { ...base.evidence.quote!, router: BSTOCKS_BSC_V3_ROUTER, spender: BSTOCKS_BSC_V3_ROUTER },
+      simulation: { ...base.evidence.simulation!, router: BSTOCKS_BSC_V3_ROUTER, spender: BSTOCKS_BSC_V3_ROUTER },
       tokenStatus: { ...base.evidence.tokenStatus!, instrumentId: bStock.instrumentId },
       audit: { ...base.evidence.audit!, instrumentId: bStock.instrumentId },
       providerEvent: { source: "bstocks-announcements", observedAt: "2026-09-28T13:59:00Z",
@@ -179,6 +189,27 @@ test("P5.5c bStocks requires independently bound provider-event evidence", () =>
   assert.equal(changed.allowed, true);
   if (clean.allowed && changed.allowed) assert.notEqual(clean.evidenceHash, changed.evidenceHash);
   assert.equal(reason(fixture()), "ALLOWED");
+});
+
+test("P5.5c bStocks rejects absent or changed access evidence and hashes its revision", () => {
+  const f = bStocksFixture();
+  const original = evaluateMarketGate(f);
+  assert.equal(original.allowed, true);
+  const e = f.evidence.eligibility!;
+  const missing = { ...e };
+  delete missing.accessControl;
+  assert.equal(reason({ ...f, evidence: { ...f.evidence,
+    eligibility: missing } }), "ELIGIBILITY_BLOCKED");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence,
+    eligibility: { ...e, source: "self-attested" } } }), "ELIGIBILITY_BLOCKED");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence,
+    eligibility: { ...e, accessControl: { ...e.accessControl!, side: "sell" } } } }), "ELIGIBILITY_BLOCKED");
+  assert.equal(reason({ ...f, evidence: { ...f.evidence,
+    eligibility: { ...e, accessControl: { ...e.accessControl!, transferBlock: 102n } } } }), "ELIGIBILITY_BLOCKED");
+  const changed = evaluateMarketGate({ ...f, evidence: { ...f.evidence,
+    eligibility: { ...e, accessControl: { ...e.accessControl!, accessHash: "b".repeat(64) } } } });
+  assert.equal(changed.allowed, true);
+  if (original.allowed && changed.allowed) assert.notEqual(original.evidenceHash, changed.evidenceHash);
 });
 
 test("P5 decoded route rejects recipient and spender substitution", () => {

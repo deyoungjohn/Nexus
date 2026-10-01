@@ -51,6 +51,26 @@ required_files=(
   docs/decisions/0026-full-token-security-evidence.md
   docs/specifications/0008-token-security.md
   docs/runbooks/token-security.md
+  migrations/0003_eoa_execution.sql
+  migrations/0004_eoa_receipt_effects.sql
+  migrations/0006_web_sessions.sql
+  migrations/0007_recovery_worker.sql
+  migrations/0008_eoa_execution_reviews.sql
+  src/application/session.ts
+  src/execution/production.ts
+  src/execution/bstocks-runtime.ts
+  src/execution/bsc-execution-chain.ts
+  src/execution/execution-json.ts
+  src/execution/market-revalidation.ts
+  src/execution/recovery-worker.ts
+  src/execution/recovery-contracts.ts
+  src/market-gate/bstocks-access.ts
+  src/market-gate/bstocks-production.ts
+  config/bsc-recovery.json
+  test/production-execution.test.ts
+  test/production-execution-fixture.ts
+  docs/decisions/0029-production-eoa-evidence-orchestration.md
+  docs/runbooks/eoa-execution.md
   package.json
   package-lock.json
   tsconfig.json

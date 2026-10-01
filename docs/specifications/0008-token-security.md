@@ -105,3 +105,15 @@ decimals/blocks and canonical reorgs. P7 signs a valid synthetic bundle, then
 rejects a revised security review. PostgreSQL actual-token-identity fixtures
 use explicitly synthetic security/code/review evidence, preserving recovery
 tests without suggesting production risk clearance.
+
+
+## Production execution binding (2026-10-01)
+
+The production market collector requests both detailed security reports at the
+quantity snapshot's canonical block/hash. The guarded executor recollects before
+persistence and one-time send, checks current and original complete P5 gates,
+and compares full source/governance/provider/review facts. Receipt clocks and head
+changes alone may differ within the original lease; changed fingerprints or findings
+invalidate approval. No scanner gap, absent review or governance finding is cleared
+by this composition. Historical submitted recovery remains independent. See
+[ADR 0029](../decisions/0029-production-eoa-evidence-orchestration.md).

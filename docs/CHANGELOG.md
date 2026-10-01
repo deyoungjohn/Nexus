@@ -586,3 +586,21 @@
   and three research tests, zero failures/skips, strict typecheck and both builds.
   Live read-only collectors correctly exit 2; test-fixture typing corrections are
   recorded in the engineering log. Existing unrelated pending work retained.
+
+## 2026-10-01 — Codex — Guarded production EOA evidence orchestration
+
+- Change/reason: connect the separate P5 evidence and P7 execution/recovery modules
+  through server-owned PostgreSQL reviews, exact persisted signatures, active owner/
+  policy/session checks and a once-only raw-send claim. Added migration 0008,
+  USDT/NVDAB production collector, trusted runtime factory, bigint codec and runbook.
+- Behavior/compatibility: default-disabled broadcasting; clients cannot supply
+  authoritative evidence/policy. Stable access-policy revision and original/current
+  gate checks permit receipt/head refresh only inside the original lease. Changed
+  approval facts, external wallet state, worse simulated fill or inadequate full gas
+  budget block. Existing pure/store/recovery interfaces remain compatible; submitted
+  recovery is independent of current warnings. No web trade endpoint or live clearance.
+- Verification: passing 186-test application baseline; final PostgreSQL-backed
+  ./scripts/check.sh passed 205 application plus three research tests, no failures/
+  skips, strict typecheck and both builds. Full synthetic send-to-recovery flow,
+  concurrent claims, authentication races, unknown outcomes and repeat-fill prevention
+  covered. P5.5/P7/P8 production qualification remains open; ADR 0029 records choices.

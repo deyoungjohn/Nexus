@@ -84,3 +84,8 @@ Created from Portable. Repository documentation is authoritative; shared MCP
 memory is supplementary. All configured clients use `scripts/memory-mcp.sh`.
 Use one memory writer at a time and never store credentials or personal data
 in project memory. Read the agent contract before making changes.
+
+The guarded EOA server service now connects immutable PostgreSQL reviews to fresh
+Market Gate evidence, exact signed-byte persistence, one-time send and historical
+recovery. Broadcasting defaults to disabled; production source/risk qualification
+and browser approval wiring remain open. See [the execution runbook](docs/runbooks/eoa-execution.md).

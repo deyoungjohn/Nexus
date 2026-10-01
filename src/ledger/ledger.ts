@@ -68,7 +68,8 @@ function validateReserve(input: ReservePlanInput): string {
   })).digest("hex");
 }
 
-async function transaction<T>(pool: Pool, run: (client: QueryClient) => Promise<T>): Promise<T> {
+async function transaction<T>(pool: Pool, run: (client: QueryClient) => Promise<T>, existingClient?: PoolClient): Promise<T> {
+  if (existingClient) return run(existingClient);
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -167,7 +168,7 @@ export class Ledger {
     return transactionClient ? reserve(transactionClient) : transaction(this.pool, reserve);
   }
 
-  async startExecution(portfolioId: string, planId: string): Promise<void> {
+  async startExecution(portfolioId: string, planId: string, existingClient?: PoolClient): Promise<void> {
     identifier(portfolioId); identifier(planId);
     await transaction(this.pool, async (client) => {
       const portfolio = await lockedPortfolio(client, portfolioId);
@@ -182,7 +183,7 @@ export class Ledger {
       const active = await client.query("SELECT 1 FROM plans WHERE portfolio_id = $1 AND id <> $2 AND status IN ('executing', 'reconciling', 'unknown') LIMIT 1", [portfolioId, planId]);
       requireInput(active.rowCount === 0, "BATCH_ALREADY_EXECUTING", "Another batch is active.");
       await client.query("UPDATE plans SET status = 'executing' WHERE id = $1", [planId]);
-    });
+    }, existingClient);
   }
 
   async markSubmitted(portfolioId: string, planId: string, reservationId: string, transactionId: string): Promise<void> {

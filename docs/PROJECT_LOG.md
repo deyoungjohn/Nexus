@@ -461,3 +461,23 @@ PostgreSQL connectivity is restored. Baseline passed 171 application plus three
 research tests; final ./scripts/check.sh passed 186 application plus three research
 tests, zero failures/skips, strict typecheck and both builds. Logs document fixture
 compile corrections and the exact remaining gates; unrelated pending work retained.
+
+## 2026-10-01 — P5.5/P7 production evidence and guarded EOA execution
+
+Codex implemented server-owned evidence assembly and PostgreSQL review → exact
+signature persistence → one-time guarded raw send → historical receipt-effect
+recovery. Active policy/session/owner/registry/revision and recovery configuration
+are rechecked atomically; original and fresh P5 gates must both pass. Receipt/head
+refresh does not renew signed leases, while changed facts require new approval.
+Current fill and full gas-ceiling checks prevent weaker execution than the preview.
+Broadcasting defaults to disabled and the web workspace still reports trading off.
+
+Final PostgreSQL-backed ./scripts/check.sh passed 205 application tests and three
+research tests, zero failures/skips, strict typecheck, headless and web builds.
+Synthetic fixtures cover concurrent claims, logout/policy races, owner isolation,
+timeout/result-write failures, external nonce/balance changes and repeat recovery
+without duplicate fills. No actual wallet signing, allowance or mainnet send.
+P5.5/P7 remain open for qualified sources/scanner/reviews/risk policy, browser exact
+approval and chain initialization, operational repair and mainnet acceptance evidence.
+See [ADR 0029](decisions/0029-production-eoa-evidence-orchestration.md) and
+[the execution runbook](runbooks/eoa-execution.md).
