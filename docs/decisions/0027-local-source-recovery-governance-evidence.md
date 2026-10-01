@@ -1,6 +1,6 @@
 # ADR 0027: Preserve rebuilt source and governance facts without granting clearance
 
-- Status: accepted for research evidence; production collector integration deferred
+- Status: accepted for research evidence; production integration subsequently adopted in [ADR 0028](0028-source-governance-and-independent-review-intake.md)
 - Date: 2026-10-01
 - Work items: P5.5d, P7.1
 

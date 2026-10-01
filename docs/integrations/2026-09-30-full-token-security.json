@@ -1,0 +1,572 @@
+{
+  "recordedAt": "2026-09-30T20:40:18.693Z",
+  "mode": "read-only",
+  "sources": [
+    {
+      "source": "sentio",
+      "mode": "read-only",
+      "chainId": 56,
+      "evidence": [
+        {
+          "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+          "observation": {
+            "observedAt": "2026-09-30T20:39:43.000Z",
+            "expiresAt": "2026-09-30T20:40:43.000Z",
+            "source": "bsc-rpc:bsc.rpc.sentio.xyz",
+            "sourceBlock": "124974058",
+            "sourceBlockHash": "0x8c0fe53c9bea62b2294cda4dbd325b86f5c9d7d85e49e624c0730f5099908fe1",
+            "profile": "runtime-owner-v1",
+            "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+            "decimals": 18,
+            "components": [
+              {
+                "address": "0x55d398326f99059ff775485246999027b3197955",
+                "codeHash": "0x97a48aa4c129657440dafdacd4c836389734d28cc4a0ca7403e68da660a74a59",
+                "sourceDigest": "a2749c40c199ef2f4176b3b526b7a6256403e8357771a1ed73a5296bbcc5921c"
+              }
+            ],
+            "authorities": [
+              {
+                "address": "0xf68a4b64162906eff0ff6ae34e2bb1cd42fef62d",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              }
+            ],
+            "controls": {
+              "owner": "0xf68a4b64162906eff0ff6ae34e2bb1cd42fef62d",
+              "beaconSlot": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "implementationSlot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "paused": false,
+            "pendingChange": false
+          },
+          "providers": [
+            {
+              "provider": "binance",
+              "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+              "observedAt": "2026-09-30T20:39:50.844Z",
+              "expiresAt": "2026-09-30T20:40:50.844Z",
+              "state": "risk",
+              "findings": [
+                "risk-level-above-low",
+                "CONTRACT_RISK:CAUTION:Mintable Detected"
+              ],
+              "digest": "eef5aebe7caba455f272ad990b5a6bbadfbf55d6caa5040b2e6d4b1b457a3530"
+            },
+            {
+              "provider": "goplus",
+              "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+              "observedAt": "2026-09-30T20:39:50.844Z",
+              "expiresAt": "2026-09-30T20:40:50.844Z",
+              "state": "risk",
+              "findings": [
+                "is_mintable"
+              ],
+              "digest": "dbd6ed61932fc2d293ffb68b0b3ccfbaba49b78840afe91841af092449bd3220"
+            }
+          ],
+          "review": null,
+          "state": "risk",
+          "reasons": [
+            "binance-risk",
+            "goplus-risk",
+            "contract-scope-review-missing-or-expired"
+          ],
+          "evidenceHash": "6cb2cf9879a1acacded5a2c120763ce5fa1b6c0265dcf8f64cda33939026a38f"
+        },
+        {
+          "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+          "observation": {
+            "observedAt": "2026-09-30T20:39:43.000Z",
+            "expiresAt": "2026-09-30T20:40:43.000Z",
+            "source": "bsc-rpc:bsc.rpc.sentio.xyz",
+            "sourceBlock": "124974058",
+            "sourceBlockHash": "0x8c0fe53c9bea62b2294cda4dbd325b86f5c9d7d85e49e624c0730f5099908fe1",
+            "profile": "bstocks-beacon-v1",
+            "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+            "decimals": 18,
+            "components": [
+              {
+                "address": "0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+                "codeHash": "0xdf946913977a2ed76735b4b2e66f2272d1a76af911c4e520655888c9e32269f9",
+                "sourceDigest": "bd9253cd5246aa1f0bd1692f7681663b0e4fde185fac1d139d3279e4f7302d53"
+              },
+              {
+                "address": "0x156d6dce9a4f6139a3406f1f021f1a4880de93a3",
+                "codeHash": "0x80fbad22136c0abdce6e0f3cc46cd0572318e01b92dbd5b4d5795ef6e8808711",
+                "sourceDigest": null
+              },
+              {
+                "address": "0xcfed6c4679297ea4889f8183bc057b4a86c64e46",
+                "codeHash": "0x060dc28d4dd8d9bb8a381d4009bccbac129ce743a10b3d8aa0ffef5034b50544",
+                "sourceDigest": "96a16ce7b86b83fa561d20f60a36613ac3c4ddd4fe93c954669152f7813c9de7"
+              },
+              {
+                "address": "0x53dba7aabde774787a1f57236b235567da8e14f4",
+                "codeHash": "0xe53b7759da23b16be41e4faa36b85c70ec750a2a631492998f40833fab17aff8",
+                "sourceDigest": "ba29891460be566ccbb6f206504ec05eb986fe41b11652ab8585664963cf564f"
+              },
+              {
+                "address": "0x9fc74be63f3589485b2423984a7a0557e0cf700a",
+                "codeHash": "0x65c448e9ecdde44701b7a20c846fec9000d9aee6e3ddeb9362bb1980d755ff4d",
+                "sourceDigest": "5d7b7edc5d2751abb3ebacbc13839715f62caf3c0811993a5ca9c04051ce4f40"
+              }
+            ],
+            "authorities": [
+              {
+                "address": "0x4333daf4481f281f3d3d2b8735ce80bc00028d0c",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x45e35fe982f3869221b222abea372fa97aa7679d",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x5948602680fe4aea08d98302337a2715b3aadad1",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c"
+              },
+              {
+                "address": "0x6a8ba4a89e6877be3170a559c4cec29a4cf77f46",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x6f64f80b50efbf0f5f13d72d16ec17a59abbe5c6",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xa42436335a41fa6c82cde224ae2b82c025027e5b",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xa4e4975433038361edc07d726022cb29a6aabc3e",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xc94e485510c458860f89d23dcb8dd34bd10e6b8b",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c"
+              },
+              {
+                "address": "0xf3eff082d1b859c75cde44871e96968e543ea491",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              }
+            ],
+            "controls": {
+              "token": "0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "tokenCodeHash": "0xdf946913977a2ed76735b4b2e66f2272d1a76af911c4e520655888c9e32269f9",
+              "beacon": "0x156d6dce9a4f6139a3406f1f021f1a4880de93a3",
+              "beaconCodeHash": "0x80fbad22136c0abdce6e0f3cc46cd0572318e01b92dbd5b4d5795ef6e8808711",
+              "implementation": "0xcfed6c4679297ea4889f8183bc057b4a86c64e46",
+              "implementationCodeHash": "0x060dc28d4dd8d9bb8a381d4009bccbac129ce743a10b3d8aa0ffef5034b50544",
+              "beaconOwner": "0x4333daf4481f281f3d3d2b8735ce80bc00028d0c",
+              "compliance": "0x53dba7aabde774787a1f57236b235567da8e14f4",
+              "complianceCodeHash": "0xe53b7759da23b16be41e4faa36b85c70ec750a2a631492998f40833fab17aff8",
+              "pauseManager": "0x9fc74be63f3589485b2423984a7a0557e0cf700a",
+              "pauseManagerCodeHash": "0x65c448e9ecdde44701b7a20c846fec9000d9aee6e3ddeb9362bb1980d755ff4d",
+              "adminMembersHash": "0x916601cc5d5bb0200ba0c67bf97bac7c403995b186ed558d58959e4e74217f19",
+              "issuerMembersHash": "0xeb2daaff8045e6f9d27ca824e11fbee015bdb7c1d9124702c6c866391cf5a069",
+              "complianceAdminMembersHash": "0x478f23bc1643ac1eae830bbb2b96e674ae803eff6ff091503c7e9036f47b58ce",
+              "complianceOpsMembersHash": "0x4ad4b85ce383eee67ec11e1273dec91207ac1c4258979edfbe0becbb71d30f72",
+              "complianceMembersHash": "0x569e75fc77c1a856f6daaf9e69d8a9566ca34aa47f9133711ce065a571af0cfd",
+              "pauseAdminMembersHash": "0xf6a7636f1b3eefc326fd3ea3370b55fd15159d48d433f10c761124d9e8bbdd81",
+              "pauseOpsMembersHash": "0x46417c9122634427dc5bc57244475d8f29fbdf5e7ada34eab6134b7280da46ba",
+              "mintEnabled": true,
+              "burnEnabled": true,
+              "uiMultiplier": "1000778223752807865",
+              "pendingMultiplier": "none",
+              "pendingEffectiveAt": "none"
+            },
+            "paused": false,
+            "pendingChange": false
+          },
+          "providers": [
+            {
+              "provider": "binance",
+              "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "observedAt": "2026-09-30T20:39:50.808Z",
+              "expiresAt": "2026-09-30T20:40:50.808Z",
+              "state": "unsupported",
+              "findings": [],
+              "digest": "4d6824ea211cf3374af1c8b20caeb1185ef9cae0869efb7cdf8725db7f143fce"
+            },
+            {
+              "provider": "goplus",
+              "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "observedAt": "2026-09-30T20:39:50.808Z",
+              "expiresAt": "2026-09-30T20:40:50.808Z",
+              "state": "risk",
+              "findings": [
+                "honeypot_with_same_creator"
+              ],
+              "digest": "4066b078a966a0e363d5d845072427ff39aca3be4ed14c825995a8f6671fb383"
+            }
+          ],
+          "review": null,
+          "state": "risk",
+          "reasons": [
+            "contract-or-delegated-authority-unresolved",
+            "source-closure-incomplete",
+            "binance-unsupported",
+            "goplus-risk",
+            "contract-scope-review-missing-or-expired"
+          ],
+          "evidenceHash": "79855cad3b9cba26e12756148cb2cdc667ef9646019aa951e70bb7032066714f"
+        }
+      ]
+    },
+    {
+      "source": "blockmachine",
+      "mode": "read-only",
+      "chainId": 56,
+      "evidence": [
+        {
+          "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+          "observation": {
+            "observedAt": "2026-09-30T20:39:45.000Z",
+            "expiresAt": "2026-09-30T20:40:45.000Z",
+            "source": "bsc-rpc:rpc-bsc.blockmachine.io",
+            "sourceBlock": "124974062",
+            "sourceBlockHash": "0xfce0f862d9c71d58b0b8d901616d37c5be0f2c3780c9fc231496e71ba0fa3b08",
+            "profile": "runtime-owner-v1",
+            "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+            "decimals": 18,
+            "components": [
+              {
+                "address": "0x55d398326f99059ff775485246999027b3197955",
+                "codeHash": "0x97a48aa4c129657440dafdacd4c836389734d28cc4a0ca7403e68da660a74a59",
+                "sourceDigest": "a2749c40c199ef2f4176b3b526b7a6256403e8357771a1ed73a5296bbcc5921c"
+              }
+            ],
+            "authorities": [
+              {
+                "address": "0xf68a4b64162906eff0ff6ae34e2bb1cd42fef62d",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              }
+            ],
+            "controls": {
+              "owner": "0xf68a4b64162906eff0ff6ae34e2bb1cd42fef62d",
+              "beaconSlot": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "implementationSlot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "paused": false,
+            "pendingChange": false
+          },
+          "providers": [
+            {
+              "provider": "binance",
+              "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+              "observedAt": "2026-09-30T20:39:50.814Z",
+              "expiresAt": "2026-09-30T20:40:50.814Z",
+              "state": "risk",
+              "findings": [
+                "risk-level-above-low",
+                "CONTRACT_RISK:CAUTION:Mintable Detected"
+              ],
+              "digest": "eef5aebe7caba455f272ad990b5a6bbadfbf55d6caa5040b2e6d4b1b457a3530"
+            },
+            {
+              "provider": "goplus",
+              "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+              "observedAt": "2026-09-30T20:39:50.814Z",
+              "expiresAt": "2026-09-30T20:40:50.814Z",
+              "state": "risk",
+              "findings": [
+                "is_mintable"
+              ],
+              "digest": "dbd6ed61932fc2d293ffb68b0b3ccfbaba49b78840afe91841af092449bd3220"
+            }
+          ],
+          "review": null,
+          "state": "risk",
+          "reasons": [
+            "binance-risk",
+            "goplus-risk",
+            "contract-scope-review-missing-or-expired"
+          ],
+          "evidenceHash": "0ce22ac059ecff1673a673c6dd8c9d230fcc9fa3233eed240d0aa0041f104dba"
+        },
+        {
+          "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+          "observation": {
+            "observedAt": "2026-09-30T20:39:45.000Z",
+            "expiresAt": "2026-09-30T20:40:45.000Z",
+            "source": "bsc-rpc:rpc-bsc.blockmachine.io",
+            "sourceBlock": "124974062",
+            "sourceBlockHash": "0xfce0f862d9c71d58b0b8d901616d37c5be0f2c3780c9fc231496e71ba0fa3b08",
+            "profile": "bstocks-beacon-v1",
+            "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+            "decimals": 18,
+            "components": [
+              {
+                "address": "0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+                "codeHash": "0xdf946913977a2ed76735b4b2e66f2272d1a76af911c4e520655888c9e32269f9",
+                "sourceDigest": "bd9253cd5246aa1f0bd1692f7681663b0e4fde185fac1d139d3279e4f7302d53"
+              },
+              {
+                "address": "0x156d6dce9a4f6139a3406f1f021f1a4880de93a3",
+                "codeHash": "0x80fbad22136c0abdce6e0f3cc46cd0572318e01b92dbd5b4d5795ef6e8808711",
+                "sourceDigest": null
+              },
+              {
+                "address": "0xcfed6c4679297ea4889f8183bc057b4a86c64e46",
+                "codeHash": "0x060dc28d4dd8d9bb8a381d4009bccbac129ce743a10b3d8aa0ffef5034b50544",
+                "sourceDigest": "96a16ce7b86b83fa561d20f60a36613ac3c4ddd4fe93c954669152f7813c9de7"
+              },
+              {
+                "address": "0x53dba7aabde774787a1f57236b235567da8e14f4",
+                "codeHash": "0xe53b7759da23b16be41e4faa36b85c70ec750a2a631492998f40833fab17aff8",
+                "sourceDigest": "ba29891460be566ccbb6f206504ec05eb986fe41b11652ab8585664963cf564f"
+              },
+              {
+                "address": "0x9fc74be63f3589485b2423984a7a0557e0cf700a",
+                "codeHash": "0x65c448e9ecdde44701b7a20c846fec9000d9aee6e3ddeb9362bb1980d755ff4d",
+                "sourceDigest": "5d7b7edc5d2751abb3ebacbc13839715f62caf3c0811993a5ca9c04051ce4f40"
+              }
+            ],
+            "authorities": [
+              {
+                "address": "0x4333daf4481f281f3d3d2b8735ce80bc00028d0c",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x45e35fe982f3869221b222abea372fa97aa7679d",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x5948602680fe4aea08d98302337a2715b3aadad1",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c"
+              },
+              {
+                "address": "0x6a8ba4a89e6877be3170a559c4cec29a4cf77f46",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x6f64f80b50efbf0f5f13d72d16ec17a59abbe5c6",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xa42436335a41fa6c82cde224ae2b82c025027e5b",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xa4e4975433038361edc07d726022cb29a6aabc3e",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xc94e485510c458860f89d23dcb8dd34bd10e6b8b",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c"
+              },
+              {
+                "address": "0xf3eff082d1b859c75cde44871e96968e543ea491",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              }
+            ],
+            "controls": {
+              "token": "0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "tokenCodeHash": "0xdf946913977a2ed76735b4b2e66f2272d1a76af911c4e520655888c9e32269f9",
+              "beacon": "0x156d6dce9a4f6139a3406f1f021f1a4880de93a3",
+              "beaconCodeHash": "0x80fbad22136c0abdce6e0f3cc46cd0572318e01b92dbd5b4d5795ef6e8808711",
+              "implementation": "0xcfed6c4679297ea4889f8183bc057b4a86c64e46",
+              "implementationCodeHash": "0x060dc28d4dd8d9bb8a381d4009bccbac129ce743a10b3d8aa0ffef5034b50544",
+              "beaconOwner": "0x4333daf4481f281f3d3d2b8735ce80bc00028d0c",
+              "compliance": "0x53dba7aabde774787a1f57236b235567da8e14f4",
+              "complianceCodeHash": "0xe53b7759da23b16be41e4faa36b85c70ec750a2a631492998f40833fab17aff8",
+              "pauseManager": "0x9fc74be63f3589485b2423984a7a0557e0cf700a",
+              "pauseManagerCodeHash": "0x65c448e9ecdde44701b7a20c846fec9000d9aee6e3ddeb9362bb1980d755ff4d",
+              "adminMembersHash": "0x916601cc5d5bb0200ba0c67bf97bac7c403995b186ed558d58959e4e74217f19",
+              "issuerMembersHash": "0xeb2daaff8045e6f9d27ca824e11fbee015bdb7c1d9124702c6c866391cf5a069",
+              "complianceAdminMembersHash": "0x478f23bc1643ac1eae830bbb2b96e674ae803eff6ff091503c7e9036f47b58ce",
+              "complianceOpsMembersHash": "0x4ad4b85ce383eee67ec11e1273dec91207ac1c4258979edfbe0becbb71d30f72",
+              "complianceMembersHash": "0x569e75fc77c1a856f6daaf9e69d8a9566ca34aa47f9133711ce065a571af0cfd",
+              "pauseAdminMembersHash": "0xf6a7636f1b3eefc326fd3ea3370b55fd15159d48d433f10c761124d9e8bbdd81",
+              "pauseOpsMembersHash": "0x46417c9122634427dc5bc57244475d8f29fbdf5e7ada34eab6134b7280da46ba",
+              "mintEnabled": true,
+              "burnEnabled": true,
+              "uiMultiplier": "1000778223752807865",
+              "pendingMultiplier": "none",
+              "pendingEffectiveAt": "none"
+            },
+            "paused": false,
+            "pendingChange": false
+          },
+          "providers": [
+            {
+              "provider": "binance",
+              "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "observedAt": "2026-09-30T20:39:50.799Z",
+              "expiresAt": "2026-09-30T20:40:50.799Z",
+              "state": "unsupported",
+              "findings": [],
+              "digest": "4d6824ea211cf3374af1c8b20caeb1185ef9cae0869efb7cdf8725db7f143fce"
+            },
+            {
+              "provider": "goplus",
+              "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "observedAt": "2026-09-30T20:39:50.799Z",
+              "expiresAt": "2026-09-30T20:40:50.799Z",
+              "state": "risk",
+              "findings": [
+                "honeypot_with_same_creator"
+              ],
+              "digest": "4066b078a966a0e363d5d845072427ff39aca3be4ed14c825995a8f6671fb383"
+            }
+          ],
+          "review": null,
+          "state": "risk",
+          "reasons": [
+            "contract-or-delegated-authority-unresolved",
+            "source-closure-incomplete",
+            "binance-unsupported",
+            "goplus-risk",
+            "contract-scope-review-missing-or-expired"
+          ],
+          "evidenceHash": "3a175e2dc72ff29060e79e8a19af29088385c620217a7295851b0433088d17c3"
+        }
+      ]
+    }
+  ],
+  "supportedBinanceUsdtAudit": {
+    "hasResult": true,
+    "isHidden": false,
+    "isSupported": true,
+    "showYellowDot": false,
+    "riskLevelEnum": "MID",
+    "riskLevel": 3,
+    "extraInfo": {
+      "buyTax": "0",
+      "sellTax": "0",
+      "isFlaggedByVendor": null,
+      "isVerified": null,
+      "isReported": null,
+      "source": "BINANCE",
+      "unusualBuyTax": false,
+      "unusualSellTax": false
+    },
+    "riskItems": [
+      {
+        "id": "CONTRACT_RISK",
+        "name": "Contract Risk",
+        "description": "Malicious mechanisms found in the contract code",
+        "details": [
+          {
+            "title": "Whitelist Restrictions Not Found",
+            "description": "Whitelist restrictions allow the contract to restrict users' transactions by excluding their address from the whitelist.",
+            "isHit": false,
+            "order": 1,
+            "riskType": "CAUTION"
+          },
+          {
+            "title": "Cooling-Off Restrictions Not Found",
+            "description": "Cooling-off period means that users may not be able to buy or sell the token in a certain period of time.",
+            "isHit": false,
+            "order": 2,
+            "riskType": "CAUTION"
+          },
+          {
+            "title": "Blacklist Restrictions Not Found",
+            "description": "Blacklist restrictions allow the contract to restrict users' transactions by blacklisting their addresses.",
+            "isHit": false,
+            "order": 3,
+            "riskType": "CAUTION"
+          },
+          {
+            "title": "Trading Suspension Function Not Found",
+            "description": "According to the token rules, trading may be paused via smart contracts, preventing on-chain buys or sells.",
+            "isHit": false,
+            "order": 4,
+            "riskType": "CAUTION"
+          },
+          {
+            "title": "Sale Restriction Not Found",
+            "description": "Selling restrictions mean that users may be restricted from selling all their tokens at once.",
+            "isHit": false,
+            "order": 5,
+            "riskType": "CAUTION"
+          },
+          {
+            "title": "Anti-Whale Mechanism Not Found",
+            "description": "Anti-whale mechanism restricts the amount or frequency of transactions to prevent large sells and may affect large traders.",
+            "isHit": false,
+            "order": 6,
+            "riskType": "CAUTION"
+          },
+          {
+            "title": "Contract Renounced",
+            "description": "Contract ownership not renounced means the creator still retains control and may alter parameters such as buy-sell taxes or blacklists, potentially leading to user asset losses.",
+            "isHit": false,
+            "order": 7,
+            "riskType": "RISK"
+          },
+          {
+            "title": "Self-Destruct Not Found",
+            "description": "Self-destruct function means the token contract can be destroyed, which will result in your token holdings being erased.",
+            "isHit": false,
+            "order": 8,
+            "riskType": "RISK"
+          },
+          {
+            "title": "Mintable Detected",
+            "description": "Mintable function means token total supply can be increased, which may affect token price.",
+            "isHit": true,
+            "order": 9,
+            "riskType": "CAUTION"
+          },
+          {
+            "title": "Balance Manipulation Not Detected",
+            "description": "Balance manipulation was found, which means developers can transfer funds without approval to manipulate user balance.",
+            "isHit": false,
+            "order": 10,
+            "riskType": "RISK"
+          },
+          {
+            "title": "Malicious Creator Not Found",
+            "description": "The token was deployed by a high-risk address, which may be associated with fraud, exploits, or other malicious activities.",
+            "isHit": false,
+            "order": 11,
+            "riskType": "CAUTION"
+          },
+          {
+            "title": "Hacking Risk Not Found",
+            "description": "This token is associated with hacking incident, hackers may gain control over this contract.",
+            "isHit": false,
+            "order": 12,
+            "riskType": "RISK"
+          },
+          {
+            "title": "Upgrade Risk Not Found",
+            "description": "Upgradeable contract means the token contract can potentially change rules and may introduce malicious functions.",
+            "isHit": false,
+            "order": 14,
+            "riskType": "CAUTION"
+          },
+          {
+            "title": "Modifiable Tax Not Found",
+            "description": "Modified tax means tax rate can be changed and may affect the cost to the user when buying and selling.",
+            "isHit": false,
+            "order": 15,
+            "riskType": "RISK"
+          },
+          {
+            "title": "Freezable Authority Accounts Not Found",
+            "description": "Such accounts means your tokens may be frozen, resulting in potential asset loss.",
+            "isHit": false,
+            "order": 16,
+            "riskType": "RISK"
+          },
+          {
+            "title": "Contract Code Verified",
+            "description": "Contract code verification checks if the contract has been reviewed and matches the deployed version on the blockchain, reflecting the project's transparency.",
+            "isHit": false,
+            "order": 100,
+            "riskType": "CAUTION"
+          }
+        ]
+      }
+    ],
+    "riskAlert": null
+  },
+  "unsupportedBinanceNvdab": {
+    "hasResult": false,
+    "isSupported": false
+  },
+  "crossSourceFingerprintsMatch": true,
+  "scope": "Public contract/control evidence and provider findings; no owner wallet, trade, exception or independent audit approval."
+}

@@ -44,7 +44,7 @@ type Change = { chain?: string; blockSeconds?: bigint; tokenCode?: string;
   adminMembers?: readonly string[]; issuerMembers?: readonly string[];
   complianceOpsMembers?: readonly string[]; mintEnabled?: boolean;
   burnEnabled?: boolean };
-const rpcReply = (change: Change = {}): typeof fetch => (async (_url, init) => {
+export const rpcReply = (change: Change = {}): typeof fetch => (async (_url, init) => {
   const body = JSON.parse(String(init?.body)) as { id: number; method: string;
     params: Array<{ to: string; data: string } | string> };
   let result: unknown;
@@ -52,6 +52,7 @@ const rpcReply = (change: Change = {}): typeof fetch => (async (_url, init) => {
   if (body.method === "eth_chainId") result = change.chain ?? "0x38";
   else if (body.method === "eth_blockNumber") result = "0x100";
   else if (body.method === "eth_getBlockByNumber") result = {
+    hash: `0x${"a".repeat(64)}`,
     number: change.blockHeaderNumber ?? "0x100",
     timestamp: `0x${(change.blockSeconds ?? blockSeconds).toString(16)}` };
   else if (body.method === "eth_getStorageAt") {
@@ -120,6 +121,25 @@ test("P5.5b bStocks pins raw/UI mapping, proxy controls and exact token", async 
     tokenAddress: "0x0000000000000000000000000000000000000001" }, rpcReply()), null);
 });
 
+test("P5.5d quantity security reads use canonical hashes and the proxy's beacon caller", async () => {
+  let headers = 0, beaconCaller: string | undefined;
+  const refs: unknown[] = [];
+  const reorg = (async (url, init) => {
+    const body = JSON.parse(String(init?.body));
+    if (["eth_call", "eth_getStorageAt", "eth_getCode"].includes(body.method)) refs.push(body.params.at(-1));
+    if (body.method === "eth_call" && body.params[0].data === "0x5c60da1b") beaconCaller = body.params[0].from;
+    const response = await rpcReply()(url, init);
+    if (body.method !== "eth_getBlockByNumber") return response;
+    headers++; const data = await response.json() as { result: { hash: string } };
+    if (headers === 2) data.result.hash = `0x${"f".repeat(64)}`;
+    return new Response(JSON.stringify(data));
+  }) as typeof fetch;
+  assert.equal(await fetchBStocksBscQuantity(request, reorg), null);
+  assert.equal(beaconCaller, token);
+  assert.ok(refs.length > 20);
+  assert.ok(refs.every(ref => JSON.stringify(ref) === JSON.stringify({ blockHash: `0x${"a".repeat(64)}`, requireCanonical: true })));
+  assert.equal(await fetchBStocksBscQuantity({ ...request, blockNumber: 256n, blockHash: `0x${"f".repeat(64)}` }, rpcReply()), null);
+});
 test("P5.5b scheduled multiplier is visible but cannot pass a control review", async () => {
   const snapshot = await fetchBStocksBscQuantity(request, rpcReply({ hasPending: true }));
   assert.ok(snapshot);

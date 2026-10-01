@@ -1228,3 +1228,103 @@ evidence supports them; do not invent failures to populate the log.
   no current 171-test PostgreSQL success is claimed. node --check, bash -n,
   stored source/hash/block/privacy assertions, all 24 real permission-result
   assertions, git diff --check and supplementary memory retrieval passed.
+
+## 2026-10-01 — P5.5d/P7.1 integrate recovered source, governance and review evidence
+
+- Scope: production read-only security source/governance integration, explicit
+  scanner field/category coverage and authenticated independent-report intake.
+  Preserve Market Gate/EOA/recovery interfaces and strict risk blocking; no live
+  asset, risk exception, signing, transaction or issuer-contact authorization.
+  Read current state, plan, logs, security specification and ADRs 0010/0026/0027;
+  searched shared Nexus memory and read query-token-audit skill.
+- Baseline: supplied isolated PostgreSQL is reachable again. Full
+  ./scripts/check.sh passed 171 application tests plus three research tests,
+  zero failures/skips, strict typecheck and both builds. This supersedes the
+  prior task's unavailable-database result; do not relabel that historical result.
+- Public independent-review discovery: EtherAuthority publishes a BSC-USD/USDT
+  report dated 2025-04-03 naming the exact settlement contract. Inspect its source
+  identity/scope and findings before treating it as qualified current review.
+  Binance FAQ claims bStocks independent audits but does not expose a matching
+  audit artifact in the inspected page; issuer statement alone is insufficient.
+  bstocks.finance could not resolve; unrelated scanner/score pages are not
+  independent full-scope audit reports. No claim that no audit exists.
+
+- P5.5d source integration: added immutable full-runtime/address certificates for
+  five locally reproduced governance sources, binding preserved report/compiler/
+  input/executable hashes and exact-vs-metadata correspondence. Other identities
+  retain strict Sourcify matching; no production compiler or arbitrary source pins.
+- P5.5d governance component: added canonical source-derived OperatorWallet and
+  BurnWallet profiles. Revalidate EIP-1967 slots, initialization/reentrancy state,
+  inner implementation/admin/owner/pending owner, operator/pause/hot-wallet controls
+  and controller code. NVDAB execution closure is nine components. Optional paired
+  collector quantity block/hash prevents collection drifting to a different head.
+- P5.5d/P7.1 reproduced gap: changing an inner proxy implementation while keeping
+  its outer runtime unchanged could escape wrapper-only identity. Regression
+  fixtures reproduce this condition; the new source-pinned inner layout/logic and
+  fingerprint validation reject upgrades, unavailable/mismatched reads and further
+  delegated controllers. Admin/owner/operator/hot-wallet changes invalidate review.
+- P5.5d scanners: expose exact coverage maps (seven Binance, twenty-two GoPlus).
+  Missing fields never become false/zero; positive warnings survive partial
+  coverage. Unsupported Binance values remain suppressed. Forged clear labels,
+  omitted/extra coverage and invalid envelopes cannot clear the pure assessment.
+- P5.5d independent-review intake: added reviewed primary publisher namespaces,
+  version-2 exact component/source scope and fresh SHA-256 PDF artifact receipts.
+  Reject mutable GitHub paths, lookalikes, redirects, HTML/non-PDF, oversized bodies,
+  changed bytes, failed retrieval and stale/mismatched receipts. Ten-second/four-MiB
+  bounds; no paid source or credential. Version-1 parsing stays compatible but
+  cannot grant live clearance. CLI exposes intake fingerprints. Registry unchanged
+  and empty; verified report bytes cannot override risk/unknown coverage. ADR 0028
+  documents provenance vs qualified operator judgments of scope/finding adequacy.
+- Public validation: Sentio block 125113819 and Blast 125113823 produced complete
+  nine-source NVDAB/two-wallet governance observations and identical fingerprints;
+  these are different-block collections. USDT source closure is one component.
+  Both commands exit 2 as expected. Saved non-secret public observations and fresh
+  scanner coverage to the dated integration report/JSON; no trade or wallet read.
+- Public review result: immutable EtherAuthority USDT PDF bytes verify SHA-256
+  94cedb0cb27d4266ce9dd6414775ab79708ef75f6a205c65e050d2453932014f.
+  The historical address-named report does not establish current full source/
+  controller scope; it is a candidate only. No matching NVDAB review recovered and
+  the user has no audit URL. Independent review is needed for live admission under
+  current policy, not for continuing implementation/offline/PostgreSQL testing.
+- Remaining findings: USDT Binance 5/7 and GoPlus 21/22 coverage with mint warnings;
+  NVDAB Binance unsupported 0/7 and GoPlus 7/22 with a shared-creator warning (not
+  proof NVDAB is a honeypot). Qualified reviews, full scanner coverage, risk policy
+  approval and other P5.5/P7 production gates remain open. No risk was accepted.
+- Tests: fifteen new focused regressions cover certificate provenance, canonical
+  layouts, changed inner logic/controllers, delegation/closure, explicit scanner
+  coverage and report provenance/scope/receipt boundaries. Existing P7 approval-
+  change test supplies matching synthetic artifact ID so a valid review revision
+  still invalidates signed approval. Real PostgreSQL execution/recovery tests pass;
+  recovery accounting and wallet/Market Gate interfaces remain unchanged.
+- Test-fixture corrections: first TypeScript compile rejected Node Buffer as DOM
+  Response BodyInit; wrap bytes in Uint8Array. Extracting a shared collector mock
+  then left an unused Interface import (TS6133); remove it and rerun the full check.
+  These were agent fixture/type integration errors, not application behavior bugs.
+- Final verification: PostgreSQL-backed ./scripts/check.sh passed 186 application
+  tests and three research regressions, zero failures/skips, strict typecheck,
+  headless and production web builds plus configuration/artifact checks. Earlier
+  incremental PostgreSQL run passed 185 tests before the final regression was
+  added. Existing unrelated pending work is preserved.
+- Supplementary memory: three durable non-secret integration/gate/test findings
+  saved to Nexus and retrieved successfully. Git documentation remains authority;
+  git diff --check passed. Focused commit includes security-module dependencies,
+  preserving unrelated pending phase work rather than staging the entire workspace.
+- Portability verification: exported the focused staged tree without unrelated
+  pending phase code. Its first compile found a legacy transfer fixture missing
+  the newly required quantity block hash/authority list. Included only those two
+  fixture fields; isolated checks then passed 97 application plus three research
+  tests, no failures/skips. This validates the security module independently of
+  pending workspace P7/web changes, not completed production wiring.
+- Public namespace regression: primary PeckShield repository inspection showed
+  the report directory is audit_reports, not the initially assumed audits path.
+  Corrected the allowlist and added accepted/rejected path, branch and publisher
+  assertions. Limit the catalog to verified EtherAuthority/PeckShield repositories;
+  unverified additional publishers stay unsupported. Rerun checks after this fix.
+- Post-correction final workspace verification: PostgreSQL-backed check passed
+  186 application and three research tests, no failures/skips, strict typecheck
+  and both builds; includes the corrected publisher-path regression assertions.
+- Final isolated focused-tree check after the publisher fix passed 97 application
+  and three research tests, zero failures/skips, typecheck and headless build.
+  The full workspace additionally passes its PostgreSQL/P7/web suites and web
+  build as reported above. Fourth non-secret publisher-provenance memory finding
+  saved/retrieved; staged and workspace diff whitespace checks passed.

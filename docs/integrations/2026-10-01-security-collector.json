@@ -1,0 +1,997 @@
+{
+  "recordedAt": "2026-10-01T14:17:19.925Z",
+  "mode": "read-only",
+  "sources": [
+    {
+      "source": "bsc.rpc.sentio.xyz",
+      "mode": "read-only",
+      "chainId": 56,
+      "evidence": [
+        {
+          "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+          "observation": {
+            "observedAt": "2026-10-01T14:08:17.000Z",
+            "expiresAt": "2026-10-01T14:09:17.000Z",
+            "source": "bsc-rpc:bsc.rpc.sentio.xyz",
+            "sourceBlock": "125113819",
+            "sourceBlockHash": "0xd4d19a1c8aeadce26e909e5a93d352b687987d58c768b45ce9242c3569a4668e",
+            "profile": "runtime-owner-v1",
+            "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+            "decimals": 18,
+            "components": [
+              {
+                "address": "0x55d398326f99059ff775485246999027b3197955",
+                "codeHash": "0x97a48aa4c129657440dafdacd4c836389734d28cc4a0ca7403e68da660a74a59",
+                "sourceDigest": "a2749c40c199ef2f4176b3b526b7a6256403e8357771a1ed73a5296bbcc5921c"
+              }
+            ],
+            "authorities": [
+              {
+                "address": "0xf68a4b64162906eff0ff6ae34e2bb1cd42fef62d",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              }
+            ],
+            "controls": {
+              "owner": "0xf68a4b64162906eff0ff6ae34e2bb1cd42fef62d",
+              "beaconSlot": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "implementationSlot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "governance": [],
+            "paused": false,
+            "pendingChange": false
+          },
+          "providers": [
+            {
+              "provider": "binance",
+              "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+              "observedAt": "2026-10-01T14:08:35.488Z",
+              "expiresAt": "2026-10-01T14:09:35.488Z",
+              "state": "risk",
+              "findings": [
+                "risk-level-above-low",
+                "CONTRACT_RISK:CAUTION:Mintable Detected"
+              ],
+              "coverage": {
+                "riskLevel": "covered",
+                "buyTax": "covered",
+                "sellTax": "covered",
+                "riskAlert": "covered",
+                "CONTRACT_RISK": "covered",
+                "TRADE_RISK": "unknown",
+                "SCAM_RISK": "unknown"
+              },
+              "digest": "3e457530e0de3101bd96fcdc225b290ebb693030f6ed503e87eaab3ef962b4d4"
+            },
+            {
+              "provider": "goplus",
+              "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+              "observedAt": "2026-10-01T14:08:35.488Z",
+              "expiresAt": "2026-10-01T14:09:35.488Z",
+              "state": "risk",
+              "coverage": {
+                "is_honeypot": "covered",
+                "cannot_buy": "covered",
+                "cannot_sell_all": "unknown",
+                "owner_change_balance": "covered",
+                "hidden_owner": "covered",
+                "can_take_back_ownership": "covered",
+                "selfdestruct": "covered",
+                "slippage_modifiable": "covered",
+                "personal_slippage_modifiable": "covered",
+                "is_blacklisted": "covered",
+                "is_whitelisted": "covered",
+                "transfer_pausable": "covered",
+                "trading_cooldown": "covered",
+                "is_anti_whale": "covered",
+                "anti_whale_modifiable": "covered",
+                "is_mintable": "covered",
+                "external_call": "covered",
+                "honeypot_with_same_creator": "covered",
+                "is_open_source": "covered",
+                "is_proxy": "covered",
+                "buy_tax": "covered",
+                "sell_tax": "covered"
+              },
+              "findings": [
+                "is_mintable"
+              ],
+              "digest": "e03b15be219c635e2ec663f3b4d39f2e490018e6a39b48cbb7a0501d20bb5bc5"
+            }
+          ],
+          "review": null,
+          "reviewArtifact": null,
+          "state": "risk",
+          "reasons": [
+            "binance-risk",
+            "binance-coverage-incomplete",
+            "goplus-risk",
+            "goplus-coverage-incomplete",
+            "contract-scope-review-missing-or-expired"
+          ],
+          "evidenceHash": "c8dc8a9dc198e69b6f76e7190beac33dd25a7e9358ed32aae6795563d0d1aa05"
+        },
+        {
+          "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+          "observation": {
+            "observedAt": "2026-10-01T14:08:17.000Z",
+            "expiresAt": "2026-10-01T14:09:17.000Z",
+            "source": "bsc-rpc:bsc.rpc.sentio.xyz",
+            "sourceBlock": "125113819",
+            "sourceBlockHash": "0xd4d19a1c8aeadce26e909e5a93d352b687987d58c768b45ce9242c3569a4668e",
+            "profile": "bstocks-beacon-v1",
+            "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+            "decimals": 18,
+            "components": [
+              {
+                "address": "0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+                "codeHash": "0xdf946913977a2ed76735b4b2e66f2272d1a76af911c4e520655888c9e32269f9",
+                "sourceDigest": "bd9253cd5246aa1f0bd1692f7681663b0e4fde185fac1d139d3279e4f7302d53"
+              },
+              {
+                "address": "0x156d6dce9a4f6139a3406f1f021f1a4880de93a3",
+                "codeHash": "0x80fbad22136c0abdce6e0f3cc46cd0572318e01b92dbd5b4d5795ef6e8808711",
+                "sourceDigest": "776d270b713beef7d878f56478dfff74b9a763a3b34ad95cd4dbad1a0389f2dc"
+              },
+              {
+                "address": "0xcfed6c4679297ea4889f8183bc057b4a86c64e46",
+                "codeHash": "0x060dc28d4dd8d9bb8a381d4009bccbac129ce743a10b3d8aa0ffef5034b50544",
+                "sourceDigest": "96a16ce7b86b83fa561d20f60a36613ac3c4ddd4fe93c954669152f7813c9de7"
+              },
+              {
+                "address": "0x53dba7aabde774787a1f57236b235567da8e14f4",
+                "codeHash": "0xe53b7759da23b16be41e4faa36b85c70ec750a2a631492998f40833fab17aff8",
+                "sourceDigest": "ba29891460be566ccbb6f206504ec05eb986fe41b11652ab8585664963cf564f"
+              },
+              {
+                "address": "0x9fc74be63f3589485b2423984a7a0557e0cf700a",
+                "codeHash": "0x65c448e9ecdde44701b7a20c846fec9000d9aee6e3ddeb9362bb1980d755ff4d",
+                "sourceDigest": "5d7b7edc5d2751abb3ebacbc13839715f62caf3c0811993a5ca9c04051ce4f40"
+              },
+              {
+                "address": "0x5948602680fe4aea08d98302337a2715b3aadad1",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c",
+                "sourceDigest": "f6d58cadfa941571ac2afb5133238b1a4ae08f18328351e91a033b226e74d824"
+              },
+              {
+                "address": "0x72f6389c01bffce7698fa5135cbf75191fe56d17",
+                "codeHash": "0x96a9ae86498d2b071724cd3a005526a9a850b0198924362418b708cc1332e26c",
+                "sourceDigest": "221989fb96084c3b2245de3ad26c23cf3b147f94fffa9cbf9102ffe15c35bfa9"
+              },
+              {
+                "address": "0xc94e485510c458860f89d23dcb8dd34bd10e6b8b",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c",
+                "sourceDigest": "55fb260da6bdddb004be27c14a2ff2886d08604f0fc753b63b54250266fe80e6"
+              },
+              {
+                "address": "0xd00eb2a87e7b699b75be975c2edae47d36cf07dd",
+                "codeHash": "0x62306a3b415ff530c75f6d19a5f7bf81b0170f79f9d5390a975681952d5ed14e",
+                "sourceDigest": "cf23c1b095cf1a4652ffb0d7d080a2b051d1a2f49cf6d6657d5b7a20696ad070"
+              }
+            ],
+            "authorities": [
+              {
+                "address": "0x4333daf4481f281f3d3d2b8735ce80bc00028d0c",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x45e35fe982f3869221b222abea372fa97aa7679d",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x5948602680fe4aea08d98302337a2715b3aadad1",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c"
+              },
+              {
+                "address": "0x6a8ba4a89e6877be3170a559c4cec29a4cf77f46",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x6f64f80b50efbf0f5f13d72d16ec17a59abbe5c6",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xa42436335a41fa6c82cde224ae2b82c025027e5b",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xa4e4975433038361edc07d726022cb29a6aabc3e",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xc94e485510c458860f89d23dcb8dd34bd10e6b8b",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c"
+              },
+              {
+                "address": "0xf3eff082d1b859c75cde44871e96968e543ea491",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x7cfe99c15537753682def016d17d4b29a7cab4ee",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xb2f56fc21efe0f3921fc28adecacc36a4bfdcac1",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              }
+            ],
+            "controls": {
+              "token": "0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "tokenCodeHash": "0xdf946913977a2ed76735b4b2e66f2272d1a76af911c4e520655888c9e32269f9",
+              "beacon": "0x156d6dce9a4f6139a3406f1f021f1a4880de93a3",
+              "beaconCodeHash": "0x80fbad22136c0abdce6e0f3cc46cd0572318e01b92dbd5b4d5795ef6e8808711",
+              "implementation": "0xcfed6c4679297ea4889f8183bc057b4a86c64e46",
+              "implementationCodeHash": "0x060dc28d4dd8d9bb8a381d4009bccbac129ce743a10b3d8aa0ffef5034b50544",
+              "beaconOwner": "0x4333daf4481f281f3d3d2b8735ce80bc00028d0c",
+              "compliance": "0x53dba7aabde774787a1f57236b235567da8e14f4",
+              "complianceCodeHash": "0xe53b7759da23b16be41e4faa36b85c70ec750a2a631492998f40833fab17aff8",
+              "pauseManager": "0x9fc74be63f3589485b2423984a7a0557e0cf700a",
+              "pauseManagerCodeHash": "0x65c448e9ecdde44701b7a20c846fec9000d9aee6e3ddeb9362bb1980d755ff4d",
+              "adminMembersHash": "0x916601cc5d5bb0200ba0c67bf97bac7c403995b186ed558d58959e4e74217f19",
+              "issuerMembersHash": "0xeb2daaff8045e6f9d27ca824e11fbee015bdb7c1d9124702c6c866391cf5a069",
+              "complianceAdminMembersHash": "0x478f23bc1643ac1eae830bbb2b96e674ae803eff6ff091503c7e9036f47b58ce",
+              "complianceOpsMembersHash": "0x4ad4b85ce383eee67ec11e1273dec91207ac1c4258979edfbe0becbb71d30f72",
+              "complianceMembersHash": "0x569e75fc77c1a856f6daaf9e69d8a9566ca34aa47f9133711ce065a571af0cfd",
+              "pauseAdminMembersHash": "0xf6a7636f1b3eefc326fd3ea3370b55fd15159d48d433f10c761124d9e8bbdd81",
+              "pauseOpsMembersHash": "0x46417c9122634427dc5bc57244475d8f29fbdf5e7ada34eab6134b7280da46ba",
+              "mintEnabled": true,
+              "burnEnabled": true,
+              "uiMultiplier": "1000778223752807865",
+              "pendingMultiplier": "none",
+              "pendingEffectiveAt": "none"
+            },
+            "governance": [
+              {
+                "profile": "bstocks-operator-wallet-v1",
+                "address": "0x5948602680fe4aea08d98302337a2715b3aadad1",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c",
+                "implementation": "0xd00eb2a87e7b699b75be975c2edae47d36cf07dd",
+                "implementationCodeHash": "0x62306a3b415ff530c75f6d19a5f7bf81b0170f79f9d5390a975681952d5ed14e",
+                "admin": "0x7cfe99c15537753682def016d17d4b29a7cab4ee",
+                "owner": "0xb2f56fc21efe0f3921fc28adecacc36a4bfdcac1",
+                "pendingOwner": "0x0000000000000000000000000000000000000000",
+                "initialized": true,
+                "operator": "0xa42436335a41fa6c82cde224ae2b82c025027e5b",
+                "paused": false,
+                "hotWallets": [
+                  "0x8894e0a0c962cb723c1976a4421c95949be2d4e3",
+                  "0xf2250dd469dc167de14ee5dd5081dd870df5bc03"
+                ]
+              },
+              {
+                "profile": "bstocks-burn-wallet-v1",
+                "address": "0xc94e485510c458860f89d23dcb8dd34bd10e6b8b",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c",
+                "implementation": "0x72f6389c01bffce7698fa5135cbf75191fe56d17",
+                "implementationCodeHash": "0x96a9ae86498d2b071724cd3a005526a9a850b0198924362418b708cc1332e26c",
+                "admin": "0x7cfe99c15537753682def016d17d4b29a7cab4ee",
+                "owner": "0xa42436335a41fa6c82cde224ae2b82c025027e5b",
+                "pendingOwner": "0x0000000000000000000000000000000000000000",
+                "initialized": true,
+                "operator": null,
+                "paused": null,
+                "hotWallets": []
+              }
+            ],
+            "paused": false,
+            "pendingChange": false
+          },
+          "providers": [
+            {
+              "provider": "binance",
+              "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "observedAt": "2026-10-01T14:08:35.504Z",
+              "expiresAt": "2026-10-01T14:09:35.504Z",
+              "state": "unsupported",
+              "findings": [],
+              "coverage": {
+                "riskLevel": "unknown",
+                "buyTax": "unknown",
+                "sellTax": "unknown",
+                "riskAlert": "unknown",
+                "CONTRACT_RISK": "unknown",
+                "TRADE_RISK": "unknown",
+                "SCAM_RISK": "unknown"
+              },
+              "digest": "260b71841a7566b1ca5e7ffeebd2fea853c639c7a52933d15c8a2c9e902d9c63"
+            },
+            {
+              "provider": "goplus",
+              "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "observedAt": "2026-10-01T14:08:35.504Z",
+              "expiresAt": "2026-10-01T14:09:35.504Z",
+              "state": "risk",
+              "coverage": {
+                "is_honeypot": "unknown",
+                "cannot_buy": "covered",
+                "cannot_sell_all": "covered",
+                "owner_change_balance": "unknown",
+                "hidden_owner": "unknown",
+                "can_take_back_ownership": "unknown",
+                "selfdestruct": "unknown",
+                "slippage_modifiable": "unknown",
+                "personal_slippage_modifiable": "unknown",
+                "is_blacklisted": "unknown",
+                "is_whitelisted": "unknown",
+                "transfer_pausable": "unknown",
+                "trading_cooldown": "unknown",
+                "is_anti_whale": "unknown",
+                "anti_whale_modifiable": "unknown",
+                "is_mintable": "unknown",
+                "external_call": "unknown",
+                "honeypot_with_same_creator": "covered",
+                "is_open_source": "covered",
+                "is_proxy": "covered",
+                "buy_tax": "covered",
+                "sell_tax": "covered"
+              },
+              "findings": [
+                "honeypot_with_same_creator"
+              ],
+              "digest": "004640d310f0e48007d5b225abe2863557d4bea1f4fcd55c0ee348180f84d93b"
+            }
+          ],
+          "review": null,
+          "reviewArtifact": null,
+          "state": "risk",
+          "reasons": [
+            "binance-unsupported",
+            "binance-coverage-incomplete",
+            "goplus-risk",
+            "goplus-coverage-incomplete",
+            "contract-scope-review-missing-or-expired"
+          ],
+          "evidenceHash": "f5d74d083666301c34b25263a84b7cd114784e932611b063e8eab3f065fcf20f"
+        }
+      ]
+    },
+    {
+      "source": "bsc-mainnet.public.blastapi.io",
+      "mode": "read-only",
+      "chainId": 56,
+      "evidence": [
+        {
+          "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+          "observation": {
+            "observedAt": "2026-10-01T14:08:19.000Z",
+            "expiresAt": "2026-10-01T14:09:19.000Z",
+            "source": "bsc-rpc:bsc-mainnet.public.blastapi.io",
+            "sourceBlock": "125113823",
+            "sourceBlockHash": "0x61c06a284e700d0857787bc1d573c6a0eeafe9fd20f164ccbd2fbf61bafa4133",
+            "profile": "runtime-owner-v1",
+            "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+            "decimals": 18,
+            "components": [
+              {
+                "address": "0x55d398326f99059ff775485246999027b3197955",
+                "codeHash": "0x97a48aa4c129657440dafdacd4c836389734d28cc4a0ca7403e68da660a74a59",
+                "sourceDigest": "a2749c40c199ef2f4176b3b526b7a6256403e8357771a1ed73a5296bbcc5921c"
+              }
+            ],
+            "authorities": [
+              {
+                "address": "0xf68a4b64162906eff0ff6ae34e2bb1cd42fef62d",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              }
+            ],
+            "controls": {
+              "owner": "0xf68a4b64162906eff0ff6ae34e2bb1cd42fef62d",
+              "beaconSlot": "0x0000000000000000000000000000000000000000000000000000000000000000",
+              "implementationSlot": "0x0000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "governance": [],
+            "paused": false,
+            "pendingChange": false
+          },
+          "providers": [
+            {
+              "provider": "binance",
+              "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+              "observedAt": "2026-10-01T14:08:39.274Z",
+              "expiresAt": "2026-10-01T14:09:39.274Z",
+              "state": "risk",
+              "findings": [
+                "risk-level-above-low",
+                "CONTRACT_RISK:CAUTION:Mintable Detected"
+              ],
+              "coverage": {
+                "riskLevel": "covered",
+                "buyTax": "covered",
+                "sellTax": "covered",
+                "riskAlert": "covered",
+                "CONTRACT_RISK": "covered",
+                "TRADE_RISK": "unknown",
+                "SCAM_RISK": "unknown"
+              },
+              "digest": "3e457530e0de3101bd96fcdc225b290ebb693030f6ed503e87eaab3ef962b4d4"
+            },
+            {
+              "provider": "goplus",
+              "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+              "observedAt": "2026-10-01T14:08:39.274Z",
+              "expiresAt": "2026-10-01T14:09:39.274Z",
+              "state": "risk",
+              "coverage": {
+                "is_honeypot": "covered",
+                "cannot_buy": "covered",
+                "cannot_sell_all": "unknown",
+                "owner_change_balance": "covered",
+                "hidden_owner": "covered",
+                "can_take_back_ownership": "covered",
+                "selfdestruct": "covered",
+                "slippage_modifiable": "covered",
+                "personal_slippage_modifiable": "covered",
+                "is_blacklisted": "covered",
+                "is_whitelisted": "covered",
+                "transfer_pausable": "covered",
+                "trading_cooldown": "covered",
+                "is_anti_whale": "covered",
+                "anti_whale_modifiable": "covered",
+                "is_mintable": "covered",
+                "external_call": "covered",
+                "honeypot_with_same_creator": "covered",
+                "is_open_source": "covered",
+                "is_proxy": "covered",
+                "buy_tax": "covered",
+                "sell_tax": "covered"
+              },
+              "findings": [
+                "is_mintable"
+              ],
+              "digest": "e03b15be219c635e2ec663f3b4d39f2e490018e6a39b48cbb7a0501d20bb5bc5"
+            }
+          ],
+          "review": null,
+          "reviewArtifact": null,
+          "state": "risk",
+          "reasons": [
+            "binance-risk",
+            "binance-coverage-incomplete",
+            "goplus-risk",
+            "goplus-coverage-incomplete",
+            "contract-scope-review-missing-or-expired"
+          ],
+          "evidenceHash": "4420500497c8266f9c57faa20567d13dbeaa176a743551ba25acdbe1ddbc6907"
+        },
+        {
+          "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+          "observation": {
+            "observedAt": "2026-10-01T14:08:19.000Z",
+            "expiresAt": "2026-10-01T14:09:19.000Z",
+            "source": "bsc-rpc:bsc-mainnet.public.blastapi.io",
+            "sourceBlock": "125113823",
+            "sourceBlockHash": "0x61c06a284e700d0857787bc1d573c6a0eeafe9fd20f164ccbd2fbf61bafa4133",
+            "profile": "bstocks-beacon-v1",
+            "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+            "decimals": 18,
+            "components": [
+              {
+                "address": "0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+                "codeHash": "0xdf946913977a2ed76735b4b2e66f2272d1a76af911c4e520655888c9e32269f9",
+                "sourceDigest": "bd9253cd5246aa1f0bd1692f7681663b0e4fde185fac1d139d3279e4f7302d53"
+              },
+              {
+                "address": "0x156d6dce9a4f6139a3406f1f021f1a4880de93a3",
+                "codeHash": "0x80fbad22136c0abdce6e0f3cc46cd0572318e01b92dbd5b4d5795ef6e8808711",
+                "sourceDigest": "776d270b713beef7d878f56478dfff74b9a763a3b34ad95cd4dbad1a0389f2dc"
+              },
+              {
+                "address": "0xcfed6c4679297ea4889f8183bc057b4a86c64e46",
+                "codeHash": "0x060dc28d4dd8d9bb8a381d4009bccbac129ce743a10b3d8aa0ffef5034b50544",
+                "sourceDigest": "96a16ce7b86b83fa561d20f60a36613ac3c4ddd4fe93c954669152f7813c9de7"
+              },
+              {
+                "address": "0x53dba7aabde774787a1f57236b235567da8e14f4",
+                "codeHash": "0xe53b7759da23b16be41e4faa36b85c70ec750a2a631492998f40833fab17aff8",
+                "sourceDigest": "ba29891460be566ccbb6f206504ec05eb986fe41b11652ab8585664963cf564f"
+              },
+              {
+                "address": "0x9fc74be63f3589485b2423984a7a0557e0cf700a",
+                "codeHash": "0x65c448e9ecdde44701b7a20c846fec9000d9aee6e3ddeb9362bb1980d755ff4d",
+                "sourceDigest": "5d7b7edc5d2751abb3ebacbc13839715f62caf3c0811993a5ca9c04051ce4f40"
+              },
+              {
+                "address": "0x5948602680fe4aea08d98302337a2715b3aadad1",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c",
+                "sourceDigest": "f6d58cadfa941571ac2afb5133238b1a4ae08f18328351e91a033b226e74d824"
+              },
+              {
+                "address": "0x72f6389c01bffce7698fa5135cbf75191fe56d17",
+                "codeHash": "0x96a9ae86498d2b071724cd3a005526a9a850b0198924362418b708cc1332e26c",
+                "sourceDigest": "221989fb96084c3b2245de3ad26c23cf3b147f94fffa9cbf9102ffe15c35bfa9"
+              },
+              {
+                "address": "0xc94e485510c458860f89d23dcb8dd34bd10e6b8b",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c",
+                "sourceDigest": "55fb260da6bdddb004be27c14a2ff2886d08604f0fc753b63b54250266fe80e6"
+              },
+              {
+                "address": "0xd00eb2a87e7b699b75be975c2edae47d36cf07dd",
+                "codeHash": "0x62306a3b415ff530c75f6d19a5f7bf81b0170f79f9d5390a975681952d5ed14e",
+                "sourceDigest": "cf23c1b095cf1a4652ffb0d7d080a2b051d1a2f49cf6d6657d5b7a20696ad070"
+              }
+            ],
+            "authorities": [
+              {
+                "address": "0x4333daf4481f281f3d3d2b8735ce80bc00028d0c",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x45e35fe982f3869221b222abea372fa97aa7679d",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x5948602680fe4aea08d98302337a2715b3aadad1",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c"
+              },
+              {
+                "address": "0x6a8ba4a89e6877be3170a559c4cec29a4cf77f46",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x6f64f80b50efbf0f5f13d72d16ec17a59abbe5c6",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xa42436335a41fa6c82cde224ae2b82c025027e5b",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xa4e4975433038361edc07d726022cb29a6aabc3e",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xc94e485510c458860f89d23dcb8dd34bd10e6b8b",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c"
+              },
+              {
+                "address": "0xf3eff082d1b859c75cde44871e96968e543ea491",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0x7cfe99c15537753682def016d17d4b29a7cab4ee",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              },
+              {
+                "address": "0xb2f56fc21efe0f3921fc28adecacc36a4bfdcac1",
+                "codeHash": "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+              }
+            ],
+            "controls": {
+              "token": "0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "tokenCodeHash": "0xdf946913977a2ed76735b4b2e66f2272d1a76af911c4e520655888c9e32269f9",
+              "beacon": "0x156d6dce9a4f6139a3406f1f021f1a4880de93a3",
+              "beaconCodeHash": "0x80fbad22136c0abdce6e0f3cc46cd0572318e01b92dbd5b4d5795ef6e8808711",
+              "implementation": "0xcfed6c4679297ea4889f8183bc057b4a86c64e46",
+              "implementationCodeHash": "0x060dc28d4dd8d9bb8a381d4009bccbac129ce743a10b3d8aa0ffef5034b50544",
+              "beaconOwner": "0x4333daf4481f281f3d3d2b8735ce80bc00028d0c",
+              "compliance": "0x53dba7aabde774787a1f57236b235567da8e14f4",
+              "complianceCodeHash": "0xe53b7759da23b16be41e4faa36b85c70ec750a2a631492998f40833fab17aff8",
+              "pauseManager": "0x9fc74be63f3589485b2423984a7a0557e0cf700a",
+              "pauseManagerCodeHash": "0x65c448e9ecdde44701b7a20c846fec9000d9aee6e3ddeb9362bb1980d755ff4d",
+              "adminMembersHash": "0x916601cc5d5bb0200ba0c67bf97bac7c403995b186ed558d58959e4e74217f19",
+              "issuerMembersHash": "0xeb2daaff8045e6f9d27ca824e11fbee015bdb7c1d9124702c6c866391cf5a069",
+              "complianceAdminMembersHash": "0x478f23bc1643ac1eae830bbb2b96e674ae803eff6ff091503c7e9036f47b58ce",
+              "complianceOpsMembersHash": "0x4ad4b85ce383eee67ec11e1273dec91207ac1c4258979edfbe0becbb71d30f72",
+              "complianceMembersHash": "0x569e75fc77c1a856f6daaf9e69d8a9566ca34aa47f9133711ce065a571af0cfd",
+              "pauseAdminMembersHash": "0xf6a7636f1b3eefc326fd3ea3370b55fd15159d48d433f10c761124d9e8bbdd81",
+              "pauseOpsMembersHash": "0x46417c9122634427dc5bc57244475d8f29fbdf5e7ada34eab6134b7280da46ba",
+              "mintEnabled": true,
+              "burnEnabled": true,
+              "uiMultiplier": "1000778223752807865",
+              "pendingMultiplier": "none",
+              "pendingEffectiveAt": "none"
+            },
+            "governance": [
+              {
+                "profile": "bstocks-operator-wallet-v1",
+                "address": "0x5948602680fe4aea08d98302337a2715b3aadad1",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c",
+                "implementation": "0xd00eb2a87e7b699b75be975c2edae47d36cf07dd",
+                "implementationCodeHash": "0x62306a3b415ff530c75f6d19a5f7bf81b0170f79f9d5390a975681952d5ed14e",
+                "admin": "0x7cfe99c15537753682def016d17d4b29a7cab4ee",
+                "owner": "0xb2f56fc21efe0f3921fc28adecacc36a4bfdcac1",
+                "pendingOwner": "0x0000000000000000000000000000000000000000",
+                "initialized": true,
+                "operator": "0xa42436335a41fa6c82cde224ae2b82c025027e5b",
+                "paused": false,
+                "hotWallets": [
+                  "0x8894e0a0c962cb723c1976a4421c95949be2d4e3",
+                  "0xf2250dd469dc167de14ee5dd5081dd870df5bc03"
+                ]
+              },
+              {
+                "profile": "bstocks-burn-wallet-v1",
+                "address": "0xc94e485510c458860f89d23dcb8dd34bd10e6b8b",
+                "codeHash": "0x1fbdf1bd87186de14b3caf88cf1e6fb123c5ab1d105cbd83c8ee092b90496f4c",
+                "implementation": "0x72f6389c01bffce7698fa5135cbf75191fe56d17",
+                "implementationCodeHash": "0x96a9ae86498d2b071724cd3a005526a9a850b0198924362418b708cc1332e26c",
+                "admin": "0x7cfe99c15537753682def016d17d4b29a7cab4ee",
+                "owner": "0xa42436335a41fa6c82cde224ae2b82c025027e5b",
+                "pendingOwner": "0x0000000000000000000000000000000000000000",
+                "initialized": true,
+                "operator": null,
+                "paused": null,
+                "hotWallets": []
+              }
+            ],
+            "paused": false,
+            "pendingChange": false
+          },
+          "providers": [
+            {
+              "provider": "binance",
+              "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "observedAt": "2026-10-01T14:08:39.282Z",
+              "expiresAt": "2026-10-01T14:09:39.282Z",
+              "state": "unsupported",
+              "findings": [],
+              "coverage": {
+                "riskLevel": "unknown",
+                "buyTax": "unknown",
+                "sellTax": "unknown",
+                "riskAlert": "unknown",
+                "CONTRACT_RISK": "unknown",
+                "TRADE_RISK": "unknown",
+                "SCAM_RISK": "unknown"
+              },
+              "digest": "260b71841a7566b1ca5e7ffeebd2fea853c639c7a52933d15c8a2c9e902d9c63"
+            },
+            {
+              "provider": "goplus",
+              "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+              "observedAt": "2026-10-01T14:08:39.282Z",
+              "expiresAt": "2026-10-01T14:09:39.282Z",
+              "state": "risk",
+              "coverage": {
+                "is_honeypot": "unknown",
+                "cannot_buy": "covered",
+                "cannot_sell_all": "covered",
+                "owner_change_balance": "unknown",
+                "hidden_owner": "unknown",
+                "can_take_back_ownership": "unknown",
+                "selfdestruct": "unknown",
+                "slippage_modifiable": "unknown",
+                "personal_slippage_modifiable": "unknown",
+                "is_blacklisted": "unknown",
+                "is_whitelisted": "unknown",
+                "transfer_pausable": "unknown",
+                "trading_cooldown": "unknown",
+                "is_anti_whale": "unknown",
+                "anti_whale_modifiable": "unknown",
+                "is_mintable": "unknown",
+                "external_call": "unknown",
+                "honeypot_with_same_creator": "covered",
+                "is_open_source": "covered",
+                "is_proxy": "covered",
+                "buy_tax": "covered",
+                "sell_tax": "covered"
+              },
+              "findings": [
+                "honeypot_with_same_creator"
+              ],
+              "digest": "004640d310f0e48007d5b225abe2863557d4bea1f4fcd55c0ee348180f84d93b"
+            }
+          ],
+          "review": null,
+          "reviewArtifact": null,
+          "state": "risk",
+          "reasons": [
+            "binance-unsupported",
+            "binance-coverage-incomplete",
+            "goplus-risk",
+            "goplus-coverage-incomplete",
+            "contract-scope-review-missing-or-expired"
+          ],
+          "evidenceHash": "326b2684111368c600c80c663ac0cec54b6628159095ccb41f0068666563808b"
+        }
+      ]
+    }
+  ],
+  "crossSourceFingerprintsMatch": true,
+  "scannerRefresh": {
+    "recordedAt": "2026-10-01T14:08:18.839Z",
+    "mode": "read-only",
+    "tokens": [
+      {
+        "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+        "providers": [
+          {
+            "provider": "binance",
+            "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+            "observedAt": "2026-10-01T13:51:16.734Z",
+            "expiresAt": "2026-10-01T13:52:16.734Z",
+            "state": "risk",
+            "findings": [
+              "risk-level-above-low",
+              "CONTRACT_RISK:CAUTION:Mintable Detected"
+            ],
+            "coverage": {
+              "riskLevel": "covered",
+              "buyTax": "covered",
+              "sellTax": "covered",
+              "riskAlert": "covered",
+              "CONTRACT_RISK": "covered",
+              "TRADE_RISK": "unknown",
+              "SCAM_RISK": "unknown"
+            },
+            "digest": "3e457530e0de3101bd96fcdc225b290ebb693030f6ed503e87eaab3ef962b4d4"
+          },
+          {
+            "provider": "goplus",
+            "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+            "observedAt": "2026-10-01T13:51:16.552Z",
+            "expiresAt": "2026-10-01T13:52:16.552Z",
+            "state": "risk",
+            "coverage": {
+              "is_honeypot": "covered",
+              "cannot_buy": "covered",
+              "cannot_sell_all": "unknown",
+              "owner_change_balance": "covered",
+              "hidden_owner": "covered",
+              "can_take_back_ownership": "covered",
+              "selfdestruct": "covered",
+              "slippage_modifiable": "covered",
+              "personal_slippage_modifiable": "covered",
+              "is_blacklisted": "covered",
+              "is_whitelisted": "covered",
+              "transfer_pausable": "covered",
+              "trading_cooldown": "covered",
+              "is_anti_whale": "covered",
+              "anti_whale_modifiable": "covered",
+              "is_mintable": "covered",
+              "external_call": "covered",
+              "honeypot_with_same_creator": "covered",
+              "is_open_source": "covered",
+              "is_proxy": "covered",
+              "buy_tax": "covered",
+              "sell_tax": "covered"
+            },
+            "findings": [
+              "is_mintable"
+            ],
+            "digest": "e03b15be219c635e2ec663f3b4d39f2e490018e6a39b48cbb7a0501d20bb5bc5"
+          }
+        ]
+      },
+      {
+        "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+        "providers": [
+          {
+            "provider": "binance",
+            "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+            "observedAt": "2026-10-01T13:51:17.226Z",
+            "expiresAt": "2026-10-01T13:52:17.226Z",
+            "state": "unsupported",
+            "findings": [],
+            "coverage": {
+              "riskLevel": "unknown",
+              "buyTax": "unknown",
+              "sellTax": "unknown",
+              "riskAlert": "unknown",
+              "CONTRACT_RISK": "unknown",
+              "TRADE_RISK": "unknown",
+              "SCAM_RISK": "unknown"
+            },
+            "digest": "260b71841a7566b1ca5e7ffeebd2fea853c639c7a52933d15c8a2c9e902d9c63"
+          },
+          {
+            "provider": "goplus",
+            "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+            "observedAt": "2026-10-01T13:51:17.577Z",
+            "expiresAt": "2026-10-01T13:52:17.577Z",
+            "state": "risk",
+            "coverage": {
+              "is_honeypot": "unknown",
+              "cannot_buy": "covered",
+              "cannot_sell_all": "covered",
+              "owner_change_balance": "unknown",
+              "hidden_owner": "unknown",
+              "can_take_back_ownership": "unknown",
+              "selfdestruct": "unknown",
+              "slippage_modifiable": "unknown",
+              "personal_slippage_modifiable": "unknown",
+              "is_blacklisted": "unknown",
+              "is_whitelisted": "unknown",
+              "transfer_pausable": "unknown",
+              "trading_cooldown": "unknown",
+              "is_anti_whale": "unknown",
+              "anti_whale_modifiable": "unknown",
+              "is_mintable": "unknown",
+              "external_call": "unknown",
+              "honeypot_with_same_creator": "covered",
+              "is_open_source": "covered",
+              "is_proxy": "covered",
+              "buy_tax": "covered",
+              "sell_tax": "covered"
+            },
+            "findings": [
+              "honeypot_with_same_creator"
+            ],
+            "digest": "004640d310f0e48007d5b225abe2863557d4bea1f4fcd55c0ee348180f84d93b"
+          }
+        ]
+      }
+    ],
+    "supportedBinanceUsdt": {
+      "recordedAt": "2026-10-01T13:51:16.734Z",
+      "status": 200,
+      "payload": {
+        "code": "000000",
+        "message": null,
+        "messageDetail": null,
+        "data": {
+          "requestId": "776bf42c-48d8-4ae9-8df6-b09590bf1ab3",
+          "hasResult": true,
+          "isHidden": false,
+          "isSupported": true,
+          "showYellowDot": false,
+          "riskLevelEnum": "MID",
+          "riskLevel": 3,
+          "extraInfo": {
+            "buyTax": "0",
+            "sellTax": "0",
+            "isFlaggedByVendor": null,
+            "isVerified": null,
+            "isReported": null,
+            "source": "BINANCE",
+            "unusualBuyTax": false,
+            "unusualSellTax": false
+          },
+          "riskItems": [
+            {
+              "id": "CONTRACT_RISK",
+              "name": "Contract Risk",
+              "description": "Malicious mechanisms found in the contract code",
+              "details": [
+                {
+                  "title": "Whitelist Restrictions Not Found",
+                  "description": "Whitelist restrictions allow the contract to restrict users' transactions by excluding their address from the whitelist.",
+                  "isHit": false,
+                  "order": 1,
+                  "riskType": "CAUTION"
+                },
+                {
+                  "title": "Cooling-Off Restrictions Not Found",
+                  "description": "Cooling-off period means that users may not be able to buy or sell the token in a certain period of time.",
+                  "isHit": false,
+                  "order": 2,
+                  "riskType": "CAUTION"
+                },
+                {
+                  "title": "Blacklist Restrictions Not Found",
+                  "description": "Blacklist restrictions allow the contract to restrict users' transactions by blacklisting their addresses.",
+                  "isHit": false,
+                  "order": 3,
+                  "riskType": "CAUTION"
+                },
+                {
+                  "title": "Trading Suspension Function Not Found",
+                  "description": "According to the token rules, trading may be paused via smart contracts, preventing on-chain buys or sells.",
+                  "isHit": false,
+                  "order": 4,
+                  "riskType": "CAUTION"
+                },
+                {
+                  "title": "Sale Restriction Not Found",
+                  "description": "Selling restrictions mean that users may be restricted from selling all their tokens at once.",
+                  "isHit": false,
+                  "order": 5,
+                  "riskType": "CAUTION"
+                },
+                {
+                  "title": "Anti-Whale Mechanism Not Found",
+                  "description": "Anti-whale mechanism restricts the amount or frequency of transactions to prevent large sells and may affect large traders.",
+                  "isHit": false,
+                  "order": 6,
+                  "riskType": "CAUTION"
+                },
+                {
+                  "title": "Contract Renounced",
+                  "description": "Contract ownership not renounced means the creator still retains control and may alter parameters such as buy-sell taxes or blacklists, potentially leading to user asset losses.",
+                  "isHit": false,
+                  "order": 7,
+                  "riskType": "RISK"
+                },
+                {
+                  "title": "Self-Destruct Not Found",
+                  "description": "Self-destruct function means the token contract can be destroyed, which will result in your token holdings being erased.",
+                  "isHit": false,
+                  "order": 8,
+                  "riskType": "RISK"
+                },
+                {
+                  "title": "Mintable Detected",
+                  "description": "Mintable function means token total supply can be increased, which may affect token price.",
+                  "isHit": true,
+                  "order": 9,
+                  "riskType": "CAUTION"
+                },
+                {
+                  "title": "Balance Manipulation Not Detected",
+                  "description": "Balance manipulation was found, which means developers can transfer funds without approval to manipulate user balance.",
+                  "isHit": false,
+                  "order": 10,
+                  "riskType": "RISK"
+                },
+                {
+                  "title": "Malicious Creator Not Found",
+                  "description": "The token was deployed by a high-risk address, which may be associated with fraud, exploits, or other malicious activities.",
+                  "isHit": false,
+                  "order": 11,
+                  "riskType": "CAUTION"
+                },
+                {
+                  "title": "Hacking Risk Not Found",
+                  "description": "This token is associated with hacking incident, hackers may gain control over this contract.",
+                  "isHit": false,
+                  "order": 12,
+                  "riskType": "RISK"
+                },
+                {
+                  "title": "Upgrade Risk Not Found",
+                  "description": "Upgradeable contract means the token contract can potentially change rules and may introduce malicious functions.",
+                  "isHit": false,
+                  "order": 14,
+                  "riskType": "CAUTION"
+                },
+                {
+                  "title": "Modifiable Tax Not Found",
+                  "description": "Modified tax means tax rate can be changed and may affect the cost to the user when buying and selling.",
+                  "isHit": false,
+                  "order": 15,
+                  "riskType": "RISK"
+                },
+                {
+                  "title": "Freezable Authority Accounts Not Found",
+                  "description": "Such accounts means your tokens may be frozen, resulting in potential asset loss.",
+                  "isHit": false,
+                  "order": 16,
+                  "riskType": "RISK"
+                },
+                {
+                  "title": "Contract Code Verified",
+                  "description": "Contract code verification checks if the contract has been reviewed and matches the deployed version on the blockchain, reflecting the project's transparency.",
+                  "isHit": false,
+                  "order": 100,
+                  "riskType": "CAUTION"
+                }
+              ]
+            }
+          ],
+          "riskAlert": null
+        },
+        "success": true
+      }
+    },
+    "unsupportedBinanceNvdab": {
+      "recordedAt": "2026-10-01T13:51:17.226Z",
+      "success": true,
+      "code": "000000",
+      "hasResult": false,
+      "isSupported": false
+    }
+  },
+  "independentAuditCandidate": {
+    "recordedAt": "2026-10-01T14:06:33.457Z",
+    "mode": "read-only-candidate",
+    "auditDate": "2025-04-03",
+    "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+    "artifact": {
+      "reviewId": "candidate-usdt-etherauthority-2025-04-03",
+      "publisherId": "etherauthority",
+      "reportUrl": "https://raw.githubusercontent.com/EtherAuthority/Audit/59d033e81b747496ab2ab0c2d4f9e07f31c68507/Binance-BSC-USD.pdf",
+      "expectedDigest": "94cedb0cb27d4266ce9dd6414775ab79708ef75f6a205c65e050d2453932014f",
+      "observedDigest": "94cedb0cb27d4266ce9dd6414775ab79708ef75f6a205c65e050d2453932014f",
+      "state": "verified",
+      "observedAt": "2026-10-01T14:06:33.457Z",
+      "expiresAt": "2026-10-01T14:07:33.457Z"
+    },
+    "qualifiedForTrading": false,
+    "reasons": [
+      "Historical address-named audit; no published runtime/source checksum in the inspected scope",
+      "Does not establish current controller custody or complete current fingerprint review",
+      "Published findings and present mint caution remain unapproved"
+    ]
+  },
+  "scope": "Read-only source/governance and document integrity; no live approval or risk exception"
+}

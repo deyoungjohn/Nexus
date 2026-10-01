@@ -10,23 +10,23 @@ inspectable evidence and recoverable sequential execution.
 
 ## Current status
 
-- P5.5d/P7.1 public source/governance research completed: recovered the NVDAB
-  beacon with an exact local runtime/metadata rebuild; resolved the two contract
-  authorities to upgradeable OperatorWallet/BurnWallet proxies. Sentio/Blast
-  agree at recorded block 125081086, including 12 permission probes per source.
-  Centralized owner/admin upgrade powers remain review findings. Local evidence
-  is not yet consumed by the production security collector; scanner coverage,
-  independent reviews and approved risk policy remain open. No application code,
-  review-registry or live-execution change. See the
-  [report](integrations/2026-10-01-bstocks-governance.md) and
-  [ADR 0027](decisions/0027-local-source-recovery-governance-evidence.md).
-  Current PostgreSQL baseline fails with ECONNREFUSED; the database-free baseline
-  passes 129 tests and skips 13 database suites. The September 30 full 171-test
-  PostgreSQL result below is historical, not current database validation.
-  Final stable-file `./scripts/check.sh` passed 129 application tests plus three
-  research regressions, with 13 database suites skipped; strict typecheck and
-  both builds passed. Public five-source rebuild/hash and 24 probe assertions
-  passed; supplementary memory write/retrieval and `git diff --check` passed.
+- P5.5d/P7.1 recovered source/governance integration implemented: immutable
+  source certificates and canonical OperatorWallet/BurnWallet adapters now resolve
+  all nine NVDAB execution components and eleven current authorities. Sentio and
+  Blast independent nearby-block collections agree on full fingerprints. Explicit
+  Binance/GoPlus coverage and review-v2 publisher/scope/PDF-digest verification
+  prevent absent fields or historical reports from clearing live admission.
+  Found a verified historical EtherAuthority USDT audit candidate; no qualified
+  current full-scope USDT/NVDAB review is configured. Scanner gaps, mint/shared-
+  creator warnings and centralized governance findings remain unapproved; live
+  security clearance and overall P5.5/P7 completion remain open. See the
+  [current report](integrations/2026-10-01-security-collector.md) and
+  [ADR 0028](decisions/0028-source-governance-and-independent-review-intake.md).
+  PostgreSQL connectivity is restored: current baseline passed 171 application
+  tests plus three research tests with no failures/skips. The prior task's
+  ECONNREFUSED/database-free result remains recorded as historical evidence.
+  Final PostgreSQL-backed ./scripts/check.sh passed 186 application and three
+  research tests with zero failures/skips, strict typecheck and both builds.
 - Cross-agent workspace initialized.
 - Shared MCP memory initialized with the `Nexus` project entity; all four initial
   observations were retrieved successfully through `open_nodes` on 2026-09-25.

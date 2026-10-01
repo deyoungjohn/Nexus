@@ -14,7 +14,8 @@
     "build": "tsc -p tsconfig.json",
     "db:migrate": "npm run build && node dist/ledger/migrate-cli.js",
     "demo": "npm run build && node dist/demo.js",
-    "attestation": "npm run build && node dist/market-gate/attestation-cli.js"
+    "attestation": "npm run build && node dist/market-gate/attestation-cli.js",
+    "security:tokens": "npm run build && node dist/security/token-security-cli.js"
   },
   "devDependencies": {
     "@modelcontextprotocol/server-memory": "2026.8.31",

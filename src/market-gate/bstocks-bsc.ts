@@ -71,6 +71,7 @@ export interface BStocksBscQuantitySnapshot {
   readonly observedAt: string;
   readonly expiresAt: string;
   readonly sourceBlock: bigint;
+  readonly sourceBlockHash: string;
   readonly rawDecimals: 18;
   readonly uiMultiplier: bigint;
   readonly pendingMultiplier: bigint | null;
@@ -78,6 +79,7 @@ export interface BStocksBscQuantitySnapshot {
   readonly tokenPaused: boolean;
   readonly mappingRevision: string;
   readonly control: BStocksBscControlFingerprint;
+  readonly authorityMembers: readonly string[];
 }
 
 export interface BStocksBscQuantityRequest {
@@ -86,6 +88,9 @@ export interface BStocksBscQuantityRequest {
   readonly rpcUrl: string;
   readonly maxBlockAgeMs: number;
   readonly now?: string;
+  /** Optional shared security block; both fields must be provided together. */
+  readonly blockNumber?: bigint;
+  readonly blockHash?: string;
 }
 
 /** Read-only identity and display mapping. It is not P5 reference-share or audit evidence. */
@@ -95,7 +100,9 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
     || input.tokenAddress.toLowerCase() !== BSTOCKS_BSC_NVDAB
     || !/^https:\/\//.test(input.rpcUrl)
     || !Number.isSafeInteger(input.maxBlockAgeMs) || input.maxBlockAgeMs <= 0
-    || (input.now !== undefined && !Number.isFinite(Date.parse(input.now)))) return null;
+    || (input.now !== undefined && !Number.isFinite(Date.parse(input.now)))
+    || ((input.blockNumber === undefined) !== (input.blockHash === undefined))
+    || (input.blockNumber !== undefined && input.blockNumber < 0n)) return null;
   let id = 0;
   const rpc = async (method: string, params: unknown[]): Promise<unknown> => {
     const requestId = ++id;
@@ -105,23 +112,27 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
       signal: AbortSignal.timeout(5000) });
     if (!response.ok) throw new Error("RPC unavailable");
     const body = await response.json() as Record<string, unknown>;
-    if (body.error || body.id !== requestId) throw new Error("RPC error");
+    if (body.jsonrpc !== "2.0" || body.error || body.id !== requestId) throw new Error("RPC error");
     return body.result;
   };
   const call = async (to: string, abi: Interface, method: string,
-    args: readonly unknown[], block: string): Promise<readonly unknown[]> => {
-    const result = await rpc("eth_call", [{ to, data: abi.encodeFunctionData(method, args) }, block]);
+    args: readonly unknown[], block: unknown, from?: string): Promise<readonly unknown[]> => {
+    const result = await rpc("eth_call", [{ to, ...(from ? { from } : {}), data: abi.encodeFunctionData(method, args) }, block]);
     if (typeof result !== "string") throw new Error("Invalid call result");
     return [...abi.decodeFunctionResult(method, result)];
   };
   try {
     if (await rpc("eth_chainId", []) !== "0x38") return null;
-    const block = await rpc("eth_blockNumber", []);
+    const block = input.blockNumber === undefined ? await rpc("eth_blockNumber", [])
+      : `0x${input.blockNumber.toString(16)}`;
     if (!hex(block)) return null;
     const header = await rpc("eth_getBlockByNumber", [block, false]);
     if (!header || typeof header !== "object") return null;
     const fields = header as Record<string, unknown>;
-    if (fields.number !== block || !hex(fields.timestamp)) return null;
+    if (fields.number !== block || !hex(fields.timestamp)
+      || typeof fields.hash !== "string" || !/^0x[0-9a-f]{64}$/.test(fields.hash)
+      || (input.blockHash !== undefined && fields.hash !== input.blockHash)) return null;
+    const blockRef = { blockHash: fields.hash, requireCanonical: true };
     const blockMs = BigInt(fields.timestamp) * 1000n;
     const nowMs = BigInt(input.now === undefined ? Date.now() : Date.parse(input.now));
     if (blockMs > nowMs || nowMs - blockMs > BigInt(input.maxBlockAgeMs)) return null;
@@ -129,23 +140,23 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
     const [tokenCode, beaconWord, implementationWord, decimals, core, extension, scheduledExtension,
       current, next, effective, hasPending, pending, complianceResult, pauseResult,
       adminRoleResult, issuerRoleResult, mintEnabledResult, burnEnabledResult] = await Promise.all([
-      rpc("eth_getCode", [token, block]), rpc("eth_getStorageAt", [token, BEACON_SLOT, block]),
-      rpc("eth_getStorageAt", [token, IMPLEMENTATION_SLOT, block]),
-      call(token, tokenAbi, "decimals", [], block),
-      call(token, tokenAbi, "supportsInterface", ["0xa60bf13d"], block),
-      call(token, tokenAbi, "supportsInterface", ["0x4bd27648"], block),
-      call(token, tokenAbi, "supportsInterface", ["0xeb0093dd"], block),
-      call(token, tokenAbi, "uiMultiplier", [], block),
-      call(token, tokenAbi, "newUIMultiplier", [], block),
-      call(token, tokenAbi, "effectiveAt", [], block),
-      call(token, tokenAbi, "hasPendingMultiplier", [], block),
-      call(token, tokenAbi, "pendingMultiplier", [], block),
-      call(token, tokenAbi, "compliance", [], block),
-      call(token, tokenAbi, "pauseManager", [], block),
-      call(token, tokenAbi, "DEFAULT_ADMIN_ROLE", [], block),
-      call(token, tokenAbi, "ISSUER_ROLE", [], block),
-      call(token, tokenAbi, "mintEnabled", [], block),
-      call(token, tokenAbi, "burnEnabled", [], block)
+      rpc("eth_getCode", [token, blockRef]), rpc("eth_getStorageAt", [token, BEACON_SLOT, blockRef]),
+      rpc("eth_getStorageAt", [token, IMPLEMENTATION_SLOT, blockRef]),
+      call(token, tokenAbi, "decimals", [], blockRef),
+      call(token, tokenAbi, "supportsInterface", ["0xa60bf13d"], blockRef),
+      call(token, tokenAbi, "supportsInterface", ["0x4bd27648"], blockRef),
+      call(token, tokenAbi, "supportsInterface", ["0xeb0093dd"], blockRef),
+      call(token, tokenAbi, "uiMultiplier", [], blockRef),
+      call(token, tokenAbi, "newUIMultiplier", [], blockRef),
+      call(token, tokenAbi, "effectiveAt", [], blockRef),
+      call(token, tokenAbi, "hasPendingMultiplier", [], blockRef),
+      call(token, tokenAbi, "pendingMultiplier", [], blockRef),
+      call(token, tokenAbi, "compliance", [], blockRef),
+      call(token, tokenAbi, "pauseManager", [], blockRef),
+      call(token, tokenAbi, "DEFAULT_ADMIN_ROLE", [], blockRef),
+      call(token, tokenAbi, "ISSUER_ROLE", [], blockRef),
+      call(token, tokenAbi, "mintEnabled", [], blockRef),
+      call(token, tokenAbi, "burnEnabled", [], blockRef)
     ]);
     const beacon = slotAddress(beaconWord);
     const compliance = complianceResult[0], pauseManager = pauseResult[0];
@@ -163,19 +174,19 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
       pauseCode, pausedResult, adminMembersResult, issuerMembersResult,
       complianceAdminResult, complianceOpsResult, complianceRoleResult,
       pauseAdminResult, pauseOpsResult] = await Promise.all([
-      rpc("eth_getCode", [beacon, block]),
-      call(beacon, beaconAbi, "implementation", [], block),
-      call(beacon, beaconAbi, "owner", [], block),
-      rpc("eth_getCode", [compliance, block]),
-      rpc("eth_getCode", [pauseManager, block]),
-      call(pauseManager, pauseAbi, "isTokenPaused", [token], block),
-      call(token, tokenAbi, "getRoleMembers", [adminRole], block),
-      call(token, tokenAbi, "getRoleMembers", [issuerRole], block),
-      call(compliance, rolesAbi, "getRoleMembers", [adminRole], block),
-      call(compliance, rolesAbi, "getRoleMembers", [ethersId("OPS_ROLE")], block),
-      call(compliance, rolesAbi, "getRoleMembers", [ethersId("COMPLIANCE_ROLE")], block),
-      call(pauseManager, rolesAbi, "getRoleMembers", [adminRole], block),
-      call(pauseManager, rolesAbi, "getRoleMembers", [ethersId("OPS_ROLE")], block)
+      rpc("eth_getCode", [beacon, blockRef]),
+      call(beacon, beaconAbi, "implementation", [], blockRef, token),
+      call(beacon, beaconAbi, "owner", [], blockRef),
+      rpc("eth_getCode", [compliance, blockRef]),
+      rpc("eth_getCode", [pauseManager, blockRef]),
+      call(pauseManager, pauseAbi, "isTokenPaused", [token], blockRef),
+      call(token, tokenAbi, "getRoleMembers", [adminRole], blockRef),
+      call(token, tokenAbi, "getRoleMembers", [issuerRole], blockRef),
+      call(compliance, rolesAbi, "getRoleMembers", [adminRole], blockRef),
+      call(compliance, rolesAbi, "getRoleMembers", [ethersId("OPS_ROLE")], blockRef),
+      call(compliance, rolesAbi, "getRoleMembers", [ethersId("COMPLIANCE_ROLE")], blockRef),
+      call(pauseManager, rolesAbi, "getRoleMembers", [adminRole], blockRef),
+      call(pauseManager, rolesAbi, "getRoleMembers", [ethersId("OPS_ROLE")], blockRef)
     ]);
     const implementation = implementationResult[0], owner = ownerResult[0];
     if (!code(beaconCode) || !nonzeroAddress(implementation) || !nonzeroAddress(owner)
@@ -197,7 +208,7 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
     const pauseOps = members(pauseOpsResult, true);
     if (!admins || !issuers || !complianceAdmins || !complianceOps
       || !complianceMembers || !pauseAdmins || !pauseOps) return null;
-    const implementationCode = await rpc("eth_getCode", [implementation, block]);
+    const implementationCode = await rpc("eth_getCode", [implementation, blockRef]);
     if (!code(implementationCode)) return null;
     const pendingNow = hasPending[0];
     if (pendingNow) {
@@ -223,15 +234,20 @@ export async function fetchBStocksBscQuantity(input: BStocksBscQuantityRequest,
       pauseOpsMembersHash: roleHash(pauseOps),
       mintEnabled: mintEnabledResult[0], burnEnabled: burnEnabledResult[0]
     };
+    const finalHeader = await rpc("eth_getBlockByNumber", [block, false]);
+    if (!finalHeader || typeof finalHeader !== "object"
+      || (finalHeader as Record<string, unknown>).hash !== fields.hash
+      || (finalHeader as Record<string, unknown>).number !== block) return null;
     const observedAt = new Date(Number(blockMs)).toISOString();
     return { instrumentId: input.instrumentId, source: `bstocks-bsc:${token}`,
       observedAt, expiresAt: new Date(Number(blockMs) + input.maxBlockAgeMs).toISOString(),
-      sourceBlock: BigInt(block), rawDecimals: 18, uiMultiplier: current[0],
+      sourceBlock: BigInt(block), sourceBlockHash: fields.hash, rawDecimals: 18, uiMultiplier: current[0],
       pendingMultiplier: pendingNow ? next[0] : null,
       pendingEffectiveAt: pendingNow ? new Date(Number(effective[0]) * 1000).toISOString() : null,
       tokenPaused: pausedResult[0],
       mappingRevision: `bsc:${token}:${current[0]}:${next[0]}:${effective[0]}:${Object.values(control).join(":")}`,
-      control };
+      control, authorityMembers: [...new Set([owner.toLowerCase(), ...admins, ...issuers,
+        ...complianceAdmins, ...complianceOps, ...complianceMembers, ...pauseAdmins, ...pauseOps])].sort() };
   } catch { return null; }
 }
 

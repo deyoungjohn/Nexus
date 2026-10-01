@@ -14,9 +14,10 @@ const blockSeconds = BigInt(Date.parse("2026-09-27T15:00:00.000Z") / 1000);
 const snapshot: BStocksBscQuantitySnapshot = {
   instrumentId: "nvdab", source: `bstocks-bsc:${BSTOCKS_BSC_NVDAB}`,
   observedAt: "2026-09-27T15:00:00.000Z", expiresAt: "2026-09-27T15:00:10.000Z",
-  sourceBlock: 256n, rawDecimals: 18, uiMultiplier: 10n ** 18n,
+  sourceBlock: 256n, sourceBlockHash: `0x${"a".repeat(64)}`, rawDecimals: 18, uiMultiplier: 10n ** 18n,
   pendingMultiplier: null, pendingEffectiveAt: null, tokenPaused: false,
   mappingRevision: "reviewed:1",
+  authorityMembers: [],
   control: { token: BSTOCKS_BSC_NVDAB, tokenCodeHash: "token-code",
     beacon: "beacon", beaconCodeHash: "beacon-code", implementation: "implementation",
     implementationCodeHash: "implementation-code", beaconOwner: "owner",

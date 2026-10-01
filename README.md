@@ -67,6 +67,17 @@ amounts are not USD valuations, and it cannot sign or submit transactions.
 `npm test`, `npm run typecheck` and `npm run build` can be run individually;
 `./scripts/check.sh` is the required combined check. Compiled output is ignored.
 
+## Token security inspection
+
+Inspect the initial USDT/NVDAB security scope with `npm run security:tokens`.
+This read-only command checks scanner coverage, executable source certificates,
+current inner wallet governance and canonical BSC state; blocking findings exit 2.
+The gate requires both route-token reports and a qualified current review with
+verified primary-publication PDF bytes and exact component scope. Verified source
+or report bytes alone do not clear risks. The empty registry enables no live asset.
+See the [security runbook](docs/runbooks/token-security.md) and
+[current findings](docs/integrations/2026-10-01-security-collector.md).
+
 ## Portable project memory
 
 Created from Portable. Repository documentation is authoritative; shared MCP

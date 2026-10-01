@@ -441,3 +441,23 @@ suites skipped, strict typecheck and both builds. Historical September 30
   no current 171-test PostgreSQL success is claimed. node --check, bash -n,
   stored source/hash/block/privacy assertions, all 24 real permission-result
   assertions, git diff --check and supplementary memory retrieval passed.
+
+## 2026-10-01 — P5.5d/P7.1 recovered source and current governance integration
+
+Integrated the recovered source certificates and live canonical wallet governance
+into the security collector, closing the nine-component NVDAB source/governance
+integration gap. Added explicit scanner coverage and independent-report-v2
+publication/byte/scope verification. See [ADR 0028](decisions/0028-source-governance-and-independent-review-intake.md)
+and [findings](integrations/2026-10-01-security-collector.md).
+
+Public Sentio/Blast collections agree on full fingerprints at nearby blocks.
+The recovered USDT audit is a verified historical candidate, not current complete
+clearance. No qualified NVDAB review was recovered; scanner coverage and known
+risk findings remain blocking under current policy. The user has no audit URL;
+building/testing can continue without one. No live asset or risk exception was
+enabled, and other P5.5/P7 production gates remain open. Recovery stays independent.
+
+PostgreSQL connectivity is restored. Baseline passed 171 application plus three
+research tests; final ./scripts/check.sh passed 186 application plus three research
+tests, zero failures/skips, strict typecheck and both builds. Logs document fixture
+compile corrections and the exact remaining gates; unrelated pending work retained.

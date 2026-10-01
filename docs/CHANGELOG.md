@@ -564,3 +564,25 @@
   no current 171-test PostgreSQL success is claimed. node --check, bash -n,
   stored source/hash/block/privacy assertions, all 24 real permission-result
   assertions, git diff --check and supplementary memory retrieval passed.
+
+## 2026-10-01 — Codex — Integrate source, current governance and independent-review intake
+
+- Change/reason: production security collector consumes exact recovered-source
+  certificates and canonical inner wallet governance, exposing nine NVDAB execution
+  components. Added explicit scanner coverage, review-v2 publisher/component scope
+  and bounded PDF-byte verification, CLI intake fingerprints, fifteen regressions,
+  ADR 0028, dated observations and updated specification/runbook/state/plan/logs.
+- Compatibility: existing latest-head API retained; optional paired quantity frame
+  added. Legacy review records parse but cannot clear live admission. New governance,
+  coverage and artifact evidence participates in existing approval hashes. Strict
+  risk blocking and historical recovery accounting preserved; no wallet operation,
+  risk exception, provider pivot or enabled live asset. Registry remains empty.
+- Findings: public two-source fingerprints agree with complete source/governance
+  closure. USDT historical audit bytes verify, but no qualified current full-scope
+  review exists. NVDAB Binance audit unsupported; provider gaps and mint/shared-
+  creator/governance findings remain unapproved. Building/testing can continue.
+- Verification: restored PostgreSQL baseline passed 171 application plus three
+  research tests. Final PostgreSQL-backed ./scripts/check.sh passed 186 application
+  and three research tests, zero failures/skips, strict typecheck and both builds.
+  Live read-only collectors correctly exit 2; test-fixture typing corrections are
+  recorded in the engineering log. Existing unrelated pending work retained.

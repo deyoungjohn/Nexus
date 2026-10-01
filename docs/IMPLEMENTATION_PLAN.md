@@ -94,3 +94,22 @@ independent contract-scope reviews and explicitly approved risk policy remain
 open; no scanner finding or centralized governance risk was silently accepted.
 P5.5/P7 live gates remain open. Production recovery configuration is unchanged;
 Blast passed these research reads, not complete recovery qualification.
+
+## 2026-10-01 — P5.5d/P7.1 source/governance and independent-review intake increment
+
+Completed the preceding next increment: exact recovered-source certificates,
+canonical inner wallet governance with nine-component execution closure, explicit
+scanner coverage and review-v2 publisher/artifact/component-scope verification.
+CLI exposes current intake fingerprints. The dated
+[results](integrations/2026-10-01-security-collector.md) and
+[ADR 0028](decisions/0028-source-governance-and-independent-review-intake.md)
+preserve interfaces, canonical quantity binding and strict risk blocking.
+
+Remaining P5.5d gates: complete supported scanner coverage for both route assets,
+qualified current independent contract/control reviews and an explicitly approved
+policy for positive mint/shared-creator/governance findings. A verified historical
+USDT report is a candidate only; the review registry remains empty. Public-source
+recovery and software integration are complete for this profile, while external
+review/coverage and risk acceptance are not. Other P5.5 economic/access/reference/
+session/event and P7 guarded-runtime/production exit gates remain unchanged.
+Building and PostgreSQL recovery testing can continue without enabling live trades.

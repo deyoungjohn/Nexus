@@ -35,6 +35,22 @@ required_files=(
   docs/specifications/0003-portfolio-coordinator.md
   migrations/0001_ledger.sql
   migrations/0002_coordinator.sql
+  config/token-security-reviews.json
+  src/security/token-security.ts
+  src/security/bsc-token-security.ts
+  src/security/token-security-cli.ts
+  src/security/reviewed-source-pins.ts
+  src/security/bstocks-governance.ts
+  src/security/review-publishers.ts
+  src/security/review-artifact.ts
+  test/security-collector.test.ts
+  test/security-collector-fixture.ts
+  docs/decisions/0028-source-governance-and-independent-review-intake.md
+  docs/integrations/2026-10-01-security-collector.md
+  docs/integrations/2026-10-01-security-collector.json
+  docs/decisions/0026-full-token-security-evidence.md
+  docs/specifications/0008-token-security.md
+  docs/runbooks/token-security.md
   package.json
   package-lock.json
   tsconfig.json

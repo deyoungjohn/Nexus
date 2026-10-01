@@ -17,3 +17,4 @@ import "./ondo-beacon-risk.test.js";
 import "./xstocks-bsc.test.js";
 import "./bstocks-bsc.test.js";
 import "./bstocks-transfer.test.js";
+import "./security-collector.test.js";
