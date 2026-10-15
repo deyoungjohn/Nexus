@@ -104,3 +104,34 @@ test("P7 BSC replacement scan fails closed on incomplete and noncanonical eviden
   }) as typeof fetch;
   assert.equal(await fetchEoaBscObservation(scanned, reorgFetcher), null);
 });
+
+test('P7 archive nonce diagnosis finds a distant canonical replacement with logarithmic reads',async()=>{
+  const anchor={blockNumber:100n,blockHash:`0x${'1'.repeat(64)}`,nonce:5n};
+  const replacementHash=`0x${'c'.repeat(64)}`, transition=900000n, head=1000000n;
+  let counts=0,fullBlocks=0;
+  const make=(mode='good'):typeof fetch=>(async(_url,init)=>{
+    const b=JSON.parse(String(init?.body));const tag=b.params[0];
+    let result:unknown;
+    if(b.method==='eth_chainId')result='0x38';
+    else if(b.method==='eth_blockNumber')result=`0x${head.toString(16)}`;
+    else if(b.method==='eth_getTransactionCount'){
+      counts++;const n=b.params[1]==='latest'?head:BigInt(b.params[1]);
+      result=mode==='missing-history'&&n!==head?null:n>=transition?'0x8':'0x5';
+    }else if(b.method==='eth_getTransactionReceipt')result=tag===replacementHash&&mode!=='missing-receipt'
+      ?{from:wallet,transactionHash:replacementHash,blockNumber:`0x${transition.toString(16)}`,blockHash,status:'0x1'}:null;
+    else {const n=BigInt(tag);if(b.params[1])fullBlocks++;
+      result={number:tag,hash:n===100n?(mode==='anchor-reorg'?blockHash:anchor.blockHash):blockHash,
+        transactions:n===transition&&mode!=='missing-tx'?[{from:wallet,hash:replacementHash,nonce:'0x7',
+          blockNumber:mode==='wrong-tx-block'?'0x1':tag,
+          blockHash:mode==='wrong-tx-hash'?anchor.blockHash:blockHash}]:[]};}
+    return new Response(JSON.stringify({jsonrpc:'2.0',id:b.id,result}));
+  }) as typeof fetch;
+  const input={...request,nonce:7n,nonceHistoryAnchor:anchor};
+  const observed=await fetchEoaBscObservation(input,make());
+  assert.equal(observed?.replacement?.receipt.blockNumber,transition);
+  assert.equal(observed?.replacement?.receipt.hash,replacementHash);
+  assert.ok(counts<=25);assert.equal(fullBlocks,1);
+  for(const mode of ['missing-history','missing-receipt','anchor-reorg','missing-tx','wrong-tx-block','wrong-tx-hash'])
+    assert.equal(await fetchEoaBscObservation(input,make(mode)),null);
+  assert.equal(await fetchEoaBscObservation({...input,scanFromBlock:100n},make()),null);
+});

@@ -30,7 +30,7 @@ export interface ChainlinkBscSettlementRequest extends Omit<ChainlinkBscEquityRe
 
 type Feed = { readonly proxy: string; readonly description: string };
 type Round = { readonly answer18: bigint; readonly updatedAt: string;
-  readonly receivedAt: string; readonly source: string };
+  readonly receivedAt: string; readonly source: string; readonly observation?: import("../pilot/price-integrity.js").PilotFeedObservation };
 
 const word = (value: string, index: number): bigint | null => {
   if (!/^0x(?:[0-9a-fA-F]{64})+$/.test(value) || value.length < 2 + 64 * (index + 1)) return null;
@@ -46,7 +46,7 @@ const description = (value: string): string | null => {
 
 /** Reads a single Chainlink round at one BSC block; stale/unsupported data returns null. */
 async function fetchRound(input: Omit<ChainlinkBscEquityRequest, "underlyingId">,
-  feed: Feed, fetcher: typeof fetch): Promise<Round | null> {
+  feed: Feed, fetcher: typeof fetch, inspect=false): Promise<Round | null> {
   if (!/^https:\/\//.test(input.rpcUrl)
     || !Number.isSafeInteger(input.maxBlockAgeMs) || input.maxBlockAgeMs <= 0
     || !Number.isSafeInteger(input.maxReferenceAgeMs) || input.maxReferenceAgeMs <= 0
@@ -74,7 +74,8 @@ async function fetchRound(input: Omit<ChainlinkBscEquityRequest, "underlyingId">
     const timestamp = fields.timestamp;
     if (typeof timestamp !== "string" || !/^0x[0-9a-fA-F]+$/.test(timestamp)) return null;
     const call = async (selector: string): Promise<string> => {
-      const value = await rpc("eth_call", [{ to: feed.proxy, data: `0x${selector}` }, block]);
+      const ref=inspect?{blockHash:fields.hash,requireCanonical:true}:block;
+      const value = await rpc("eth_call", [{ to: feed.proxy, data: `0x${selector}` }, ref]);
       if (typeof value !== "string") throw new Error("Invalid feed response");
       return value;
     };
@@ -86,6 +87,18 @@ async function fetchRound(input: Omit<ChainlinkBscEquityRequest, "underlyingId">
     const updatedAt = word(round, 3), answeredInRound = word(round, 4);
     const blockMs = BigInt(timestamp) * 1000n;
     const nowMs = BigInt(input.now === undefined ? Date.now() : Date.parse(input.now));
+    if(inspect) {
+      if(roundId===null||answer===null||startedAt===null||answeredInRound===null||updatedAt===null
+        ||updatedAt>8640000000000n||startedAt>8640000000000n||typeof fields.hash!=="string"||!/^0x[0-9a-f]{64}$/.test(fields.hash))return null;
+      const end=await rpc("eth_getBlockByNumber",[block,false]) as Record<string,unknown>;
+      if(end?.hash!==fields.hash||end.number!==block)return null;
+      const signedAnswer=answer>=1n<<255n?answer-(1n<<256n):answer;
+      const observation={source:`chainlink-bsc:${feed.proxy}`,roundId,answeredInRound,answer18:signedAnswer*10n**10n,
+        startedAt:new Date(Number(startedAt*1000n)).toISOString(),updatedAt:new Date(Number(updatedAt*1000n)).toISOString(),observedAt:new Date(Number(nowMs)).toISOString(),
+        sourceBlock:BigInt(block),sourceBlockHash:fields.hash,blockTimestamp:new Date(Number(blockMs)).toISOString()};
+      return {source:observation.source,updatedAt:observation.updatedAt,receivedAt:observation.observedAt,
+        answer18:observation.answer18,observation};
+    }
     if (!roundId || !answer || answer >= 1n << 255n || !startedAt || !updatedAt
       || answeredInRound === null || answeredInRound < roundId
       || startedAt > updatedAt || updatedAt > blockMs / 1000n
@@ -126,4 +139,10 @@ export async function fetchChainlinkBscSettlement(input: ChainlinkBscSettlementR
     valuationUnit: "USD-18", assetId: BSC_USDT_ASSET,
     lowerValueNumerator: lower, upperValueNumerator: upper,
     denominator: 10n ** 18n };
+}
+
+/** Retains invalid answers/clocks for P1/P3 diagnosis; no invalid sample authorizes a trade. */
+export async function fetchPilotFeedObservation(input:Omit<ChainlinkBscEquityRequest,'underlyingId'>,
+  kind:'equity'|'settlement',fetcher:typeof fetch=fetch) {
+  return (await fetchRound(input,kind==='equity'?BSC_EQUITY_FEEDS.NVDA:BSC_USDT_USD_FEED,fetcher,true))?.observation??null;
 }

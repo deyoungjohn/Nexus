@@ -534,6 +534,401 @@
   PostgreSQL suites skipped. Post-change check passed 66 tests with the same
   two skips, plus typecheck/build/config; `git diff --check` passed.
 
+## 2026-09-28 — EOA-first wallet priority and route-specific eligibility
+
+- Agent/client: Codex, following the owner's EOA-first direction.
+- Change: Added [ADR 0016](decisions/0016-eoa-first-wallet-execution.md),
+  clarified ADR 0014, and updated the implementation plan, Market Gate
+  specification, project state and phase/engineering logs.
+- Reason: The blueprint's owner-approved MVP can use an EOA without the
+  Agentic Wallet CLI, and the public bStocks FAQ does not state a universal
+  Binance account-status prerequisite for direct external-wallet DEX use.
+  Provider geographic and address restrictions remain separate requirements.
+- Behavior/compatibility impact: Documentation and delivery priority only;
+  no signing, trade, live instrument or Market Gate behavior changed. P6 and
+  synthetic EOA P7 work may advance while P5.5 live bStocks gates remain open.
+- Verification: Baseline `./scripts/check.sh` passed 66 tests with two
+  PostgreSQL suites skipped, plus typecheck/build/config. Post-change check
+  passed the same 66 tests and two skips, plus typecheck/build/config;
+  `git diff --check` passed.
+
+## 2026-09-28 — bStocks access flow and synthetic P6/P7 foundations
+
+- Agent/client: Codex.
+- Change: Documented the bStocks server-side access flow; added strict pure
+  rules/scheduling, EOA EIP-712 exact-leg approval and signed EIP-1559 swap
+  verification, seven named tests, specifications 0005/0006 and ADR 0017.
+- Reason: Advance the portable phase plan under the owner's EOA-first direction
+  while retaining bStocks jurisdiction and issuer gates.
+- Behavior/compatibility impact: New offline APIs only. Existing P3/P4/P5
+  behavior is preserved. No live bStocks eligibility source, signer or trade
+  broadcaster was enabled. P6 and P7 remain in progress.
+- Verification: Baseline `./scripts/check.sh` passed 66 tests and two
+  PostgreSQL skips; post-change check passed 73 tests and two skips, plus
+  typecheck, build and configuration checks. The database suites require
+  `TEST_DATABASE_URL` and were not run in this environment.
+
+## 2026-09-28 — P5.5c bStocks access-control core
+
+- Agent/client: Codex.
+- Change: Added short-lived EOA/session challenge binding, a fail-closed
+  bStocks access composer over reviewed jurisdiction, country, product and
+  on-chain transfer checks, and required route-bound access evidence in P5.
+  Added five named tests, ADR 0018 and updated the runbook, plan, state and logs.
+- Reason: Enforce the bStocks third-party geographic and wallet restrictions
+  inside Nexus before any exact owner-approved leg can be prepared.
+- Behavior/compatibility impact: bStocks P5 inputs without the new access
+  evidence now block; non-bStocks gate behavior is unchanged. No production
+  country endpoint, web runtime, signing or trade submission is enabled.
+- Verification: Baseline `./scripts/check.sh` passed 73 tests with two database
+  skips. Final check passed 78 tests with two database skips, plus typecheck,
+  build and configuration checks; `git diff --check` passed.
+## 2026-09-28 — P7 EOA persistence and recovery groundwork
+
+- Agent/client: Codex.
+- Change: Added migration 0003, default-paused EOA owner/nonce binding,
+  transactional signed-leg persistence and one-time pre-leg claim, read-only
+  canonical BSC receipt observation, recovery states, exact balance-delta
+  reconciliation and sequential/partial-basket decisions. Added eight named
+  tests, ADR 0019 and updated plan, state, specification and logs.
+- Reason: Preserve the signed transaction identity before any network action
+  and prevent timeouts or crashes from causing blind duplicate submissions.
+- Behavior/compatibility impact: New P7 APIs and schema; existing P3 legacy
+  interfaces remain. No broadcaster or live instrument was enabled. P7 remains
+  in progress because PostgreSQL and chain recovery integration are unverified.
+- Verification: Baseline `./scripts/check.sh` passed 78 tests with two database
+  skips. Post-change check passed 85 tests with three skips, plus typecheck,
+  build and configuration. `git diff --check` passed. The new P7 database suite
+  requires `TEST_DATABASE_URL` and was not run here.
+- Review correction: a deep reorg after reconciliation now marks the leg
+  reorged, pauses execution and advances the portfolio revision; automatic
+  execution cannot use the stale balance snapshot. Added pure and PostgreSQL
+  regression assertions. The PostgreSQL path remains unverified locally.
+
+## 2026-09-29 — P7 database-verification record
+
+- Agent/client: Codex.
+- Change: Recorded the supplied-test-DB attempt and its sandbox connection
+  failure in the engineering log, project log and state. No application code
+  or database data changed.
+- Reason: Preserve the exact verification gate and distinguish an environment
+  permission failure from a migration or store defect.
+- Behavior/compatibility impact: None; P7 remains in progress and live
+  execution disabled.
+- Verification: `./scripts/check.sh` with `TEST_DATABASE_URL` set passed 85
+  tests and failed three PostgreSQL suites at `connect EPERM 127.0.0.1:5432`
+  before running database assertions. The no-database check after the
+  documentation update passed 85 tests with three skips, plus typecheck,
+  build and configuration checks. A retry after the owner reported the
+  container ready failed at the same sandbox TCP boundary.
+- Follow-up: owner reports that the full check passes from the host shell with
+  the disposable test database. The agent's numeric-localhost retry still
+  passed 85 non-database tests and failed P3/P4/P7 before connecting with
+  sandbox `EPERM`. Recorded host-side execution as the environment fix; no
+  application behavior changed, and the host output was not captured here.
+
+## 2026-09-29 — Correct P7 PostgreSQL validation record
+
+- Agent/client: Codex.
+- Change: Marked the current P7 migration/store integration test as passed on
+  the owner's host run: 101 passing tests, including the named P7 PostgreSQL
+  signed-leg suite. Updated plan, state, specification, ADR and logs; no
+  application code changed.
+- Reason: Earlier status conflated the agent sandbox's `EPERM` with the host
+  result and understated verified P7 progress.
+- Behavior/compatibility impact: Documentation only. Remaining P7 recovery
+  and guarded-broadcast gates still block live execution.
+- Verification: Owner-provided host result above; agent pre-change no-database
+  `./scripts/check.sh` passed 85 tests with three skips, typecheck, build and
+  configuration. Agent post-change no-database check passed the same 85 tests
+  with three skips, plus typecheck, build and configuration.
+
+## 2026-09-29 — Independently verify P7 PostgreSQL store
+
+- Agent/client: Codex.
+- Change: Updated the implementation plan, project state, EOA specification,
+  ADR 0019 and logs to record direct PostgreSQL-backed validation after
+  workspace network access was enabled. No application code changed.
+- Reason: Replace the earlier sandbox-limited verification status with an
+  accurate result from this session.
+- Behavior/compatibility impact: Documentation only; P7 and live bStocks
+  remain gated by the other documented requirements.
+- Verification: `TEST_DATABASE_URL`-backed `./scripts/check.sh` passed 101
+  tests, zero failures/skips, including the P7 signed-leg store suite;
+  typecheck, build and configuration passed. The post-documentation run
+  passed the same 101 tests with no skips, plus typecheck, build and
+  configuration.
+
+## 2026-09-29 — P7 chain-evidence adapters
+
+- Agent/client: Codex.
+- Change: Added a read-only chain-56 native/ERC20 balance reader pinned to an
+  expected block hash and a bounded canonical same-wallet/same-nonce mined
+  replacement scan. Updated specification, plan, state, ADR and phase logs.
+- Reason: Supply concrete chain evidence for eventual P7 reconciliation while
+  keeping ambiguous nonce use and reorgs unresolved.
+- Behavior/compatibility impact: Additive optional read-only APIs; existing
+  observation requests and store behavior remain compatible. No broadcaster
+  or live bStocks execution is enabled.
+- Verification: PostgreSQL-backed `./scripts/check.sh` passed 106 tests, zero
+  failures/skips, plus typecheck, build and configuration. Synthetic tests
+  cover pinned balances, reorg rejection, replacement detection and incomplete
+  evidence. Remaining gates are recorded in specification 0006 and state.
+
+## 2026-09-29 — Harden persisted EOA recovery
+
+- Agent/client: Codex.
+- Change: Required exact-receipt-block, complete tracked-asset and native-gas
+  snapshots; added store-derived BSC observation and a read-only finalized
+  balance-candidate builder; blocked unpause with unresolved execution.
+  Expanded PostgreSQL restart and synthetic adversarial tests.
+- Reason: Prevent a later-block or incomplete snapshot from silently changing
+  portfolio accounting, and prevent a deep reorg from being unpaused without
+  repair.
+- Behavior/compatibility impact: Additive recovery APIs; reconciliation and
+  unpause reject formerly accepted unsafe inputs. No live broadcaster or trade.
+- Verification: PostgreSQL-backed `./scripts/check.sh` passed 109 tests, zero
+  failures/skips, plus strict typecheck, build and configuration. The balance
+  candidate is exercised against the real test store with mocked BSC RPC.
+  Production reconciliation still needs receipt-effect proof and authorized
+  source wiring.
+
+## 2026-09-29 — Require receipt effects for EOA recovery
+
+- Agent/client: Codex.
+- Change: Added canonical BSC receipt/log/gas reader, exact ERC20 Transfer and
+  native-gas proof, migration 0004 for the proof digest, and a PostgreSQL
+  recovery driver. Added pure adversarial and real-database recovery tests;
+  recorded the supported token behavior in ADR 0020.
+- Reason: A successful receipt and a balance delta alone cannot attribute the
+  wallet's token and gas changes to the tracked transaction.
+- Behavior/compatibility impact: Reconciliation now rejects missing or
+  contradictory receipt effects and nonzero native transaction value. No live
+  broadcaster, wallet action or bStocks execution is enabled.
+- Verification: PostgreSQL-backed `./scripts/check.sh` passed 112 tests with
+  zero failures/skips, plus typecheck, build and configuration. Invalid proof
+  and incomplete gas leave the submitted reservation frozen; valid evidence
+  reconciles once and stores a digest.
+
+## 2026-09-29 — Add labelled P8 fixture web workflow
+
+- Agent/client: Codex.
+- Change: Added a Next.js/React workspace with read-only EOA discovery,
+  synthetic basket planning, bounded/expiring fixture review, local-only
+  acknowledgement, sample outcome history, JSON export and browser pause.
+  Added five model tests, specification 0007 and ADR 0021; included the web
+  build in `./scripts/check.sh`.
+- Reason: Make the blueprint's decision flow reviewable while P5.5 and P7 live
+  evidence/recovery gates remain open.
+- Behavior/compatibility impact: New `npm run web:dev`, `web:build` and
+  `web:start` commands; no changes to headless execution interfaces. Browser
+  fixture records have no wallet or server authority. Live trading remains
+  disabled. The sample spend ceiling now stays within the contribution even
+  with a one-cent reserve.
+- Verification: PostgreSQL-backed baseline passed 112 tests. Final
+  `./scripts/check.sh` passed 117 tests, zero failures/skips, plus strict
+  typecheck, headless/Next.js builds and configuration; a local production
+  HTTP smoke returned 200 with fixture labels. The one-cent-reserve regression
+  assertion passed. Broader accessibility review remains open.
+- Additional verification: three Chromium Playwright tests passed for the
+  local end-to-end walkthrough, error/pause handling and mobile keyboard/wallet
+  discovery. `npm run web:e2e` is a separate command requiring an installed
+  Chromium binary. The post-browser-test `./scripts/check.sh` passed 117 tests,
+  zero failures/skips, and both builds; broader accessibility review remains
+  open.
+
+## 2026-09-30 — P6 durable rule scheduling
+
+- Agent/client: Codex.
+- Change: Added migration 0005, immutable compiled drafts/review lifecycle,
+  persisted occurrence/evidence batches, conservative intent-to-P4 mapping
+  and revision-pinned allocation quantities. Added PostgreSQL concurrency,
+  restart, rollback, event/freeze/expiry and allocation tests. Fixed schedule
+  windows crossing local midnight. Added specification updates and ADR 0022.
+- Reason: Persist reviewed instructions and prevent duplicate reservations
+  when a scheduling worker races or restarts.
+- Behavior/compatibility impact: Additive `RuleStore`/planning interfaces and
+  same-client P4 transaction composition; existing callers remain compatible.
+  Rule mutations invalidate held plans and cannot release submitted funds.
+  Valuations/events remain trusted server inputs; no signing/submission path.
+- Verification: Full PostgreSQL-backed check passed 129 tests with zero
+  failures/skips, strict typecheck and both builds. Subsequent integration
+  checks passed 138 and 139 tests; original scheduling/DST cases still pass.
+
+## 2026-09-30 — P8 owner-authenticated saved workspace
+
+- Agent/client: Codex.
+- Change: Added migration 0006, single-use EOA sign-in/session store,
+  transactional owner-scoped application service and `/workspace`. Connected
+  canonical basket/price save/review/activation, balances/reservations,
+  decision/evaluation and safe receipt display/export, and server pause.
+  Added explicit data-provenance labels, HTTP origin/session/body guards,
+  wallet-change response invalidation and four PostgreSQL-backed Chromium
+  cases. Retained `/` fixture flow; updated ADR 0023 and portable records.
+- Reason: Replace browser-only persistence with inspectable saved backend state
+  while the live evidence/recovery gates remain open.
+- Behavior/compatibility impact: `DATABASE_URL` migrations and exact
+  `NEXUS_APP_ORIGIN` configure saved state. New portfolios start paused with
+  unverified balances. Shared backend transaction seams are additive. Web
+  build/dev use Webpack extension aliases for NodeNext source imports;
+  `web:e2e` tests the production server and uses isolated PostgreSQL when
+  `TEST_DATABASE_URL` is supplied. No live signer/broadcast or trade endpoint.
+  Sign-in does not establish bStocks eligibility. Browser earnings creation
+  awaits trusted server event review. Git staging is unavailable under the
+  current read-only `.git` policy.
+- Verification: Saved backend check passed 138 tests; web integration check
+  passed 139 with zero failures/skips and both builds. Seven Chromium tests
+  pass for the saved workflow/security/account-change/mobile cases and three
+  original fixture cases. Intermediate compiler/browser findings and their
+  corrections are recorded in ENGINEERING_LOG. Final PostgreSQL-backed
+  `./scripts/check.sh` passed 139 tests, zero failures/skips, typecheck,
+  headless/production web builds and configuration checks.
+
+## 2026-09-30 — Free-source readiness and access-policy clarification
+
+- Agent/client: Codex.
+- Change: Recorded owner-selected public RPC/free-data preference and dated
+  read-only capability/source-clock results; clarified terms acceptance versus
+  bStocks eligibility and the limits of the FAQ's contact guidance.
+- Reason: Identify usable free inputs without overstating RPC recovery support,
+  price freshness or compulsory issuer-contact requirements.
+- Behavior/compatibility impact: Documentation only; no live registration,
+  application code/interface change, eligibility bypass or policy relaxation.
+- Verification: PostgreSQL-backed baseline passed 139 tests, zero failures/skips
+  and both builds. Public RPC/feed probes and current official-source review
+  are recorded in the integration report. Post-documentation
+  `./scripts/check.sh` passed 139 tests, zero failures/skips, strict typecheck,
+  headless/production web builds and configuration checks.
+
+## 2026-09-30 — Eligibility challenges and provider reassessment
+
+- Agent/client: Codex.
+- Change: Added `docs/verificaton-challenges.md` with the major bStocks access
+  dependency, source-backed xStocks/Ondo comparison, responsibility boundaries
+  and conditional pivot steps; updated plan, state and project/engineering logs.
+- Reason: Assess alternatives under owner-reported support delays without
+  treating permissionless transfers or terms acceptance as integration approval.
+- Behavior/compatibility impact: Documentation only. Provider priority, access
+  policy and application interfaces remain unchanged. Corrected blanket
+  direct-issuer onboarding assumptions for secondary Ondo acquisition; other
+  live source/risk/recovery prerequisites remain open.
+- Verification: PostgreSQL-backed baseline passed 139 tests, zero failures/skips,
+  typecheck, both builds and configuration checks. Current official issuer and
+  integration sources are linked in the report. Post-documentation full check
+  also passed 139 tests, zero failures/skips, strict typecheck, both builds and
+  configuration checks; `git diff --check` passed. No wallet action or outreach.
+
+## 2026-09-30 — Regular-session Ondo BSC route evidence
+
+- Agent/client: Codex.
+- Change: Added a dated Ondo secondary-route report and structured public
+  observations for inventory/pools, four-size quotes, synthetic bounded router
+  effects, source clocks, audits and aggregator intermediaries; updated plan,
+  state, verification challenges and engineering/project logs.
+- Reason: Reassess the alternative-provider recommendation during an open
+  regular session and distinguish quote availability from full-size execution.
+- Behavior/compatibility impact: Documentation/evidence only. Small direct
+  NVDA calls spent full input and received the quote; AAPL's direct pool
+  returned dust with partial input consumption. Broader aggregator paths may
+  cross unreviewed intermediaries or bStocks. No live price-bound approval,
+  provider pivot, application/interface change or policy relaxation.
+- Verification: Baseline PostgreSQL-backed full check passed 139 tests,
+  zero failures/skips, typecheck, headless/production web builds and config
+  checks. Dated read-only probes include minimum/expiry rejection and paired
+  observer gas controls. Post-documentation PostgreSQL-backed full check passed
+  139 tests, zero failures/skips, strict typecheck, both builds and config
+  checks; structured evidence/hash assertions and `git diff --check` passed.
+
+## 2026-09-30 — Historical BSC recovery RPC candidates
+
+- Agent/client: Codex.
+- Change: Added Chainlist RPC survey and public evidence, identifying Sentio
+  and Blockmachine as historical-read candidates; updated source report,
+  implementation plan, state and engineering/project logs.
+- Reason: Resolve dataseed's unavailable historical balances through empirical
+  endpoint checks required for exact receipt-block execution recovery.
+- Behavior/compatibility impact: Documentation/evidence only. Existing P7
+  readers passed sampled historical blocks/receipts on candidate endpoints;
+  matching stock replays succeeded. No application default, automatic failover,
+  intended-wallet reconciliation, live provider switch or broadcast change.
+- Verification: PostgreSQL-backed baseline full check passed 139 tests,
+  zero failures/skips, strict typecheck, both builds and config checks.
+  Read-only endpoint/reader/replay and consistency assertions are recorded
+  in the dated report. Post-documentation PostgreSQL-backed full check passed
+  139 tests, zero failures/skips, strict typecheck, both builds and config
+  checks; stored evidence assertions and `git diff --check` passed.
+
+## 2026-09-30 — P7.3/P7.5 production recovery wiring
+
+- Agent/client: Codex.
+- Change: Added trusted versioned recovery config/registry, Sentio/Blockmachine
+  complete-source fallback, persisted-leg polling CLI, portfolio advisory
+  ownership, migration 0007 and atomic observation/fill provenance. Added
+  restart/concurrency, outage/unsupported proof, revert, source inconsistency,
+  lost-connection and post-fill crash tests, ADR 0024 and operator runbook.
+- Reason: Connect empirically tested historical RPCs to a concrete durable
+  recovery runtime that cannot rebroadcast or count a settled fill twice.
+- Behavior/compatibility impact: Existing callers remain compatible. Recovery
+  configuration and signed identity are server-owned. Unreconciled reorgs now
+  pause and advance the portfolio revision; submitted reservations stay frozen.
+  Registry reviews are required for all tracked/output ERC20s; only native
+  gas is enabled by default. Provider priority, eligibility and live trading
+  gates remain unchanged. No deployment scheduler or broadcaster is enabled.
+- Verification: PostgreSQL baseline full check passed 139 tests; post-change
+  tests passed 147 with zero failures/skips. Both configured historical sources
+  passed public balance/receipt reader smoke checks with matching digests.
+  Final PostgreSQL-backed full check passed 147 tests, zero failures/skips,
+  strict typecheck, both builds and config checks. Production CLI empty-schema
+  smoke returned `[]` and exit 0; `git diff --check` passed. Durable findings
+  were stored in and retrieved from supplementary Nexus memory.
+
+## 2026-09-30 — P7.3/P7.5 USDT/NVDAB raw recovery registration
+
+- Agent/client: Codex.
+- Change: Registered reviewed USDT/NVDAB raw denominations with runtime/beacon
+  identity pins; added receipt-block code/decimals validation before and after
+  proof collection, UI-accounting and guarded PostgreSQL regression cases,
+  dated source/receipt evidence and ADR 0025. Updated plan, state and runbook.
+- Reason: Let the durable recovery worker reconcile these exact raw assets
+  conditionally without double-counting bStocks UI events or silently accepting
+  an unreviewed implementation upgrade.
+- Behavior/compatibility impact: Optional schema/callback fields preserve older
+  fixtures. Definite code changes require review; unavailable/noncanonical
+  views permit complete-source fallback. P5 security, eligibility/economic
+  gates, provider priority and live-trading restrictions remain unchanged.
+- Verification: Baseline full PostgreSQL check passed 147 tests; latest tests
+  passed 154, zero failures/skips. Both sources matched deployed runtime/source
+  hashes, public buy/sell block transfer accounting and all four application
+  guard smoke checks. Final PostgreSQL-backed full check passed 154 tests,
+  zero failures/skips, strict typecheck and both builds. Stored evidence and
+  cross-source assertions, `git diff --check` and memory write/retrieval passed.
+
+## 2026-09-30 — Codex — Enforce security for both route tokens
+
+- Change/reason: implemented modular public token-security collection, strict
+  scanner coverage normalization, complete executable source/control/authority
+  fingerprints and trusted bounded contract-scope reviews. Both stock and
+  settlement reports now enter P5 and P7 approval; a plain `clear` label cannot
+  replace them. Added inspection command, empty review registry, ADR 0026,
+  specification/runbook and public MD/JSON findings; updated portable records.
+- Fixes: canonical hash references/final reorg checks in quantity/transfer
+  readers, proxy caller for beacon resolution and live head time evaluated
+  after retrieval rather than before RPC latency. Delegated privilege code and
+  unresolved contract authorities cannot silently pass a review.
+- Compatibility: new security adapter method is optional at the type boundary
+  but absent/unsupported/risk evidence blocks the gate. Old approval evidence
+  requires revalidation. Historical submitted recovery remains unchanged.
+  NVDAB and USDT remain blocked under this policy; no exception, provider pivot,
+  live registry, owner-wallet call, broadcast or production migration.
+- Verification: baseline PostgreSQL full check passed 154 tests; intermediate
+  full checks passed 167/169. Final PostgreSQL-backed `./scripts/check.sh` passed
+  **171 tests, zero failures/skips**, typecheck, headless/production web builds
+  and config checks. Clock regression reproduced against old ignored compiled
+  behavior, then passed restored code. Two source observations agree on full
+  fingerprints; three RPCs passed canonical hash read probes. Inspection exits
+  2 for expected blocking findings. Existing uncommitted work was retained.
+
+
 ## 2026-10-01 — Codex — Recover public beacon source and inspect wallet governance
 
 - Change/reason: resolved the NVDAB beacon source gap locally with a full deployed
@@ -564,6 +959,7 @@
   no current 171-test PostgreSQL success is claimed. node --check, bash -n,
   stored source/hash/block/privacy assertions, all 24 real permission-result
   assertions, git diff --check and supplementary memory retrieval passed.
+
 
 ## 2026-10-01 — Codex — Integrate source, current governance and independent-review intake
 
@@ -623,3 +1019,115 @@
   correctly blocked. Test-fixture corrections documented; no actual wallet operation.
   ADR 0030 preserves decisions; direct pending web/rule prerequisites included while
   unrelated work remains untouched.
+
+
+## 2026-10-02 — Codex — Detailed unresolved-challenges engineering handoff
+
+- Change/reason: added docs/SENIOR_ENGINEER_HANDOFF.md for the owner to share with
+  a senior engineer. Covers 15 unresolved challenges with chronology, evidence,
+  exact public identities, interfaces, policy tensions and actionable acceptance
+  criteria. Linked it from state and implementation-plan continuation instructions.
+- Behavior/compatibility: documentation only; preserves application APIs, provider
+  priority, current admission rules, default-disabled broadcasting and phase gates.
+  Records the preference to prove the EOA MVP before commissioning a new audit,
+  without creating an exception or describing unreviewed contracts as cleared.
+- Verification: PostgreSQL-backed baseline passed 213 application and three research
+  tests, zero failures/skips, strict typecheck and both builds. Initial check without
+  test URL had 157 passes/27 database skips and is not full PostgreSQL evidence.
+  Post-documentation PostgreSQL check also passed 213 application plus three
+  research tests, zero failures/skips, strict typecheck and both builds. Handoff
+  local links/privacy/structure and whitespace checks passed. No new browser run,
+  wallet signature, allowance, send or external message. .git is read-only; local
+  changes remain uncommitted and unrelated existing work is preserved.
+
+## 2026-10-02 — Codex: bounded owner-only bStocks pilot
+
+- Change: implemented ADR 0031's one-EOA/one-buy/five-USDT admission, preserving strict
+  default security and original scanner states while explicitly deferring independent
+  review. Added private reviewed access/mapping/event ports, expiring signed owner
+  declaration/export, real-state loopback Anvil buy/sell proof and exact external
+  allowance receipt validation. Recovered the ADGM NVDAB primary prospectus/feed
+  heartbeats; current country/economic review remains pending.
+- Reason: follow the owner's instruction to implement the senior engineer's bounded
+  supervised pilot and avoid requiring unavailable scanner/audit data for that scope.
+- Behavior/compatibility: optional renewable signing retains exact original approval
+  and requires fresh complete current evidence before persistence/one-time claim.
+  Added separate settlement-age policy and namespaced reference/status IDs. Default
+  strict admission, original-lease behavior, raw import, ledger/recovery/rules remain.
+  Added migration 0009, finalized owner-signed paused bootstrap/resync, canonical
+  logarithmic nonce diagnosis, owner-only one-trade plan and authenticated web routes.
+  New profile/portfolio cannot reset the consumed pilot cap. Resync cannot erase an
+  unresolved/disputed leg. Price monitoring is sampled/read-only; no scheduler added.
+- Fixes: scoped manual mapping bigint decoding to preserve canonical security strings
+  and hashes; corrected the source-ID grammar and settlement/status clock coupling;
+  prevented repository dot-prefix/parent-symlink private-output escapes. Logs include
+  reproduced failures, fixture corrections and regression verification.
+- Verification: PostgreSQL-backed ./scripts/check.sh passed 231 application plus three
+  research tests, zero failures/skips, strict typecheck and both builds. 16 Chromium
+  cases passed, including owner snapshot activation/tamper rejection and endpoint
+  guards. Actual isolated Anvil startup/canonical fork and public owner/source reads
+  succeeded without sending/signing a mainnet transaction. Live acceptance is still
+  pending funding, qualified current records and fresh exact owner approvals. Updated
+  state/plan/logs, source manifest, ADR, runbook and forwardable senior questions.
+
+
+## 2026-10-02 — Codex: ADR 0031 Amendment 1 pilot evidence and R1 recovery
+
+- Change/reason: implemented the owner's accepted amendment/response002 to resolve
+  owner-pilot evidence decisions. Current ADGM primary/supplement manifests and
+  Binance restrictions, private signed J1–J5 records, local-decision revision, exact
+  dual raw/display mapping, P1–P9 current-session/peg/mid/output/gas policy and
+  persistent source high-water/cadence are implemented. Diagnostics expose both
+  exact premiums with true source clocks; gas is separately capped.
+- Recovery: exact external approval precedes initial bootstrap; persisted pilot legs
+  require canonical zero allowance before successful reconciliation. Nonzero freezes
+  once without releasing submitted funds. Migration 0010 retains immutable complete
+  original fill proofs. R1 appends an owner-signed compensating anchor/revision only
+  for identical same-hash effects and complete finalized ledger equality from two
+  reviewed independent upstreams. Authenticated/origin-guarded API and exact browser
+  review/signing are added. No balance/fill/reservation amounts are overwritten;
+  pause remains, replay is a no-op and competing corrections reject.
+- Compatibility: pilot profile/manual records and eligibility domain move to v2;
+  old pilot approvals require new records/signatures. Strict default/scanner unknowns/
+  deferred independent review, wallet-wide one-buy cap, exact transaction persistence,
+  once-only broadcast and unresolved resync rejection remain. General R2/R3 repair
+  and public-release/legal/issuer API work remain separate.
+- Verification: PostgreSQL-backed ./scripts/check.sh passed 243 application plus
+  three research tests, zero failures/skips, strict typecheck and both builds.
+  Expanded browser verification/final docs checks are recorded below. Read-only
+  live register and private v2 source probes succeeded; sampled premiums were in band
+  outside the regular session. No mainnet transaction, personal eligibility decision
+  or live gate closure was claimed. Logs document test corrections and cash-value
+  cap regression. [Runbook](runbooks/owner-pilot.md) and
+  [evidence](integrations/2026-10-02-pilot-amendment-verification.json) preserve portability.
+
+- Final expanded Chromium suite: 18 passed, including R1 evidence/signature and
+  PostgreSQL HTTP access boundaries. Earlier ambiguous-alert selector corrected;
+  product rejection had already succeeded before signing. Mainnet acceptance and
+  independent RPC upstream qualification are not implied by synthetic tests.
+
+## 2026-10-02 — Codex/API — Supervised funded-EOA acceptance script
+
+- Change: added scripts/test-eoa-pilot.sh / npm run pilot:eoa, local hidden/file
+  signing, diagnostic/allowance/declaration/run/recover commands, mandatory private
+  durable evidence and owner-scoped recovery. Added optional production observer,
+  consistent ledger/proof export, operator locks and recovery replay comparison.
+  Input/evidence collisions and failed-lock cleanup have regression checks. Full
+  instructions and [ADR 0032](decisions/0032-supervised-eoa-acceptance-runner.md)
+  record setup, broadcast switches and stop/start acceptance.
+- Reason: owner needs a reviewable funded EOA workflow script with data for mainnet
+  receipt/recovery gates.
+- Behavior/compatibility: deployment.broadcastEnabled=true AND --broadcast plus
+  exact confirmations required; default run is diagnostics only. Current v2
+  eligibility/price/security/simulation, external exact approval before bootstrap,
+  one wallet-wide buy <=5 USDT, persist-before-broadcast and no resend remain.
+  No web signer/custody/dependency, unlimited approve, second buy/mainnet sale,
+  audit clearance or legal decision. Default recovery discovery and runtime remain
+  compatible unless the optional filter/observer is supplied. Keys excluded from
+  artifacts/database/docs/MCP.
+- Verification: final PostgreSQL-backed ./scripts/check.sh passed **257 application
+  and three research tests**, zero failures/skips, strict typecheck and both builds;
+  **18 Chromium cases passed**. Launcher/help and actual public read-only CLI smoke
+  with isolated migrated PostgreSQL passed; mandatory private artifacts exported
+  and no portfolios/sessions/legs created. Whitespace/local links passed. Actual owner
+  mainnet transaction/receipt/process-restart acceptance remains open.

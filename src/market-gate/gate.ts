@@ -5,9 +5,12 @@ import { regularSessionOpen } from "./session.js";
 import { decodeV3ExactInputSingle, routeMatchesCalldata } from "./route.js";
 import { BSTOCKS_BSC_V3_POOL, BSTOCKS_BSC_V3_ROUTER } from "./bstocks-transfer.js";
 import { verifyTokenSecurityBundle } from "../security/token-security.js";
+import { pilotPriceReasons, type PilotPriceReason } from "../pilot/price-integrity.js";
+import { maximumShareRatio } from "../pilot/quantity.js";
+import { pilotPriceBand, validatePilotProfile, verifyPilotSecurity } from "../pilot/profile.js";
 import type { EventEvidence, GateRequest, ProviderEventEvidence, TimedEvidence } from "./evidence.js";
 
-export type GateReason = "MISSING_EVIDENCE" | "INVALID_CLOCK" | "STALE_EVIDENCE" |
+export type GateReason = PilotPriceReason | "MISSING_EVIDENCE" | "INVALID_CLOCK" | "STALE_EVIDENCE" |
   "INSTRUMENT_MISMATCH" | "ELIGIBILITY_BLOCKED" | "QUANTITY_CHANGED" |
   "REFERENCE_UNAVAILABLE" | "SESSION_CLOSED" | "TOKEN_HALTED" |
   "AUDIT_UNSUPPORTED" | "TOKEN_SECURITY_BLOCKED" | "EVENT_RESTRICTED" | "ROUTE_UNSUPPORTED" | "QUOTE_MISMATCH" |
@@ -70,6 +73,18 @@ export function evaluateMarketGate(input: GateRequest): GateResult {
 function evaluateChecked(input: GateRequest): GateResult {
   const { now: nowText, wallet, instrument, snapshot, proposal, marketPolicy: p, evidence: e } = input;
   const now = at(nowText);
+  const pilot = input.pilotProfile;
+  if (pilot) {
+    validatePilotProfile(pilot);
+    const reason=pilotPriceReasons(input)[0];
+    if(reason)return deny(reason);
+    if (instrument.instrumentId !== pilot.instrumentId || wallet.toLowerCase() !== pilot.wallet
+      || proposal.side !== "buy" || proposal.spend.units > pilot.maximumSpendRaw
+      || snapshot.confirmedCash.assetId !== "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955"
+      || snapshot.positions.some(position => position.raw.units > 0n)
+      || (p.maxSettlementAgeMs ?? p.maxStatusAgeMs) > 1_350_000
+      || p.maxReferenceAgeMs > pilot.price.heartbeatMs) return deny("PORTFOLIO_LIMIT");
+  }
   if (!Number.isFinite(now) || !address(wallet)) return deny("INVALID_CLOCK");
   if (proposal.instrumentId !== instrument.instrumentId || snapshot.positions.filter((x) => x.instrument.instrumentId === instrument.instrumentId).length !== 1)
     return deny("INSTRUMENT_MISMATCH");
@@ -81,10 +96,14 @@ function evaluateChecked(input: GateRequest): GateResult {
   const { eligibility, quantity, reference, settlement, portfolioValuations,
     session, tokenStatus, audit, event, providerEvent, quote, simulation } = e;
   if (![p.maxReferenceAgeMs, p.maxStatusAgeMs, p.maxQuoteAgeMs, p.maxSimulationAgeMs, p.maxQuoteLifetimeMs].every((n) => Number.isSafeInteger(n) && n > 0)
+    || (p.maxSettlementAgeMs !== undefined && (!Number.isSafeInteger(p.maxSettlementAgeMs)
+      || p.maxSettlementAgeMs <= 0 || p.maxSettlementAgeMs > 86_400_000))
+    || (p.approvalClock !== undefined && !['original-leases','refresh-before-submit'].includes(p.approvalClock))
     || p.maxBlockLag < 0n || p.maxNetworkFeeSettlement < 0n || p.maxAdditionalFeeSettlement < 0n
     || ![p.maxPriceDeviationBps, p.maxPriceImpactBps, p.maxSpreadBps, p.maxPositiveFillBufferBps, p.maxSlippageBps].every(bps))
     return deny("INVALID_CLOCK");
-  if (![eligibility, quantity, settlement, session, tokenStatus, audit, event].every((item) => timely(item, now, p.maxStatusAgeMs)))
+  if (![eligibility, quantity, session, tokenStatus, audit, event].every((item) => timely(item, now, p.maxStatusAgeMs))
+    || !timely(settlement, now, p.maxSettlementAgeMs ?? p.maxStatusAgeMs))
     return deny("STALE_EVIDENCE");
   if (instrument.issuerId === "bstocks" && !providerEvent) return deny("MISSING_EVIDENCE");
   if (providerEvent && !timely(providerEvent, now, p.maxStatusAgeMs)) return deny("STALE_EVIDENCE");
@@ -94,7 +113,8 @@ function evaluateChecked(input: GateRequest): GateResult {
     return deny("ELIGIBILITY_BLOCKED");
   if (instrument.issuerId === "bstocks") {
     const access = eligibility.accessControl;
-    if (eligibility.source !== "bstocks-access:v1" || !access
+    if ((eligibility.source !== "bstocks-access:v1"
+      && !(pilot && eligibility.source === "bstocks-owner-pilot:v1")) || !access
       || !/^[0-9a-f]{64}$/.test(access.accessHash)
       || access.side !== proposal.side || !same(access.token, instrument.tokenAddress)
       || !same(access.pool, BSTOCKS_BSC_V3_POOL)
@@ -115,7 +135,7 @@ function evaluateChecked(input: GateRequest): GateResult {
   if (settlement.valuationUnit !== snapshot.valuationUnit || settlement.assetId !== snapshot.confirmedCash.assetId
     || settlement.denominator <= 0n || settlement.lowerValueNumerator <= 0n
     || settlement.upperValueNumerator < settlement.lowerValueNumerator
-    || snapshot.cashValueLower > snapshot.confirmedCash.units * settlement.lowerValueNumerator / settlement.denominator)
+    || (!pilot && snapshot.cashValueLower > snapshot.confirmedCash.units * settlement.lowerValueNumerator / settlement.denominator))
     return deny("REFERENCE_UNAVAILABLE");
   const held = snapshot.positions.filter((item) => item.raw.units > 0n);
   if (portfolioValuations.length !== held.length || new Set(portfolioValuations.map((item) => item.instrumentId)).size !== held.length)
@@ -134,8 +154,8 @@ function evaluateChecked(input: GateRequest): GateResult {
     return deny("SESSION_CLOSED");
   if (tokenStatus.instrumentId !== instrument.instrumentId || tokenStatus.source !== instrument.statusSource
     || tokenStatus.state !== "open") return deny("TOKEN_HALTED");
-  if (audit.instrumentId !== instrument.instrumentId || audit.state !== "clear") return deny("AUDIT_UNSUPPORTED");
-  if (!verifyTokenSecurityBundle({ bundle: e.tokenSecurity,
+  if (audit.instrumentId !== instrument.instrumentId || (!pilot && audit.state !== "clear")) return deny("AUDIT_UNSUPPORTED");
+  if (pilot ? !verifyPilotSecurity(input) : !verifyTokenSecurityBundle({ bundle: e.tokenSecurity,
     assets: [{ assetId: instrument.assetId, decimals: instrument.decimals },
       { assetId: snapshot.confirmedCash.assetId, decimals: snapshot.confirmedCash.decimals }],
     sourceBlock: quantity.sourceBlock, now: nowText, maxAgeMs: p.maxStatusAgeMs }))
@@ -179,9 +199,16 @@ function evaluateChecked(input: GateRequest): GateResult {
     || (proposal.side === "sell" && proposal.raw.units !== quote.inputRaw)) return deny("QUOTE_MISMATCH");
   if (quote.minimumOutputRaw <= quote.additionalFeeSettlement && proposal.side === "sell") return deny("QUOTE_COST");
 
+  if(pilot) {
+    if(!quantity.pilotMapping)return deny("QUANTITY_CHANGED");
+    const ratio=maximumShareRatio(quantity.pilotMapping);
+    if(ratio.shareUnitsNumerator*quantity.shareUnitsDenominator!==quantity.shareUnitsNumerator*ratio.shareUnitsDenominator)
+      return deny("QUANTITY_CHANGED");
+  }
   const shareValue = (raw: bigint): bigint => raw * quantity.shareUnitsNumerator * reference.pricePerShare
     / (quantity.shareUnitsDenominator * 10n ** 18n);
   const referenceExpected = proposal.side === "buy" ? shareValue(quote.expectedOutputRaw) : shareValue(quote.inputRaw);
+  const priceBand = pilot ? pilotPriceBand(pilot, now - at(reference.sourceAt)) : p.maxPriceDeviationBps;
   const effectiveSettlementRaw = proposal.side === "buy" ? quote.inputRaw + quote.additionalFeeSettlement
     : quote.expectedOutputRaw - quote.additionalFeeSettlement;
   const effectiveSettlement = proposal.side === "buy"
@@ -189,9 +216,16 @@ function evaluateChecked(input: GateRequest): GateResult {
     : effectiveSettlementRaw * settlement.lowerValueNumerator / settlement.denominator;
   if (referenceExpected <= 0n || effectiveSettlement <= 0n
     || (referenceExpected > effectiveSettlement ? referenceExpected - effectiveSettlement : effectiveSettlement - referenceExpected)
-      * 10_000n > referenceExpected * BigInt(p.maxPriceDeviationBps)) return deny("PRICE_DEVIATION");
+      * 10_000n > referenceExpected * BigInt(priceBand)) return deny(pilot?"P8":"PRICE_DEVIATION");
+  // A pilot also bounds the worst signed fill; a good preview cannot hide a bad minimum.
+  if (pilot) {
+    const minimumValue = shareValue(quote.minimumOutputRaw);
+    if (minimumValue <= 0n || (effectiveSettlement > minimumValue ? effectiveSettlement - minimumValue : minimumValue - effectiveSettlement)
+      * 10_000n > minimumValue * BigInt(priceBand)) return deny(pilot?"P8":"PRICE_DEVIATION");
+  }
 
   if (!simulation.source || simulation.chainId !== quote.chainId || !same(simulation.sender, quote.sender)
+    || (pilot && simulation.allowanceRaw !== quote.inputRaw)
     || !same(simulation.recipient, quote.recipient) || !same(simulation.router, quote.router)
     || !same(simulation.spender, quote.spender) || !same(simulation.tokenIn, quote.tokenIn)
     || simulation.calldata.toLowerCase() !== quote.calldata.toLowerCase() || simulation.value !== quote.value
@@ -206,7 +240,9 @@ function evaluateChecked(input: GateRequest): GateResult {
   const adjusted: Proposal = proposal.side === "buy" ? {
     ...proposal, spend: amount(quote.inputRaw + quote.additionalFeeSettlement, snapshot.confirmedCash),
     acquiredValueLower: shareValue(quote.minimumOutputRaw),
-    acquiredValueUpper: ceil(shareValue(quote.expectedOutputRaw) * BigInt(10_000 + p.maxPositiveFillBufferBps), 10_000n)
+    acquiredValueUpper: pilot?ceil(quote.expectedOutputRaw*quantity.shareUnitsNumerator*reference.pricePerShare
+      *BigInt(10000+p.maxPositiveFillBufferBps),quantity.shareUnitsDenominator*10n**18n*10000n)
+      :ceil(shareValue(quote.expectedOutputRaw) * BigInt(10_000 + p.maxPositiveFillBufferBps), 10_000n)
   } : { ...proposal, proceeds: amount(quote.minimumOutputRaw - quote.additionalFeeSettlement, snapshot.confirmedCash),
     proceedsValueLower: (quote.minimumOutputRaw - quote.additionalFeeSettlement)
       * settlement.lowerValueNumerator / settlement.denominator };
@@ -214,14 +250,17 @@ function evaluateChecked(input: GateRequest): GateResult {
     if (proposal.side === "buy" && adjusted.side === "buy") assertSameDenomination(proposal.spend, adjusted.spend);
     else if (proposal.side === "sell" && adjusted.side === "sell") assertSameDenomination(proposal.proceeds, adjusted.proceeds);
     else return deny("PORTFOLIO_LIMIT");
-    const plan = coordinatePortfolio(snapshot, input.coordinatorPolicy, [adjusted]);
+    const currentCashLower=snapshot.confirmedCash.units*settlement.lowerValueNumerator/settlement.denominator;
+    const limitsSnapshot=pilot&&currentCashLower<snapshot.cashValueLower?{...snapshot,cashValueLower:currentCashLower}:snapshot;
+    const plan = coordinatePortfolio(limitsSnapshot, input.coordinatorPolicy, [adjusted]);
     if (plan.legs.length !== 1 || plan.legs[0]?.proposalId !== proposal.id
       || plan.legs[0]?.amount.units !== (adjusted.side === "buy" ? adjusted.spend.units : adjusted.raw.units))
       return deny("PORTFOLIO_LIMIT");
   } catch { return deny("PORTFOLIO_LIMIT"); }
   const evidenceHash = createHash("sha256").update(JSON.stringify(canonical({
     wallet, instrument, snapshotRevision: snapshot.revision, sourceBlock: snapshot.sourceBlock,
-    mappingRevision: quantity.mappingRevision, proposal: adjusted, evidence: e, marketPolicy: p
+    mappingRevision: quantity.mappingRevision, proposal: adjusted, evidence: e, marketPolicy: p,
+    ...(pilot ? { pilotProfile: pilot } : {})
   }))).digest("hex");
   return { allowed: true, evidenceHash, quoteExpiresAt: quote.expiresAt,
     adjustedProposal: adjusted, mappingRevision: quantity.mappingRevision };

@@ -4,6 +4,8 @@ import type { GateRequest } from "../market-gate/evidence.js";
 import { eoaApprovalTypedData, type EoaLegApproval } from "./signing-payload.js";
 export { eoaApprovalTypedData, type EoaLegApproval } from "./signing-payload.js";
 import { evaluateMarketGate } from "../market-gate/gate.js";
+import { executionMarketExpiry, revalidateExecutionMarket } from "./market-revalidation.js";
+import { securityDigest } from "../security/token-security.js";
 
 export interface ApprovalMetadata {
   readonly portfolioId: string;
@@ -35,7 +37,8 @@ export function prepareEoaLegApproval(request: GateRequest, metadata: ApprovalMe
   const quote = request.evidence.quote;
   const expiry = Date.parse(metadata.expiresAt);
   requireInput(Number.isFinite(expiry) && expiry > Date.parse(request.now)
-    && expiry <= Date.parse(gate.quoteExpiresAt) && expiry <= Date.parse(quote.onchainDeadline),
+    && expiry <= Date.parse(gate.quoteExpiresAt) && expiry <= Date.parse(quote.onchainDeadline)
+    && (request.marketPolicy.approvalClock !== "refresh-before-submit" || expiry <= executionMarketExpiry(request)),
   "APPROVAL_EXPIRED", "Approval must expire within quote and on-chain deadlines.");
   return Object.freeze({ ...metadata, portfolioRevision: request.snapshot.revision,
     evidenceHash: gate.evidenceHash, wallet: request.wallet, chainId: quote.chainId,
@@ -46,7 +49,7 @@ export function prepareEoaLegApproval(request: GateRequest, metadata: ApprovalMe
 
 /** Rebuilds the approval against fresh inputs and checks the owner's typed signature. */
 export function verifyEoaLegApproval(approval: EoaLegApproval, signature: string,
-  freshRequest: GateRequest, expected: ApprovalMetadata, paused: boolean): void {
+  freshRequest: GateRequest, expected: ApprovalMetadata, paused: boolean, approvedRequest?: GateRequest): void {
   requireInput(!paused, "PORTFOLIO_PAUSED", "Paused portfolios cannot execute.");
   requireInput(approval.portfolioId === expected.portfolioId && approval.planId === expected.planId
     && approval.legId === expected.legId && same(approval.policyHash, expected.policyHash)
@@ -59,7 +62,14 @@ export function verifyEoaLegApproval(approval: EoaLegApproval, signature: string
   const now = Date.parse(freshRequest.now);
   requireInput(Number.isFinite(now) && now < Date.parse(approval.expiresAt),
     "APPROVAL_EXPIRED", "Owner approval has expired.");
-  const rebuilt = prepareEoaLegApproval(freshRequest, expected);
+  if (approvedRequest) {
+    requireInput(approvedRequest.marketPolicy.approvalClock === "refresh-before-submit"
+      && securityDigest({ ...freshRequest, now: approvedRequest.now, evidence: approvedRequest.evidence })
+        === securityDigest(approvedRequest),
+    "APPROVAL_CHANGED", "Renewal requires the same trusted original approval policy.");
+    revalidateExecutionMarket(approvedRequest, freshRequest.evidence, freshRequest.now);
+  }
+  const rebuilt = prepareEoaLegApproval(approvedRequest ?? freshRequest, expected);
   requireInput(approval.portfolioRevision === rebuilt.portfolioRevision
     && same(approval.evidenceHash, rebuilt.evidenceHash)
     && same(approval.wallet, rebuilt.wallet) && approval.chainId === rebuilt.chainId
@@ -76,8 +86,9 @@ export function verifyEoaLegApproval(approval: EoaLegApproval, signature: string
 
 /** Validates a signed EIP-1559 swap and returns its hash; does not broadcast it. */
 export function verifySignedEoaSwap(approval: EoaLegApproval, signature: string,
-  rawSignedTransaction: string, freshRequest: GateRequest, expected: ApprovalMetadata, paused: boolean): string {
-  verifyEoaLegApproval(approval, signature, freshRequest, expected, paused);
+  rawSignedTransaction: string, freshRequest: GateRequest, expected: ApprovalMetadata, paused: boolean,
+  approvedRequest?: GateRequest): string {
+  verifyEoaLegApproval(approval, signature, freshRequest, expected, paused, approvedRequest);
   let tx: Transaction;
   try { tx = Transaction.from(rawSignedTransaction); }
   catch { requireInput(false, "INVALID_TRANSACTION", "Signed transaction cannot be decoded."); }

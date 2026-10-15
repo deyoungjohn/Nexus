@@ -131,22 +131,23 @@ export class CoordinatorStore {
   private readonly ledger: Ledger;
   constructor(private readonly pool: Pool) { this.ledger = new Ledger(pool); }
 
-  async registerInstrument(instrument: Instrument): Promise<void> {
+  async registerInstrument(instrument: Instrument, existingClient?: PoolClient): Promise<void> {
     const rebuilt = createInstrument(instrument);
     requireInput(rebuilt.instrumentId === instrument.instrumentId && rebuilt.assetId === instrument.assetId,
       "INVALID_INSTRUMENT", "Instrument identity does not match its metadata.");
-    const existing = await this.pool.query<{ body: Instrument }>(
+    const database=existingClient??this.pool;
+    const existing = await database.query<{ body: Instrument }>(
       "SELECT body FROM instruments WHERE instrument_id = $1", [instrument.instrumentId]);
     if (existing.rows[0]) {
       requireInput(digest(existing.rows[0].body) === digest(instrument), "INSTRUMENT_METADATA_CHANGED",
         "Registered instrument metadata is immutable.");
       return;
     }
-    await this.pool.query("INSERT INTO instruments(instrument_id, asset_id, body) VALUES ($1, $2, $3::jsonb)",
+    await database.query("INSERT INTO instruments(instrument_id, asset_id, body) VALUES ($1, $2, $3::jsonb)",
       [instrument.instrumentId, instrument.assetId, json(instrument)]);
   }
 
-  async activatePolicy(input: PolicyActivation): Promise<bigint> {
+  async activatePolicy(input: PolicyActivation, existingClient?: PoolClient): Promise<bigint> {
     identifier(input.portfolioId); identifier(input.policyId);
     requireInput(input.expectedRevision >= 0n && Number.isSafeInteger(input.version) && input.version > 0,
       "INVALID_POLICY_VERSION", "Policy version and portfolio revision must be valid.");
@@ -183,7 +184,7 @@ export class CoordinatorStore {
       await client.query("INSERT INTO portfolio_revisions(portfolio_id, revision, reason) VALUES ($1, $2, 'policy-change')",
         [input.portfolioId, next.toString()]);
       return next;
-    });
+    }, existingClient);
   }
 
   async coordinateAndReserve(input: CoordinationRequest, existingClient?: PoolClient): Promise<StoredCoordination> {

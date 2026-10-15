@@ -3,6 +3,7 @@ import { id } from "ethers";
 import { nativeAssetId, tokenAssetId, type Amount } from "../domain/amount.js";
 import { requireInput } from "../domain/errors.js";
 import { verifyEoaBalanceDelta } from "./reconcile.js";
+import { securityDigest } from '../security/token-security.js';
 
 export interface EoaReceiptLog {
   readonly address: string;
@@ -40,6 +41,17 @@ export interface VerifyEoaReceiptEffectsRequest {
   readonly transactionValue: bigint;
   readonly before: readonly Amount[];
   readonly after: readonly Amount[];
+}
+
+/** Inclusion coordinates may change in R1; ordered contents and gas may not. */
+export function receiptEffectsIdentity(proof:EoaReceiptEffectProof):string {
+  return securityDigest({transactionHash:proof.transactionHash.toLowerCase(),from:proof.from.toLowerCase(),
+    to:proof.to.toLowerCase(),success:proof.success,gasUsed:proof.gasUsed,effectiveGasPrice:proof.effectiveGasPrice,
+    logs:proof.logs.map(l=>({address:l.address.toLowerCase(),topics:l.topics.map(t=>t.toLowerCase()),data:l.data.toLowerCase()}))});
+}
+export function decodeReceiptProof(proof:EoaReceiptEffectProof):EoaReceiptEffectProof {
+  return {...proof,blockNumber:BigInt(proof.blockNumber),gasUsed:BigInt(proof.gasUsed),effectiveGasPrice:BigInt(proof.effectiveGasPrice),
+    logs:proof.logs.map(l=>({...l,blockNumber:BigInt(l.blockNumber),logIndex:BigInt(l.logIndex)}))};
 }
 
 const hash = (value: unknown): value is string => typeof value === "string"

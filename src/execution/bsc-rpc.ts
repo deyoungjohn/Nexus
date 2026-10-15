@@ -1,4 +1,5 @@
 import type { EoaChainObservation, EoaReceipt } from "./recovery.js";
+import { diagnoseNonceHistory, type NonceHistoryAnchor } from "./nonce-history.js";
 
 export interface EoaBscObservationRequest {
   readonly rpcUrl: string;
@@ -7,6 +8,8 @@ export interface EoaBscObservationRequest {
   /** Optional bounded canonical scan when the tracked receipt is missing. */
   readonly nonce?: bigint;
   readonly scanFromBlock?: bigint;
+  /** Owner-activated chain bootstrap; enables logarithmic historical diagnosis. */
+  readonly nonceHistoryAnchor?: NonceHistoryAnchor;
 }
 
 const hexQuantity = (value: unknown): bigint | null => typeof value === "string"
@@ -40,7 +43,8 @@ export async function fetchEoaBscObservation(input: EoaBscObservationRequest,
     const headBlock = hexQuantity(await rpc("eth_blockNumber", []));
     const latestNonce = hexQuantity(await rpc("eth_getTransactionCount", [input.wallet, "latest"]));
     if (headBlock === null || latestNonce === null) return null;
-    if ((input.nonce === undefined) !== (input.scanFromBlock === undefined)
+    if ((input.nonce === undefined) !== (input.scanFromBlock === undefined && input.nonceHistoryAnchor === undefined)
+      || (input.scanFromBlock !== undefined && input.nonceHistoryAnchor !== undefined)
       || (input.nonce !== undefined && input.nonce < 0n)
       || (input.scanFromBlock !== undefined && (input.scanFromBlock < 0n
         || input.scanFromBlock > headBlock))) return null;
@@ -63,6 +67,10 @@ export async function fetchEoaBscObservation(input: EoaBscObservationRequest,
         blockNumber, success: fields.status === "0x1" };
     }
     let replacement: EoaChainObservation["replacement"] = null;
+    if (receipt === null && input.nonce !== undefined && input.nonceHistoryAnchor && latestNonce > input.nonce) {
+      replacement = await diagnoseNonceHistory(rpc, { wallet: input.wallet, transactionHash: input.transactionHash,
+        nonce: input.nonce, headBlock, latestNonce, anchor: input.nonceHistoryAnchor });
+    }
     if (receipt === null && input.nonce !== undefined && input.scanFromBlock !== undefined
       && latestNonce > input.nonce) {
       // A scan window must cover every candidate block; otherwise stay unresolved.

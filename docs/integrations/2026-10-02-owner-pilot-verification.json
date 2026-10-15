@@ -1,0 +1,130 @@
+{
+  "date": "2026-10-02",
+  "client": "Codex",
+  "scope": "P5.5/P7/P8 owner-only NVDAB pilot implementation",
+  "notices": [
+    "No mainnet writes or actual owner transaction signatures.",
+    "Application chain fixtures and browser execution interceptions are synthetic.",
+    "Public inspection/source probes and real Anvil startup are distinct from actual funded-owner round-trip and receipt-effect acceptance.",
+    "Owner addresses, declarations, signatures and configuration are excluded."
+  ],
+  "baseline": {
+    "applicationTests": 213,
+    "researchTests": 3,
+    "failures": 0,
+    "skips": 0,
+    "postgresqlEnabled": true,
+    "typecheck": "passed",
+    "builds": [
+      "headless",
+      "web"
+    ]
+  },
+  "implementationChecks": {
+    "applicationTests": 231,
+    "researchTests": 3,
+    "failures": 0,
+    "skips": 0,
+    "postgresqlEnabled": true,
+    "typecheck": "passed",
+    "builds": [
+      "headless",
+      "web"
+    ]
+  },
+  "browser": {
+    "chromiumCasesPassed": 16,
+    "failures": 0,
+    "realAuthenticatedPostgresqlHttpGuards": true,
+    "tradeAndSnapshotResponses": "synthetic test interceptions"
+  },
+  "anvilStartup": {
+    "status": "passed",
+    "anvil": "1.8.3",
+    "chainId": "0x38",
+    "sourceBlock": "125232708",
+    "canonicalForkHashMatches": true,
+    "generatedAccounts": 0,
+    "simulatedTransactions": 0,
+    "mainnetWrites": 0
+  },
+  "offlineCastConstruction": {
+    "version": "1.8.3",
+    "chainId": 56,
+    "unsignedType2Template": "passed",
+    "mainnetWrites": 0,
+    "hardwareOrKeystoreSignature": "not exercised"
+  },
+  "publicPriceProbes": {
+    "samples": [
+      {
+        "observedAt": "2026-10-02T05:18:02.276Z",
+        "sessionDate": "2026-10-02",
+        "sessionOpen": false,
+        "reference": {
+          "source": "chainlink-bsc:0xea5c2cbb5cd57dac24e26180b19a929f3e9699b8",
+          "sourceAt": "2026-10-01T19:57:58.000Z",
+          "price18": "230975000000000000000"
+        },
+        "dexMidSettlementPerToken18": "231945033892775613709",
+        "settlementUsd18": "999620080000000000",
+        "reviewedMapping": null,
+        "unavailableSources": []
+      },
+      {
+        "observedAt": "2026-10-02T05:30:46.950Z",
+        "sessionDate": "2026-10-02",
+        "sessionOpen": false,
+        "reference": {
+          "source": "chainlink-bsc:0xea5c2cbb5cd57dac24e26180b19a929f3e9699b8",
+          "sourceAt": "2026-10-01T19:57:58.000Z",
+          "price18": "230975000000000000000"
+        },
+        "dexMidSettlementPerToken18": "231954624823820331403",
+        "settlementUsd18": "999610000000000000",
+        "reviewedMapping": null,
+        "unavailableSources": []
+      }
+    ],
+    "diagnostics": {
+      "status": "attention-required",
+      "referenceAgeMs": 34368950,
+      "bandBps": 196,
+      "deviationBps": null,
+      "alerts": [
+        "outside-regular-session",
+        "normalized-deviation-unavailable"
+      ],
+      "sessions": [
+        {
+          "sessionDate": "2026-10-02",
+          "regularSessionSamples": 0,
+          "observedDistinctUpdates": 0,
+          "positiveSourceTimeIntervalsMs": [],
+          "unavailableSamples": 0
+        }
+      ],
+      "samplingLimitation": "Observed updates only; missed rounds and the time between probes are not certified."
+    }
+  },
+  "openAcceptance": [
+    "current owner jurisdiction review",
+    "cited economic raw/share ratio",
+    "current company/provider notices",
+    "funded intended wallet and exact external allowance receipt",
+    "owner eligibility and chain snapshot signatures",
+    "actual funded-owner Anvil buy/sell",
+    "fresh exact trade approval/raw signature",
+    "mainnet canonical receipt/effect proof",
+    "restart without duplicate fill"
+  ],
+  "deferred": [
+    "independent review commissioning",
+    "complete scanner coverage",
+    "unattended scheduler and post-fill allocation",
+    "baskets and additional providers",
+    "disputed/general accounting repair",
+    "complete external-transaction classification",
+    "public-service eligibility/source-use/release qualification"
+  ]
+}

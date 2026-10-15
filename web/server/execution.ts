@@ -6,6 +6,7 @@ import { decodeExecutionJson } from "../../src/execution/execution-json.js";
 import { parseRecoveryConfig } from "../../src/execution/recovery-config.js";
 import { parseTokenSecurityReviews } from "../../src/security/token-security.js";
 import type { BStocksProductionReviewPorts } from "../../src/market-gate/bstocks-production.js";
+import type { PilotManualRecords } from "../../src/pilot/manual-records.js";
 import { configuredOrigin, databasePool } from "./http";
 
 // Qualified access/economic/events/valuations need server integrations. Missing is blocking.
@@ -22,6 +23,8 @@ export async function executionApplication():Promise<ExecutionApplication>{
   // Operator filesystem only. Reload per request so deployment changes invalidate old reviews.
   const config=decodeExecutionJson<Omit<Parameters<typeof createBStocksExecutionRuntime>[0],"pool"|"sessions"|"recoveryConfig"|"securityReviews">>(
     JSON.parse(await readFile(file,"utf8")));
+  if(process.env.NEXUS_PILOT_RECORDS)Object.assign(config,{pilotRecords:decodeExecutionJson<PilotManualRecords>(
+    JSON.parse(await readFile(process.env.NEXUS_PILOT_RECORDS,"utf8")))});
   const [recovery,reviews]=await Promise.all([
     readFile(process.env.NEXUS_RECOVERY_CONFIG??"config/bsc-recovery.json","utf8"),
     readFile(process.env.NEXUS_TOKEN_SECURITY_REVIEWS??"config/token-security-reviews.json","utf8")]);

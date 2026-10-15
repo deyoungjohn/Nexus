@@ -8,9 +8,12 @@ import { applicationTransaction, SessionStore } from "./session.js";
 export interface ExecutionRecordView {
   configured:boolean; broadcastEnabled:boolean;
   legs:{planId:string;legIndex:number;instrumentId:string;side:string;inputUnits:string;decimals:number;
-    status:string;reviewId:string|null;expiresAt:string|null;transactionHash:string|null;transactionState:string|null}[];
+    status:string;reanchorAvailable?:boolean;reviewId:string|null;expiresAt:string|null;transactionHash:string|null;transactionState:string|null}[];
 }
 export interface ExecutionReviewView {
+  pilotAdmission?:{mode:'owner-pilot';profileRevision:string;maximumSpendUnits:string;independentReview:'deferred';
+    referenceSourceAt:string;referenceAgeMs:number;referenceBandBps:number;roundTripPassed:boolean;
+    scannerFindings:string[];unknownScannerChecks:string[]};
   kind:"review";reviewId:string;approval:Record<string,unknown>;
   typedData:Record<string,unknown>;transaction:Record<string,string>;
 }
@@ -40,13 +43,14 @@ export class ExecutionApplication {
       JOIN coordination_occurrences c ON c.plan_id=p.id AND c.portfolio_id=p.portfolio_id
       JOIN decision_records d ON d.id=c.decision_record_id AND d.portfolio_id=p.portfolio_id
       WHERE p.portfolio_id=$1 ORDER BY p.created_at DESC,p.id LIMIT 50`,[portfolioId]);
-    const reviews=await client.query<{id:string;plan_id:string;leg_index:number;expires_at:Date;tx_hash:string|null;state:string|null}>(`SELECT r.id,r.plan_id,r.leg_index,r.expires_at,r.tx_hash,l.state
+    const reviews=await client.query<{id:string;plan_id:string;leg_index:number;expires_at:Date;tx_hash:string|null;state:string|null;reconciled_at:Date|null}>(`SELECT r.id,r.plan_id,r.leg_index,r.expires_at,r.tx_hash,l.state,l.reconciled_at
       FROM eoa_execution_reviews r LEFT JOIN eoa_execution_legs l ON l.tx_hash=r.tx_hash
       WHERE r.portfolio_id=$1 ORDER BY (r.tx_hash IS NOT NULL) DESC,r.created_at DESC,r.id DESC`,[portfolioId]);
     return{configured:this.executor!==null,broadcastEnabled:this.executor!==null&&this.broadcastEnabled,
       legs:plans.rows.flatMap(p=>p.body.result.legs.map((leg,index)=>{
         const r=reviews.rows.find(r=>r.plan_id===p.id&&r.leg_index===index);
         return{planId:p.id,legIndex:index,instrumentId:leg.instrumentId,side:leg.side,inputUnits:leg.amount.units,decimals:leg.amount.decimals,
+          ...(r?.state==='reorged'&&r.reconciled_at?{reanchorAvailable:true}:{}),
           status:p.status,reviewId:r?.id??null,expiresAt:r?.expires_at.toISOString()??null,transactionHash:r?.tx_hash??null,transactionState:r?.state??null};
       }))};
   });}
@@ -61,7 +65,7 @@ export class ExecutionApplication {
     if(kind==="prepare"){
       requireInput(typeof c.planId==="string"&&Number.isSafeInteger(c.legIndex)&&Number(c.legIndex)>=0,"INVALID_COMMAND","Stored plan and leg index required.");
       const r=await this.executor.prepare({sessionToken:token,planId:c.planId,legIndex:Number(c.legIndex)});
-      return r.kind==="review"?executionReviewView(r.reviewId,r.approval):r;
+      return r.kind==="review"?{...executionReviewView(r.reviewId,r.approval),...(r.pilotAdmission?{pilotAdmission:r.pilotAdmission}:{})}:r;
     }
     requireInput(typeof c.reviewId==="string","INVALID_COMMAND","Server review ID required.");
     if(kind==="broadcast")return this.executor.broadcast({sessionToken:token,reviewId:c.reviewId});

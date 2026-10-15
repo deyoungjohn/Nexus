@@ -1,6 +1,7 @@
 import type { Instrument } from "../domain/instrument.js";
 import type { CoordinatorPolicy, PortfolioSnapshot, Proposal } from "../coordinator/plan.js";
 import type { TokenSecurityEvidence } from "../security/token-security.js";
+import type { PilotAdmissionProfile, PilotRoundTrip } from "../pilot/profile.js";
 
 export interface TimedEvidence {
   readonly source: string;
@@ -31,6 +32,7 @@ export interface EligibilityEvidence extends TimedEvidence {
 
 /** Ratio maps raw token base units to 10^18 reference-share base units. */
 export interface QuantityEvidence extends TimedEvidence {
+  readonly pilotMapping?: import("../pilot/quantity.js").PilotQuantityMapping;
   readonly instrumentId: string;
   readonly quantityModel: string;
   readonly adapterVersion: string;
@@ -147,6 +149,9 @@ export interface SimulationEvidence {
 }
 
 export interface MarketEvidence {
+  readonly pilotPrices?: import("../pilot/price-integrity.js").PilotPriceEvidence;
+  /** Owner-only pilot proof; never replaces the underlying scanner reports. */
+  readonly pilotRoundTrip?: PilotRoundTrip | null;
   readonly eligibility: EligibilityEvidence | null;
   readonly quantity: QuantityEvidence | null;
   readonly reference: ReferenceEvidence | null;
@@ -164,6 +169,10 @@ export interface MarketEvidence {
 }
 
 export interface MarketGatePolicy {
+  /** Settlement-oracle update age is distinct from live token/permission observation age. */
+  readonly maxSettlementAgeMs?: number;
+  /** Default retains the original source-lease signing window. */
+  readonly approvalClock?: "original-leases" | "refresh-before-submit";
   readonly maxReferenceAgeMs: number;
   readonly maxStatusAgeMs: number;
   readonly maxQuoteAgeMs: number;
@@ -186,6 +195,8 @@ export interface MarketGatePolicy {
 }
 
 export interface GateRequest {
+  /** Trusted deployment configuration. Browser input cannot select this profile. */
+  readonly pilotProfile?: PilotAdmissionProfile;
   readonly now: string;
   readonly wallet: string;
   readonly instrument: Instrument;

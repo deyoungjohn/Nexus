@@ -1,5 +1,12 @@
 # Guarded EOA execution composition
 
+2026-10-02 update: strict/default original-lease guidance below remains compatible.
+For the explicitly configured owner-only profile, use the [pilot runbook](owner-pilot.md)
+and ADR 0031: complete evidence refresh may outlive the short original status lease,
+while the original signed quote/approval expires within five minutes. Owner-signed
+chain bootstrap/resync and one-trade planning are now implemented. Current personal
+access/mapping/event records and mainnet acceptance are still pending.
+
 Work items: P5.5/P7.1/P7.2/P7.5. Decision: [ADR 0029](../decisions/0029-production-eoa-evidence-orchestration.md).
 Status: server library wired and PostgreSQL-tested; live deployment disabled.
 

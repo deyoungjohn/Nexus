@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  test-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    tmpfs:
+      # Stores data in memory instead of disk for faster tests
+      - /var/lib/postgresql/data

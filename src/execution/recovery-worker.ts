@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { Pool } from "pg";
-import { DomainError, requireInput } from "../domain/errors.js";
+import { DomainError, requireInput, identifier } from "../domain/errors.js";
 import { prepareBscBalanceEvidence } from "./bsc-recovery.js";
 import { fetchEoaBscObservation } from "./bsc-rpc.js";
 import { parseRecoveryConfig, recoveryConfigurationRecord, resolveRecoveryAssets,
@@ -17,16 +17,23 @@ export interface RecoveryWorkerResult {
 
 /** Trusted headless runtime. Discovers persisted legs; has no signer or broadcast port. */
 export async function runBscRecoveryOnce(pool: Pool, rawConfig: RecoveryConfig,
-  fetcher: typeof fetch = fetch, limit = 25): Promise<readonly RecoveryWorkerResult[]> {
+  fetcher: typeof fetch = fetch, limit = 25,
+  selection?: { readonly wallet: string; readonly legId?: string }): Promise<readonly RecoveryWorkerResult[]> {
   const config = parseRecoveryConfig(rawConfig);
   requireInput(Number.isInteger(limit) && limit > 0 && limit <= 100,
     "INVALID_RECOVERY_LIMIT", "Recovery batch must contain 1–100 legs.");
+  if (selection) {
+    requireInput(/^0x[0-9a-f]{40}$/i.test(selection.wallet), "INVALID_RECOVERY_SELECTION", "Exact owner wallet required.");
+    if (selection.legId !== undefined) identifier(selection.legId);
+  }
   const candidates = await pool.query<{ id: string; portfolio_id: string }>(`
     SELECT l.id, l.portfolio_id FROM eoa_execution_legs l
     LEFT JOIN LATERAL (SELECT max(started_at) checked FROM eoa_recovery_attempts
       WHERE leg_id = l.id) a ON true
-    WHERE l.chain_id = 56
-    ORDER BY a.checked NULLS FIRST, l.created_at, l.id LIMIT $1`, [limit]);
+    WHERE l.chain_id = 56 AND ($2::text IS NULL OR l.wallet=$2)
+      AND ($3::text IS NULL OR l.id=$3)
+    ORDER BY a.checked NULLS FIRST, l.created_at, l.id LIMIT $1`,
+  [limit, selection?.wallet.toLowerCase() ?? null, selection?.legId ?? null]);
   const results: RecoveryWorkerResult[] = [];
   const record = recoveryConfigurationRecord(config);
   for (const leg of candidates.rows) {
@@ -63,7 +70,8 @@ export async function runBscRecoveryOnce(pool: Pool, rawConfig: RecoveryConfig,
           const provenance = { attemptId, sourceId: source.id };
           const current = await store.loadRecoveryContext(leg.portfolio_id, leg.id);
           const observation = await fetchEoaBscObservation({ rpcUrl: source.rpcUrl,
-            wallet: current.wallet, transactionHash: current.transactionHash }, fetcher);
+            wallet: current.wallet, transactionHash: current.transactionHash,
+            ...(current.nonceHistoryAnchor ? {nonce:current.nonce,nonceHistoryAnchor:current.nonceHistoryAnchor} : {}) }, fetcher);
           if (observation === null) continue;
           const decision = await store.recordChainObservation(leg.portfolio_id, leg.id,
             observation, BigInt(config.finalityBlocks), provenance);
@@ -113,6 +121,7 @@ export async function runBscRecoveryOnce(pool: Pool, rawConfig: RecoveryConfig,
       // Domain rejection is durable and safe to inspect. Infrastructure errors
       // propagate for operator alerts; raw database/RPC messages are never logged.
       if (!(error instanceof DomainError)) throw error;
+      if(error.code==="PILOT_POST_FILL_ALLOWANCE_NONZERO")await new EoaExecutionStore(pool,lock).freezeAllowanceIncident(leg.portfolio_id,leg.id);
       if (attemptId !== undefined) await lock.query(
         "UPDATE eoa_recovery_attempts SET outcome = 'manual-review', reason = $2, finished_at = now() WHERE id = $1",
         [attemptId, error.code]);

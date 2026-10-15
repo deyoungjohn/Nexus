@@ -26,8 +26,9 @@ The result describes **on-chain transfer controls only**; it cannot be cast as
 P5 `EligibilityEvidence` or token-audit clearance.
 
 The jurisdiction check needs a current issuer-supported country endpoint and
-the intended user's own account/product eligibility. Binance's FAQ says a
-public country endpoint exists but does not give its path in the reviewed
+reliable user-jurisdiction evidence. Account/product status is additionally
+needed where an account-based route or applicable terms require it. Binance's
+FAQ says a public country endpoint exists but does not give its path in the reviewed
 public text. Do not guess that endpoint or infer eligibility from a localized
 webpage, VPN, quote, or a synthetic wallet preflight. P7 must repeat the
 actual-wallet preflight immediately before submission and after each fill.
@@ -37,9 +38,15 @@ actual-wallet preflight immediately before submission and after each fill.
 Nexus can now discover a current on-chain block/blacklist/pause failure before
 trying an exact route, while retaining the existing fail-closed Market Gate.
 The result is time-limited and can change at the next block. No private wallet
-address is recorded in Git or shared memory. Geographic and account-level
-eligibility, independent risk evidence, price policy and execution recovery
+address is recorded in Git or shared memory. Geographic and route-specific
+user eligibility, independent risk evidence, price policy and execution recovery
 remain open.
+
+2026-09-28 clarification: [ADR 0016](0016-eoa-first-wallet-execution.md)
+separates direct-EOA DEX use from Binance account routes. The reviewed FAQ
+does not establish a universal Binance account-status prerequisite for the
+former. Provider-supported geographic eligibility and actual-wallet transfer
+checks remain required; this preflight alone still cannot clear them.
 
 Sources: [verified NVDAB implementation](https://sourcify.dev/server/v2/contract/56/0xcfed6c4679297ea4889f8183bc057b4a86c64e46?fields=all),
 [verified compliance contract](https://sourcify.dev/server/v2/contract/56/0x53dba7aabde774787a1f57236b235567da8e14f4?fields=all),

@@ -1,0 +1,2346 @@
+{
+  "schemaVersion": 1,
+  "workItems": [
+    "P7.3",
+    "P7.5"
+  ],
+  "scope": "Read-only public chain/provider research. No intended user wallet, credentials, signed bytes, approval, broadcast or application configuration change.",
+  "sourcePage": "https://chainlist.org/chain/56",
+  "sourceFeed": "https://chainlist.org/rpcs.json",
+  "preferredCandidate": "https://bsc.rpc.sentio.xyz",
+  "backupCandidate": "https://rpc-bsc.blockmachine.io",
+  "method": {
+    "screen": "Chain 56 and historical native balance plus USDT balanceOf at latest minus 200000 blocks; HTTPS only, skip credential-shaped/query and WebSocket URLs.",
+    "deepVerification": "Three canonical blocks including 40000000 (2024-06-28), nonzero native WBNB backing and USDT/WBNB pool balances, historical nonce, two receipt dates, full transaction blocks, canonical receipt fields and normalized log digests.",
+    "existingReaders": [
+      "fetchBscTrackedBalances",
+      "fetchBscReceiptEffectProof",
+      "fetchEoaBscObservation"
+    ],
+    "adapterTimeoutMs": 5000,
+    "diagnosticTimeoutMs": 10000,
+    "coreCriteria": "Historical state, full transaction blocks, canonical receipts, existing readers. Standalone eth_getLogs is additional capability, not required by current receipt-effect reader.",
+    "privacy": "Public pool/contract balances and sampled transaction hashes only. Sample sender used transiently to exercise receipt identity; no sender, recipient or full event payload retained.",
+    "probeCorrection": "Initial deeper probe used Blast for reference log discovery and received a rate limit. Switched research discovery to Sentio and reran paced verification; no app code change."
+  },
+  "screen": {
+    "source": "https://chainlist.org/rpcs.json",
+    "capturedAt": "2026-09-30T16:48:42.679Z",
+    "finishedAt": "2026-09-30T16:49:09.785Z",
+    "chainName": "BNB Smart Chain Mainnet",
+    "listedEntries": 58,
+    "excluded": [
+      {
+        "host": "rpc-bsc.48.club",
+        "reason": "Non-HTTPS transport"
+      },
+      {
+        "host": "bsc-mainnet.nodereal.io",
+        "reason": "Credential-shaped or query URL excluded"
+      },
+      {
+        "host": "go.getblock.io",
+        "reason": "Credential-shaped or query URL excluded"
+      },
+      {
+        "host": "bsc-rpc.publicnode.com",
+        "reason": "Non-HTTPS transport"
+      },
+      {
+        "host": "services.tokenview.io",
+        "reason": "Credential-shaped or query URL excluded"
+      },
+      {
+        "host": "bsc-mainnet.4everland.org",
+        "reason": "Credential-shaped or query URL excluded"
+      },
+      {
+        "host": "bsc-mainnet.4everland.org",
+        "reason": "Non-HTTPS transport"
+      },
+      {
+        "host": "bsc.callstaticrpc.com",
+        "reason": "Non-HTTPS transport"
+      },
+      {
+        "host": "rpc.owlracle.info",
+        "reason": "Credential-shaped or query URL excluded"
+      },
+      {
+        "host": "api-bsc-mainnet-full.n.dwellir.com",
+        "reason": "Credential-shaped or query URL excluded"
+      },
+      {
+        "host": "bsc.drpc.org",
+        "reason": "Non-HTTPS transport"
+      },
+      {
+        "host": "bsc.api.pocket.network",
+        "reason": "Non-HTTPS transport"
+      },
+      {
+        "host": "bsc-ws-node.nariox.org",
+        "reason": "Non-HTTPS transport"
+      }
+    ],
+    "headers": [
+      {
+        "number": "0x7726817",
+        "hash": "0xc57552fed84242f7472cdb14fef08d57d8a818d771f4543c4de3fccdf2b772a2",
+        "timestamp": "0x6abd349e",
+        "date": "2026-09-30T16:11:10.000Z"
+      },
+      {
+        "number": "0x76f6e5f",
+        "hash": "0x6f143e787ea18f7cb0b0e85271c5d40debad4f731c84ed3b1bf4f12239377ea2",
+        "timestamp": "0x6abbddb4",
+        "date": "2026-09-29T15:48:04.000Z"
+      },
+      {
+        "number": "0x2625a00",
+        "hash": "0x095f88c4f4855eab7bc6bb7161ade81adf7d60e11804d40197e4388227d1eddf",
+        "timestamp": "0x667e61b3",
+        "date": "2024-06-28T07:09:39.000Z"
+      }
+    ],
+    "anchorBlock": "124943263",
+    "usdt": "0x55d398326f99059ff775485246999027b3197955",
+    "publicPool": "0x36696169c63e42cd08ce11f5deebbcebae652050",
+    "results": [
+      {
+        "url": "https://bsc-dataseed.bnbchain.org",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:42.683Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 142
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 147
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 146
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://lb.routeme.sh/rpc/evm/56",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:48:42.681Z",
+        "reads": [],
+        "chain": {
+          "ok": false,
+          "error": "{\"code\":-32029,\"message\":\"public rate limit exceeded — sign up for free at https://routeme.sh to continue (economy and performance routing at competitive prices)\"}",
+          "ms": 1010
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://rpc.nodeflare.app/bnb/public",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:42.681Z",
+        "reads": [],
+        "chain": {
+          "ok": false,
+          "error": "Non-JSON HTTP 403",
+          "ms": 1079
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed1.defibit.io",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:43.471Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 133
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 136
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 611
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed2.defibit.io",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:43.761Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 129
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 130
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 695
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed1.ninicoin.io",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:43.692Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 142
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 142
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 772
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed3.defibit.io",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:44.703Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 143
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 144
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 655
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed4.defibit.io",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:45.066Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 129
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 129
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 717
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://rpc.hostdefi.com/api/rpc/bsc",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:48:42.680Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 1813
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 469
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1094
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed2.ninicoin.io",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:45.100Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 145
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 142
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 815
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed3.ninicoin.io",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:45.997Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 134
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 134
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 775
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed1.bnbchain.org",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:46.409Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 138
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 134
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 750
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed4.ninicoin.io",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:46.394Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 139
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 137
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 764
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed2.bnbchain.org",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:46.554Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 152
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 149
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 886
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed3.bnbchain.org",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:47.393Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 134
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 136
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 845
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-dataseed4.bnbchain.org",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:47.782Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 143
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 147
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 755
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bscrpc.com",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:48:49.179Z",
+        "reads": [],
+        "chain": {
+          "ok": false,
+          "error": "\"message: API key disabled, json-rpc code: -32051, rest code: 403\"",
+          "ms": 619
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://binance-smart-chain-public.nodies.app",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:48:48.860Z",
+        "reads": [],
+        "chain": {
+          "ok": false,
+          "error": "Non-JSON HTTP 403",
+          "ms": 1143
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://rpc-bsc.48.club",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:48:47.786Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 1018
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 543
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1219
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://binance.nodereal.io",
+        "tracking": "yes",
+        "checkedAt": "2026-09-30T16:48:49.799Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 135
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"missing trie node\"}",
+            "ms": 131
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 631
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://0.48.club",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:48:48.093Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 973
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 517
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1119
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc.blockpi.network/v1/rpc/private",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:48:51.047Z",
+        "reads": [],
+        "chain": {
+          "ok": false,
+          "error": "Non-JSON HTTP 521",
+          "ms": 614
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc.rpc.blxrbdn.com",
+        "tracking": "yes",
+        "checkedAt": "2026-09-30T16:48:50.917Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 123
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 118
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 680
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bnb.api.onfinality.io/public",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:48:51.053Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32029,\"message\":\"Too Many Requests, Please apply an OnFinality API key or contact us to receive a higher rate limit\"}",
+            "ms": 219
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32029,\"message\":\"Too Many Requests, Please apply an OnFinality API key or contact us to receive a higher rate limit\"}",
+            "ms": 215
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1871
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-rpc.publicnode.com",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:51.662Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32602,\"message\":\"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode\"}",
+            "ms": 880
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32602,\"message\":\"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode\"}",
+            "ms": 396
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 976
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-mainnet.public.blastapi.io",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:48:52.190Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x0",
+            "ms": 994
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+            "ms": 486
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 962
+        },
+        "historicalStatePassed": true
+      },
+      {
+        "url": "https://bsc.drpc.org",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:54.983Z",
+        "reads": [],
+        "chain": {
+          "ok": false,
+          "error": "fetch failed",
+          "ms": 757
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://public.1rpc.io/bnb",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:50.004Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 1314
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 1817
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 3127
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc.meowrpc.com",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:53.710Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 1244
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"The method eth_call is not supported.\"}",
+            "ms": 509
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1023
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://rpc.polysplit.cloud/v1/chain/56",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:55.743Z",
+        "reads": [],
+        "chain": {
+          "ok": false,
+          "error": "Non-JSON HTTP 200",
+          "ms": 1532
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://public-bsc.nownodes.io",
+        "tracking": "yes",
+        "checkedAt": "2026-09-30T16:48:56.838Z",
+        "reads": [],
+        "chain": {
+          "ok": false,
+          "error": "fetch failed",
+          "ms": 726
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc-mainnet.gateway.tatum.io",
+        "tracking": "yes",
+        "checkedAt": "2026-09-30T16:48:56.613Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x0",
+            "ms": 331
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-16401,\"message\":\"Method 'eth_call' is available for paid plans only. To access this feature, please upgrade your subscription at https://co.tatum.io/upgrade.\"}",
+            "ms": 127
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1359
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc.blockrazor.xyz",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:57.276Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 371
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 388
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1186
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://api.zan.top/bsc-mainnet",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:48:54.265Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x0",
+            "ms": 2277
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32012,\"message\":\"cu limit exceeded; Method \\\"eth_call\\\" is not available for unregistered accounts. Please visit https://zan.top/ and register to unlock more.\",\"data\":{\"traceId\":\"1a0f3382b82091b5\"}}",
+            "ms": 286
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 2642
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc.blockrazor.xyz/fullprivacy",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:57.565Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 371
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 388
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1436
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://endpoints.omniatech.io/v1/bsc/mainnet/public",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:59.572Z",
+        "reads": [],
+        "chain": {
+          "ok": false,
+          "error": "Non-JSON HTTP 521",
+          "ms": 854
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc.blockrazor.xyz/maxbackrun",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:58.782Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 377
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 371
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 898
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://public-bsc-mainnet.fastnode.io",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:49:00.112Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32603,\"message\":\"state at block #124743264 is pruned\"}",
+            "ms": 370
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32603,\"message\":\"state at block #124743264 is pruned\"}",
+            "ms": 371
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 872
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc.api.pocket.network",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:48:59.821Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"not supported\"}",
+            "ms": 981
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+            "ms": 232
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 982
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://bsc.rpc.sentio.xyz",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:49:00.427Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x0",
+            "ms": 510
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+            "ms": 510
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1010
+        },
+        "historicalStatePassed": true
+      },
+      {
+        "url": "https://bsc-rpc-public.chainpulse.cc",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:49:02.368Z",
+        "reads": [],
+        "chain": {
+          "ok": false,
+          "error": "Non-JSON HTTP 521",
+          "ms": 1027
+        },
+        "historicalStatePassed": false
+      },
+      {
+        "url": "https://rpc.swiftnodes.io/rpc/bsc",
+        "tracking": "limited",
+        "checkedAt": "2026-09-30T16:49:00.779Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x0",
+            "ms": 716
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+            "ms": 1072
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1226
+        },
+        "historicalStatePassed": true
+      },
+      {
+        "url": "https://rpc-bsc.blockmachine.io",
+        "tracking": "none",
+        "checkedAt": "2026-09-30T16:49:02.076Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x0",
+            "ms": 1109
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+            "ms": 437
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1374
+        },
+        "historicalStatePassed": true
+      },
+      {
+        "url": "https://56.rpc.thirdweb.com",
+        "tracking": "yes",
+        "checkedAt": "2026-09-30T16:49:03.397Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x0",
+            "ms": 1294
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": true,
+            "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+            "ms": 621
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 1007
+        },
+        "historicalStatePassed": true
+      },
+      {
+        "url": "https://xrpc.cl/bsc",
+        "tracking": "unspecified",
+        "checkedAt": "2026-09-30T16:49:02.808Z",
+        "reads": [
+          {
+            "method": "eth_getBalance",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"XRPC Cluster: Backend bsc node currently syncing and fallbacks busy\"}",
+            "ms": 2143
+          },
+          {
+            "method": "eth_call(balanceOf)",
+            "block": "0x76f6e5f",
+            "ok": false,
+            "error": "{\"code\":-32000,\"message\":\"XRPC Cluster: Backend bsc node currently syncing and fallbacks busy\"}",
+            "ms": 2437
+          }
+        ],
+        "chain": {
+          "ok": true,
+          "result": "0x38",
+          "ms": 2046
+        },
+        "historicalStatePassed": false
+      }
+    ]
+  },
+  "verification": {
+    "startedAt": "2026-09-30T16:55:55.105Z",
+    "finishedAt": "2026-09-30T16:58:28.035Z",
+    "headers": [
+      {
+        "number": "0x7726817",
+        "hash": "0xc57552fed84242f7472cdb14fef08d57d8a818d771f4543c4de3fccdf2b772a2",
+        "timestamp": "0x6abd349e",
+        "date": "2026-09-30T16:11:10.000Z"
+      },
+      {
+        "number": "0x76f6e5f",
+        "hash": "0x6f143e787ea18f7cb0b0e85271c5d40debad4f731c84ed3b1bf4f12239377ea2",
+        "timestamp": "0x6abbddb4",
+        "date": "2026-09-29T15:48:04.000Z"
+      },
+      {
+        "number": "0x2625a00",
+        "hash": "0x095f88c4f4855eab7bc6bb7161ade81adf7d60e11804d40197e4388227d1eddf",
+        "timestamp": "0x667e61b3",
+        "date": "2024-06-28T07:09:39.000Z"
+      }
+    ],
+    "publicPool": "0x36696169c63e42cd08ce11f5deebbcebae652050",
+    "usdt": "0x55d398326f99059ff775485246999027b3197955",
+    "wbnb": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+    "stockTokens": [
+      "0xa9ee28c80f960b889dfbd1902055218cba016f75",
+      "0x02fca66c1d1afb4e2a7884261eb00f63598a7436"
+    ],
+    "sampleTransactions": [
+      {
+        "block": {
+          "number": "0x76f6e5f",
+          "hash": "0x6f143e787ea18f7cb0b0e85271c5d40debad4f731c84ed3b1bf4f12239377ea2",
+          "timestamp": "0x6abbddb4",
+          "date": "2026-09-29T15:48:04.000Z"
+        },
+        "transactionHash": "0x8e3fad30694e174399562789df78a8779d9f6001eb62ad5cc2f127fe79554d3a"
+      },
+      {
+        "block": {
+          "number": "0x2625a00",
+          "hash": "0x095f88c4f4855eab7bc6bb7161ade81adf7d60e11804d40197e4388227d1eddf",
+          "timestamp": "0x667e61b3",
+          "date": "2024-06-28T07:09:39.000Z"
+        },
+        "transactionHash": "0x0e3384ad2350d20921190b15e29305ed08eecfe97de975b6e015a6c6d476a90a"
+      }
+    ],
+    "results": [
+      {
+        "url": "https://bsc-mainnet.public.blastapi.io",
+        "checkedAt": "2026-09-30T16:55:55.106Z",
+        "historical": [
+          {
+            "block": "0x7726817",
+            "blockHash": "0xc57552fed84242f7472cdb14fef08d57d8a818d771f4543c4de3fccdf2b772a2",
+            "date": "2026-09-30T16:11:10.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x14b945b15417869f4ecb8",
+                "ms": 460
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000666f776068bf43db4f40a",
+                "ms": 460
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000000012e1d6c963ea2feefd9",
+                "ms": 459
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 470
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          },
+          {
+            "block": "0x76f6e5f",
+            "blockHash": "0x6f143e787ea18f7cb0b0e85271c5d40debad4f731c84ed3b1bf4f12239377ea2",
+            "date": "2026-09-29T15:48:04.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x14c47d61a031dc94539ae",
+                "ms": 467
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+                "ms": 460
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000001594307a0662ada666d",
+                "ms": 459
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 471
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          },
+          {
+            "block": "0x2625a00",
+            "blockHash": "0x095f88c4f4855eab7bc6bb7161ade81adf7d60e11804d40197e4388227d1eddf",
+            "date": "2024-06-28T07:09:39.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x13170dd07dcb452f62400",
+                "ms": 461
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000021083e09ed83ac4b9c86c6",
+                "ms": 461
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000003bae35d219506477e65",
+                "ms": 461
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 484
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          }
+        ],
+        "receipts": [
+          {
+            "fullBlockPassed": true,
+            "block": "0x76f6e5f",
+            "transactionHash": "0x8e3fad30694e174399562789df78a8779d9f6001eb62ad5cc2f127fe79554d3a",
+            "receiptMatches": true,
+            "gasUsed": "0x4a397",
+            "effectiveGasPrice": "0x365c040",
+            "receiptLogCount": 6,
+            "receiptLogsDigest": "0x8265c49a1936bf195147131d91ea8fd34471f0bcfda871bd5741116cc315bb76",
+            "logQueryPassed": false,
+            "logQueryError": "{\"code\":-32000,\"message\":\"Your request has been rate-limited due to unusually high traffic on the Alchemy public API. Consider creating a free Alchemy account or upgrading to a paid plan for guaranteed throughput, even in times of extraordinary request traffic.\"}",
+            "receiptAdapterPassed": true,
+            "observationAdapterPassed": true
+          },
+          {
+            "fullBlockPassed": true,
+            "block": "0x2625a00",
+            "transactionHash": "0x0e3384ad2350d20921190b15e29305ed08eecfe97de975b6e015a6c6d476a90a",
+            "receiptMatches": true,
+            "gasUsed": "0x299dc",
+            "effectiveGasPrice": "0x1a13b8600",
+            "receiptLogCount": 8,
+            "receiptLogsDigest": "0xb6fa7bc3e615a24b5c4eb47ac747d34b5097135e4d88bdc3980c69dcb9476932",
+            "logQueryPassed": false,
+            "logQueryError": "{\"code\":-32000,\"message\":\"Your request has been rate-limited due to unusually high traffic on the Alchemy public API. Consider creating a free Alchemy account or upgrading to a paid plan for guaranteed throughput, even in times of extraordinary request traffic.\"}",
+            "receiptAdapterPassed": true,
+            "observationAdapterPassed": true
+          }
+        ],
+        "adapterChecks": [
+          {
+            "block": "0x76f6e5f",
+            "reader": "fetchBscTrackedBalances",
+            "passed": true,
+            "balances": [
+              {
+                "assetId": "eip155:56/native",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+                "units": "7149133158423618632111654"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+                "units": "6368956710915839518317"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xa9ee28c80f960b889dfbd1902055218cba016f75",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+                "units": "0"
+              }
+            ]
+          },
+          {
+            "block": "0x2625a00",
+            "reader": "fetchBscTrackedBalances",
+            "passed": true,
+            "balances": [
+              {
+                "assetId": "eip155:56/native",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+                "units": "39933475392650981767153350"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+                "units": "17614577134262295166565"
+              }
+            ]
+          }
+        ],
+        "allPassed": false,
+        "coreRecoveryReadsPassed": true,
+        "stateMatchesReference": [
+          true,
+          true,
+          true
+        ],
+        "receiptLogsMatchReference": [
+          true,
+          true
+        ],
+        "filterLogsMatchReference": [
+          false,
+          false
+        ]
+      },
+      {
+        "url": "https://bsc.rpc.sentio.xyz",
+        "checkedAt": "2026-09-30T16:55:55.108Z",
+        "historical": [
+          {
+            "block": "0x7726817",
+            "blockHash": "0xc57552fed84242f7472cdb14fef08d57d8a818d771f4543c4de3fccdf2b772a2",
+            "date": "2026-09-30T16:11:10.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x14b945b15417869f4ecb8",
+                "ms": 513
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000666f776068bf43db4f40a",
+                "ms": 518
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000000012e1d6c963ea2feefd9",
+                "ms": 512
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 515
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          },
+          {
+            "block": "0x76f6e5f",
+            "blockHash": "0x6f143e787ea18f7cb0b0e85271c5d40debad4f731c84ed3b1bf4f12239377ea2",
+            "date": "2026-09-29T15:48:04.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x14c47d61a031dc94539ae",
+                "ms": 510
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+                "ms": 510
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000001594307a0662ada666d",
+                "ms": 520
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 512
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          },
+          {
+            "block": "0x2625a00",
+            "blockHash": "0x095f88c4f4855eab7bc6bb7161ade81adf7d60e11804d40197e4388227d1eddf",
+            "date": "2024-06-28T07:09:39.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x13170dd07dcb452f62400",
+                "ms": 516
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000021083e09ed83ac4b9c86c6",
+                "ms": 523
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000003bae35d219506477e65",
+                "ms": 532
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 560
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          }
+        ],
+        "receipts": [
+          {
+            "fullBlockPassed": true,
+            "block": "0x76f6e5f",
+            "transactionHash": "0x8e3fad30694e174399562789df78a8779d9f6001eb62ad5cc2f127fe79554d3a",
+            "receiptMatches": true,
+            "gasUsed": "0x4a397",
+            "effectiveGasPrice": "0x365c040",
+            "receiptLogCount": 6,
+            "receiptLogsDigest": "0x8265c49a1936bf195147131d91ea8fd34471f0bcfda871bd5741116cc315bb76",
+            "logQueryPassed": true,
+            "logQueryCount": 101,
+            "logQueryDigest": "0xc1761b24a3c6391f154127b52d31810c6c06b490d8cd9dffa6ee00159b9fa400",
+            "receiptAdapterPassed": true,
+            "observationAdapterPassed": true
+          },
+          {
+            "fullBlockPassed": true,
+            "block": "0x2625a00",
+            "transactionHash": "0x0e3384ad2350d20921190b15e29305ed08eecfe97de975b6e015a6c6d476a90a",
+            "receiptMatches": true,
+            "gasUsed": "0x299dc",
+            "effectiveGasPrice": "0x1a13b8600",
+            "receiptLogCount": 8,
+            "receiptLogsDigest": "0xb6fa7bc3e615a24b5c4eb47ac747d34b5097135e4d88bdc3980c69dcb9476932",
+            "logQueryPassed": true,
+            "logQueryCount": 57,
+            "logQueryDigest": "0xfad9bb1616ef53cf4abad9df91535aa0fda786cfb23cc3cf892bf57fa2e2d106",
+            "receiptAdapterPassed": true,
+            "observationAdapterPassed": true
+          }
+        ],
+        "adapterChecks": [
+          {
+            "block": "0x76f6e5f",
+            "reader": "fetchBscTrackedBalances",
+            "passed": true,
+            "balances": [
+              {
+                "assetId": "eip155:56/native",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+                "units": "7149133158423618632111654"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+                "units": "6368956710915839518317"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xa9ee28c80f960b889dfbd1902055218cba016f75",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+                "units": "0"
+              }
+            ]
+          },
+          {
+            "block": "0x2625a00",
+            "reader": "fetchBscTrackedBalances",
+            "passed": true,
+            "balances": [
+              {
+                "assetId": "eip155:56/native",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+                "units": "39933475392650981767153350"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+                "units": "17614577134262295166565"
+              }
+            ]
+          }
+        ],
+        "allPassed": true,
+        "coreRecoveryReadsPassed": true,
+        "stateMatchesReference": [
+          true,
+          true,
+          true
+        ],
+        "receiptLogsMatchReference": [
+          true,
+          true
+        ],
+        "filterLogsMatchReference": [
+          true,
+          true
+        ]
+      },
+      {
+        "url": "https://rpc.swiftnodes.io/rpc/bsc",
+        "checkedAt": "2026-09-30T16:56:47.112Z",
+        "historical": [
+          {
+            "block": "0x7726817",
+            "blockHash": "0xc57552fed84242f7472cdb14fef08d57d8a818d771f4543c4de3fccdf2b772a2",
+            "date": "2026-09-30T16:11:10.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x14b945b15417869f4ecb8",
+                "ms": 413
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000666f776068bf43db4f40a",
+                "ms": 558
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000000012e1d6c963ea2feefd9",
+                "ms": 576
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 725
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          },
+          {
+            "block": "0x76f6e5f",
+            "blockHash": "0x6f143e787ea18f7cb0b0e85271c5d40debad4f731c84ed3b1bf4f12239377ea2",
+            "date": "2026-09-29T15:48:04.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x14c47d61a031dc94539ae",
+                "ms": 614
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+                "ms": 921
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000001594307a0662ada666d",
+                "ms": 702
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 1283
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          },
+          {
+            "block": "0x2625a00",
+            "blockHash": "0x095f88c4f4855eab7bc6bb7161ade81adf7d60e11804d40197e4388227d1eddf",
+            "date": "2024-06-28T07:09:39.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": false,
+                "error": "{\"code\":-32000,\"message\":\"header not found\"}",
+                "ms": 343
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": false,
+                "error": "{\"code\":-32000,\"message\":\"header not found\"}",
+                "ms": 765
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": false,
+                "error": "{\"code\":-32000,\"message\":\"header not found\"}",
+                "ms": 308
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": false,
+                "error": "{\"code\":-32000,\"message\":\"header not found\"}",
+                "ms": 651
+              }
+            ],
+            "canonicalMatches": false,
+            "statePassed": false
+          }
+        ],
+        "receipts": [
+          {
+            "fullBlockPassed": true,
+            "block": "0x76f6e5f",
+            "transactionHash": "0x8e3fad30694e174399562789df78a8779d9f6001eb62ad5cc2f127fe79554d3a",
+            "receiptMatches": true,
+            "gasUsed": "0x4a397",
+            "effectiveGasPrice": "0x365c040",
+            "receiptLogCount": 6,
+            "receiptLogsDigest": "0x8265c49a1936bf195147131d91ea8fd34471f0bcfda871bd5741116cc315bb76",
+            "logQueryPassed": true,
+            "logQueryCount": 101,
+            "logQueryDigest": "0xc1761b24a3c6391f154127b52d31810c6c06b490d8cd9dffa6ee00159b9fa400",
+            "receiptAdapterPassed": false,
+            "observationAdapterPassed": false
+          },
+          {
+            "fullBlockPassed": false,
+            "block": "0x2625a00",
+            "transactionHash": "0x0e3384ad2350d20921190b15e29305ed08eecfe97de975b6e015a6c6d476a90a",
+            "receiptMatches": false,
+            "logQueryPassed": false,
+            "receiptError": "\"Rate limited\"",
+            "logQueryError": "{\"code\":-32000,\"message\":\"header not found\"}",
+            "receiptAdapterPassed": false,
+            "observationAdapterPassed": false
+          }
+        ],
+        "adapterChecks": [
+          {
+            "block": "0x76f6e5f",
+            "reader": "fetchBscTrackedBalances",
+            "passed": false
+          },
+          {
+            "block": "0x2625a00",
+            "reader": "fetchBscTrackedBalances",
+            "passed": false
+          }
+        ],
+        "allPassed": false,
+        "coreRecoveryReadsPassed": false,
+        "stateMatchesReference": [
+          true,
+          true,
+          false
+        ],
+        "receiptLogsMatchReference": [
+          true,
+          false
+        ],
+        "filterLogsMatchReference": [
+          true,
+          false
+        ]
+      },
+      {
+        "url": "https://rpc-bsc.blockmachine.io",
+        "checkedAt": "2026-09-30T16:56:49.043Z",
+        "historical": [
+          {
+            "block": "0x7726817",
+            "blockHash": "0xc57552fed84242f7472cdb14fef08d57d8a818d771f4543c4de3fccdf2b772a2",
+            "date": "2026-09-30T16:11:10.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x14b945b15417869f4ecb8",
+                "ms": 383
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000666f776068bf43db4f40a",
+                "ms": 385
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000000012e1d6c963ea2feefd9",
+                "ms": 384
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 384
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          },
+          {
+            "block": "0x76f6e5f",
+            "blockHash": "0x6f143e787ea18f7cb0b0e85271c5d40debad4f731c84ed3b1bf4f12239377ea2",
+            "date": "2026-09-29T15:48:04.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x14c47d61a031dc94539ae",
+                "ms": 388
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+                "ms": 393
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000001594307a0662ada666d",
+                "ms": 391
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 390
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          },
+          {
+            "block": "0x2625a00",
+            "blockHash": "0x095f88c4f4855eab7bc6bb7161ade81adf7d60e11804d40197e4388227d1eddf",
+            "date": "2024-06-28T07:09:39.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x13170dd07dcb452f62400",
+                "ms": 403
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000021083e09ed83ac4b9c86c6",
+                "ms": 512
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000003bae35d219506477e65",
+                "ms": 391
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 387
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          }
+        ],
+        "receipts": [
+          {
+            "fullBlockPassed": true,
+            "block": "0x76f6e5f",
+            "transactionHash": "0x8e3fad30694e174399562789df78a8779d9f6001eb62ad5cc2f127fe79554d3a",
+            "receiptMatches": true,
+            "gasUsed": "0x4a397",
+            "effectiveGasPrice": "0x365c040",
+            "receiptLogCount": 6,
+            "receiptLogsDigest": "0x8265c49a1936bf195147131d91ea8fd34471f0bcfda871bd5741116cc315bb76",
+            "logQueryPassed": true,
+            "logQueryCount": 101,
+            "logQueryDigest": "0xc1761b24a3c6391f154127b52d31810c6c06b490d8cd9dffa6ee00159b9fa400",
+            "receiptAdapterPassed": true,
+            "observationAdapterPassed": true
+          },
+          {
+            "fullBlockPassed": true,
+            "block": "0x2625a00",
+            "transactionHash": "0x0e3384ad2350d20921190b15e29305ed08eecfe97de975b6e015a6c6d476a90a",
+            "receiptMatches": true,
+            "gasUsed": "0x299dc",
+            "effectiveGasPrice": "0x1a13b8600",
+            "receiptLogCount": 8,
+            "receiptLogsDigest": "0xb6fa7bc3e615a24b5c4eb47ac747d34b5097135e4d88bdc3980c69dcb9476932",
+            "logQueryPassed": true,
+            "logQueryCount": 57,
+            "logQueryDigest": "0xfad9bb1616ef53cf4abad9df91535aa0fda786cfb23cc3cf892bf57fa2e2d106",
+            "receiptAdapterPassed": true,
+            "observationAdapterPassed": true
+          }
+        ],
+        "adapterChecks": [
+          {
+            "block": "0x76f6e5f",
+            "reader": "fetchBscTrackedBalances",
+            "passed": true,
+            "balances": [
+              {
+                "assetId": "eip155:56/native",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+                "units": "7149133158423618632111654"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+                "units": "6368956710915839518317"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xa9ee28c80f960b889dfbd1902055218cba016f75",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+                "units": "0"
+              }
+            ]
+          },
+          {
+            "block": "0x2625a00",
+            "reader": "fetchBscTrackedBalances",
+            "passed": true,
+            "balances": [
+              {
+                "assetId": "eip155:56/native",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+                "units": "39933475392650981767153350"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+                "units": "17614577134262295166565"
+              }
+            ]
+          }
+        ],
+        "allPassed": true,
+        "coreRecoveryReadsPassed": true,
+        "stateMatchesReference": [
+          true,
+          true,
+          true
+        ],
+        "receiptLogsMatchReference": [
+          true,
+          true
+        ],
+        "filterLogsMatchReference": [
+          true,
+          true
+        ]
+      },
+      {
+        "url": "https://56.rpc.thirdweb.com",
+        "checkedAt": "2026-09-30T16:57:26.862Z",
+        "historical": [
+          {
+            "block": "0x7726817",
+            "blockHash": "0xc57552fed84242f7472cdb14fef08d57d8a818d771f4543c4de3fccdf2b772a2",
+            "date": "2026-09-30T16:11:10.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x14b945b15417869f4ecb8",
+                "ms": 632
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000666f776068bf43db4f40a",
+                "ms": 666
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000000012e1d6c963ea2feefd9",
+                "ms": 995
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 678
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          },
+          {
+            "block": "0x76f6e5f",
+            "blockHash": "0x6f143e787ea18f7cb0b0e85271c5d40debad4f731c84ed3b1bf4f12239377ea2",
+            "date": "2026-09-29T15:48:04.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x14c47d61a031dc94539ae",
+                "ms": 697
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000005e9e348fb7f7109ad5626",
+                "ms": 695
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000001594307a0662ada666d",
+                "ms": 721
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 669
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          },
+          {
+            "block": "0x2625a00",
+            "blockHash": "0x095f88c4f4855eab7bc6bb7161ade81adf7d60e11804d40197e4388227d1eddf",
+            "date": "2024-06-28T07:09:39.000Z",
+            "reads": [
+              {
+                "label": "native WBNB backing",
+                "method": "eth_getBalance",
+                "ok": true,
+                "result": "0x13170dd07dcb452f62400",
+                "ms": 665
+              },
+              {
+                "label": "USDT pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x00000000000000000000000000000000000000000021083e09ed83ac4b9c86c6",
+                "ms": 649
+              },
+              {
+                "label": "WBNB pool balance",
+                "method": "eth_call",
+                "ok": true,
+                "result": "0x0000000000000000000000000000000000000000000003bae35d219506477e65",
+                "ms": 634
+              },
+              {
+                "label": "historical nonce",
+                "method": "eth_getTransactionCount",
+                "ok": true,
+                "result": "0x1",
+                "ms": 662
+              }
+            ],
+            "canonicalMatches": true,
+            "statePassed": true
+          }
+        ],
+        "receipts": [
+          {
+            "fullBlockPassed": true,
+            "block": "0x76f6e5f",
+            "transactionHash": "0x8e3fad30694e174399562789df78a8779d9f6001eb62ad5cc2f127fe79554d3a",
+            "receiptMatches": true,
+            "gasUsed": "0x4a397",
+            "effectiveGasPrice": "0x365c040",
+            "receiptLogCount": 6,
+            "receiptLogsDigest": "0x8265c49a1936bf195147131d91ea8fd34471f0bcfda871bd5741116cc315bb76",
+            "logQueryPassed": true,
+            "logQueryCount": 101,
+            "logQueryDigest": "0xc1761b24a3c6391f154127b52d31810c6c06b490d8cd9dffa6ee00159b9fa400",
+            "receiptAdapterPassed": true,
+            "observationAdapterPassed": true
+          },
+          {
+            "fullBlockPassed": true,
+            "block": "0x2625a00",
+            "transactionHash": "0x0e3384ad2350d20921190b15e29305ed08eecfe97de975b6e015a6c6d476a90a",
+            "receiptMatches": true,
+            "gasUsed": "0x299dc",
+            "effectiveGasPrice": "0x1a13b8600",
+            "receiptLogCount": 8,
+            "receiptLogsDigest": "0xb6fa7bc3e615a24b5c4eb47ac747d34b5097135e4d88bdc3980c69dcb9476932",
+            "logQueryPassed": true,
+            "logQueryCount": 57,
+            "logQueryDigest": "0xfad9bb1616ef53cf4abad9df91535aa0fda786cfb23cc3cf892bf57fa2e2d106",
+            "receiptAdapterPassed": true,
+            "observationAdapterPassed": true
+          }
+        ],
+        "adapterChecks": [
+          {
+            "block": "0x76f6e5f",
+            "reader": "fetchBscTrackedBalances",
+            "passed": true,
+            "balances": [
+              {
+                "assetId": "eip155:56/native",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+                "units": "7149133158423618632111654"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+                "units": "6368956710915839518317"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xa9ee28c80f960b889dfbd1902055218cba016f75",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+                "units": "0"
+              }
+            ]
+          },
+          {
+            "block": "0x2625a00",
+            "reader": "fetchBscTrackedBalances",
+            "passed": true,
+            "balances": [
+              {
+                "assetId": "eip155:56/native",
+                "units": "0"
+              },
+              {
+                "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+                "units": "39933475392650981767153350"
+              },
+              {
+                "assetId": "eip155:56/erc20:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+                "units": "17614577134262295166565"
+              }
+            ]
+          }
+        ],
+        "allPassed": true,
+        "coreRecoveryReadsPassed": true,
+        "stateMatchesReference": [
+          true,
+          true,
+          true
+        ],
+        "receiptLogsMatchReference": [
+          true,
+          true
+        ],
+        "filterLogsMatchReference": [
+          true,
+          true
+        ]
+      }
+    ]
+  },
+  "stockReplay": {
+    "startedAt": "2026-09-30T17:00:33.800Z",
+    "finishedAt": "2026-09-30T17:00:52.068Z",
+    "results": [
+      {
+        "rpcUrl": "https://bsc.rpc.sentio.xyz",
+        "label": "Ondo block that previously failed replay",
+        "block": "124939148",
+        "blockHash": "0x443b2db8126a620940176d9b05ae2451b8212858de76045cb27fa2e5e436a586",
+        "blockTime": "2026-09-30T16:17:48.000Z",
+        "publicPool": "0xb90bdbfbdffd4af5a636b5805539edeafb969308",
+        "passed": true,
+        "balances": [
+          {
+            "assetId": "eip155:56/native",
+            "units": "0"
+          },
+          {
+            "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+            "units": "12786498366507565677853"
+          },
+          {
+            "assetId": "eip155:56/erc20:0xa9ee28c80f960b889dfbd1902055218cba016f75",
+            "units": "10825947686385119358"
+          }
+        ]
+      },
+      {
+        "rpcUrl": "https://bsc.rpc.sentio.xyz",
+        "label": "Historical bStocks route probe",
+        "block": "124347223",
+        "blockHash": "0x3caf421ceb74d98a423957b2ce9d1e4518025f70f3819bc68f95a3107f721c06",
+        "blockTime": "2026-09-27T14:16:29.000Z",
+        "publicPool": "0x8fb4243b553ac29ba088acf00b9b7da24bd6690c",
+        "passed": true,
+        "balances": [
+          {
+            "assetId": "eip155:56/native",
+            "units": "0"
+          },
+          {
+            "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+            "units": "1492881842849431009167401"
+          },
+          {
+            "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+            "units": "9688231412552515173683"
+          }
+        ]
+      },
+      {
+        "rpcUrl": "https://rpc-bsc.blockmachine.io",
+        "label": "Ondo block that previously failed replay",
+        "block": "124939148",
+        "blockHash": "0x443b2db8126a620940176d9b05ae2451b8212858de76045cb27fa2e5e436a586",
+        "blockTime": "2026-09-30T16:17:48.000Z",
+        "publicPool": "0xb90bdbfbdffd4af5a636b5805539edeafb969308",
+        "passed": true,
+        "balances": [
+          {
+            "assetId": "eip155:56/native",
+            "units": "0"
+          },
+          {
+            "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+            "units": "12786498366507565677853"
+          },
+          {
+            "assetId": "eip155:56/erc20:0xa9ee28c80f960b889dfbd1902055218cba016f75",
+            "units": "10825947686385119358"
+          }
+        ]
+      },
+      {
+        "rpcUrl": "https://rpc-bsc.blockmachine.io",
+        "label": "Historical bStocks route probe",
+        "block": "124347223",
+        "blockHash": "0x3caf421ceb74d98a423957b2ce9d1e4518025f70f3819bc68f95a3107f721c06",
+        "blockTime": "2026-09-27T14:16:29.000Z",
+        "publicPool": "0x8fb4243b553ac29ba088acf00b9b7da24bd6690c",
+        "passed": true,
+        "balances": [
+          {
+            "assetId": "eip155:56/native",
+            "units": "0"
+          },
+          {
+            "assetId": "eip155:56/erc20:0x55d398326f99059ff775485246999027b3197955",
+            "units": "1492881842849431009167401"
+          },
+          {
+            "assetId": "eip155:56/erc20:0x02fca66c1d1afb4e2a7884261eb00f63598a7436",
+            "units": "9688231412552515173683"
+          }
+        ]
+      }
+    ]
+  }
+}

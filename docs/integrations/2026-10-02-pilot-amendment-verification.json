@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-02",
+  "agent": "Codex",
+  "scope": "ADR 0031 Amendment 1 owner-only engineering implementation",
+  "checks": {
+    "applicationTests": 243,
+    "researchTests": 3,
+    "failures": 0,
+    "skipped": 0,
+    "postgresqlEnabled": true,
+    "typecheck": "passed",
+    "headlessBuild": "passed",
+    "webBuild": "passed",
+    "browser": {
+      "passed": 18,
+      "failed": 0,
+      "suite": "Chromium; real PostgreSQL endpoint/workspace checks plus synthetic exact trade/snapshot/R1 signing"
+    }
+  },
+  "publicRegisterProbe": {
+    "status": "discovery_succeeded",
+    "source": "https://www.adgm.com/financial-services-regulatory-authority/listing-authority/approved-prospectuses",
+    "primaryApprovalDate": "2026-06-11",
+    "applicableSupplementsDiscovered": 0,
+    "scope": "Current register discovery, not restriction-list content or owner eligibility review"
+  },
+  "publicSourceDiagnostic": {
+    "status": "attention-required",
+    "alerts": [
+      "outside-regular-session"
+    ],
+    "priceReasonCodes": [],
+    "referenceAgeMs": 41068958,
+    "bandBps": 200,
+    "interpretations": [
+      {
+        "interpretation": "raw",
+        "absoluteBps": "38",
+        "signedPremiumBps": "37"
+      },
+      {
+        "interpretation": "display",
+        "absoluteBps": "30",
+        "signedPremiumBps": "29"
+      }
+    ],
+    "economicReview": "unreviewed dual diagnostics",
+    "policy": "declared-age-band",
+    "scope": "Read-only sampled observations; outside regular session; no trading admission"
+  },
+  "mainnet": {
+    "allowanceSubmitted": false,
+    "tradeSubmitted": false,
+    "ownerDeclarationObtained": false,
+    "configurationActivated": false
+  },
+  "openGates": [
+    "Private current restriction/event/control records and dated owner local-law decision",
+    "Fresh version-2 owner declaration and exact setup/trade signatures",
+    "Funded EOA actual simulation and mainnet receipt/restart acceptance",
+    "Reviewed independent RPC upstreams for actual R1 if an incident occurs",
+    "General R2/R3 repair and public-release qualification"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "workItems": [
+    "P7.3",
+    "P7.5"
+  ],
+  "scope": "Read-only configured-source smoke test using public contract balances and an unrelated public receipt; not a Nexus leg reconciliation or stock semantics review.",
+  "startedAt": "2026-09-30T17:47:04.998Z",
+  "finishedAt": "2026-09-30T17:47:23.678Z",
+  "configurationHash": "72ec7ff29142cbe5e81ea39c8d002b5c6bda645a063f897b5aa8dd402654b034",
+  "results": [
+    {
+      "sourceId": "sentio-bsc",
+      "blockNumber": "40000000",
+      "blockHash": "0x095f88c4f4855eab7bc6bb7161ade81adf7d60e11804d40197e4388227d1eddf",
+      "historicalBalances": true,
+      "nonzeroTokenBalances": true,
+      "receiptProof": true,
+      "canonicalObservation": true,
+      "balanceDigest": "ea9b42fc6eb1ef03a3b619fd7ccae079c3e1eada5b17b8db84eed5d89cbd0243",
+      "proofDigest": "48f024d0dd111f3ec9c5860a0d23d4f2e079a7a89f115fc028a98c816b02383a"
+    },
+    {
+      "sourceId": "blockmachine-bsc",
+      "blockNumber": "40000000",
+      "blockHash": "0x095f88c4f4855eab7bc6bb7161ade81adf7d60e11804d40197e4388227d1eddf",
+      "historicalBalances": true,
+      "nonzeroTokenBalances": true,
+      "receiptProof": true,
+      "canonicalObservation": true,
+      "balanceDigest": "ea9b42fc6eb1ef03a3b619fd7ccae079c3e1eada5b17b8db84eed5d89cbd0243",
+      "proofDigest": "48f024d0dd111f3ec9c5860a0d23d4f2e079a7a89f115fc028a98c816b02383a"
+    }
+  ]
+}

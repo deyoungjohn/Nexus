@@ -45,7 +45,7 @@ const blockHash = `0x${"b".repeat(64)}`;
 const reorgHash = `0x${"c".repeat(64)}`;
 const topic = (address: string): string => `0x${address.slice(2).toLowerCase().padStart(64, "0")}`;
 
-async function withLeg(run: (value: Awaited<ReturnType<typeof seedLeg>>) => Promise<void>, canonical = false): Promise<void> {
+export async function withLeg(run: (value: Awaited<ReturnType<typeof seedLeg>>) => Promise<void>, canonical = false): Promise<void> {
   const admin = new Pool({ connectionString: databaseUrl });
   const schema = `nexus_worker_${randomUUID().replaceAll("-", "")}`;
   await admin.query(`CREATE SCHEMA ${schema}`);
@@ -71,7 +71,7 @@ function canonicalFixture<T>(value: T): T {
   return value;
 }
 
-async function seedLeg(pool: Pool, canonical = false) {
+export async function seedLeg(pool: Pool, canonical = false) {
   const owner = Wallet.createRandom();
   let gate = canonical ? canonicalFixture(fixture(owner.address)) : fixture(owner.address);
   if (canonical) gate = { ...gate, evidence: { ...gate.evidence, tokenSecurity: [
@@ -172,7 +172,7 @@ async function seedLeg(pool: Pool, canonical = false) {
     state: string; reconciled: boolean }>(`SELECT p.revision, p.execution_paused, r.state,
       l.reconciled_at IS NOT NULL reconciled FROM portfolios p JOIN reservations r ON r.portfolio_id = p.id
       JOIN eoa_execution_legs l ON l.reservation_id = r.id WHERE p.id = 'portfolio-one'`)).rows[0]!;
-  return { pool, store, reviewed, rpc, methods, prepared, rawSignedTransaction, state };
+  return { pool, owner, approval, store, reviewed, rpc, methods, prepared, rawSignedTransaction, state };
 }
 
 test("P7 PostgreSQL USDT/NVDAB registry recovery rejects upgrades and repeats code checks before fill", pgOptions, async () => {

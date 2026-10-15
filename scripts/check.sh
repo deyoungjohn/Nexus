@@ -69,6 +69,64 @@ required_files=(
   web/app/api/execution/route.ts
   web/e2e/execution.spec.ts
   docs/decisions/0030-bstocks-route-and-web-approval.md
+  docs/decisions/0031-owner-only-bstocks-pilot.md
+  docs/runbooks/owner-pilot.md
+  docs/runbooks/eoa-pilot-runner.md
+  docs/decisions/0032-supervised-eoa-acceptance-runner.md
+  scripts/test-eoa-pilot.sh
+  src/pilot/runner-cli.ts
+  src/pilot/runner-input.ts
+  src/pilot/runner-evidence.ts
+  src/pilot/runner-runtime.ts
+  src/pilot/runner-services.ts
+  src/pilot/runner-trade.ts
+  src/pilot/runner-allowance.ts
+  test/pilot-runner.test.ts
+  docs/SENIOR_ENGINEER_FOLLOWUP.md
+  docs/integrations/2026-10-02-owner-pilot-sources.md
+  docs/integrations/2026-10-02-owner-pilot-sources.json
+  docs/0031-amendment-1-pilot-evidence-rules.md
+  docs/response002.md
+  migrations/0010_pilot_evidence.sql
+  src/pilot/prospectus-register.ts
+  src/pilot/quantity.ts
+  src/pilot/price-integrity.ts
+  src/pilot/price-journal.ts
+  src/execution/allowance-proof.ts
+  src/execution/reanchor-evidence.ts
+  src/execution/reanchor.ts
+  test/pilot-amendment.test.ts
+  test/pilot-recovery.test.ts
+  test/reanchor.test.ts
+  web/lib/reanchor-wallet.ts
+  web/components/reanchor-panel.tsx
+  web/server/reanchor.ts
+  web/app/api/reanchor/route.ts
+  migrations/0009_chain_snapshots.sql
+  src/execution/chain-bootstrap.ts
+  src/execution/nonce-history.ts
+  src/pilot/profile.ts
+  src/pilot/manual-records.ts
+  src/pilot/allowance.ts
+  src/pilot/round-trip.ts
+  src/pilot/planning.ts
+  src/pilot/private-output.ts
+  src/pilot/inspect-cli.ts
+  src/pilot/records-cli.ts
+  src/pilot/price-monitor.ts
+  src/pilot/price-monitor-cli.ts
+  test/pilot.test.ts
+  test/pilot-manual-records.test.ts
+  test/pilot-private-output.test.ts
+  test/pilot-price-monitor.test.ts
+  test/pilot-round-trip.test.ts
+  test/chain-bootstrap.test.ts
+  web/components/pilot-panel.tsx
+  web/lib/chain-snapshot-wallet.ts
+  web/server/chain-snapshot.ts
+  web/server/pilot-plan.ts
+  web/app/api/chain-snapshot/route.ts
+  web/app/api/pilot-plan/route.ts
   docs/integrations/2026-10-01-bstocks-route-adapter.md
   docs/integrations/2026-10-01-bstocks-route-adapter.json
   src/execution/production.ts
@@ -113,7 +171,7 @@ for file in "${required_files[@]}"; do
   fi
 done
 
-bash -n scripts/check.sh scripts/memory-mcp.sh
+bash -n scripts/check.sh scripts/memory-mcp.sh scripts/test-eoa-pilot.sh
 
 node -e '
   const fs = require("fs");

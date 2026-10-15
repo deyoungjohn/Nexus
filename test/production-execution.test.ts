@@ -89,15 +89,19 @@ test("P5.5 production assembly keeps missing economic/access/event review blocke
   assert.ok(requests.every(r=>r.method!=="eth_sendRawTransaction"));
 });
 
-async function withPortfolio(run:(value:Awaited<ReturnType<typeof seed>>)=>Promise<void>){
+async function withPortfolio(run:(value:Awaited<ReturnType<typeof seed>>)=>Promise<void>,pilotSources=false){
   const admin=new Pool({connectionString:databaseUrl});
   const schema=`nexus_exec_${randomUUID().replaceAll("-","")}`;await admin.query(`CREATE SCHEMA ${schema}`);
   const pool=new Pool({connectionString:databaseUrl,options:`-c search_path=${schema}`,max:5});
-  try{await migrate(pool);await migrate(pool);await run(await seed(pool));}
+  try{await migrate(pool);await migrate(pool);await run(await seed(pool,pilotSources));}
   finally{await pool.end();await admin.query(`DROP SCHEMA ${schema} CASCADE`);await admin.end();}
 }
-async function seed(pool:Pool){
-  const owner=Wallet.createRandom();const base=productionFixture(owner.address);
+async function seed(pool:Pool,pilotSources=false){
+  const owner=Wallet.createRandom();const base=structuredClone(productionFixture(owner.address));
+  if(pilotSources){Object.assign(base.instrument,{referenceSource:'chainlink-bsc:0xea5c2cbb5cd57dac24e26180b19a929f3e9699b8'});
+    Object.assign(base.evidence.reference!,{source:base.instrument.referenceSource});
+    Object.assign(base.evidence.settlement!,{source:'chainlink-bsc:0xb97ad0e74fa7d920791e90258a6e2085088b4320'});}
+
   const sessions=new SessionStore(pool,"https://nexus.example");let now=new Date(originalNow);
   const challenge=await sessions.challenge(owner.address,now);
   const session=await sessions.verify(challenge.id,await owner.signMessage(challenge.message),now);
@@ -323,6 +327,32 @@ test("P7 production composition disables broadcasting by default and requires re
   } finally {await pool.end();}
 });
 
+test("P7 PostgreSQL mandatory observation sink records blocked production evidence and disk failure stops review",pgOptions,async()=>withPortfolio(async s=>{
+  const recovery=parseRecoveryConfig({version:1,registryVersion:"synthetic-observer",finalityBlocks:"12",
+    sources:[{id:"fixture",rpcUrl:"https://fixture.invalid/"}],assets:[{assetId:"eip155:56/native",decimals:18,
+      semantics:"native-gas",review:"synthetic-observer"}]});
+  const reviews={accessPolicy:null,reviewedControl:null,access:{async session(){throw Error("Unconfigured");},
+    async jurisdiction(){return null;},async country(){return null;},async product(){return null;}},
+    async economicQuantity(){return null;},async portfolioValuations(){return [];},async event(){return null;},
+    async providerEvent(){return null;},async quote(){return null;},async simulation(){return null;}};
+  const now=new Date(),challenge=await s.sessions.challenge(s.owner.address,now);
+  const session=await s.sessions.verify(challenge.id,await s.owner.signMessage(challenge.message),now);
+  const input={pool:s.pool,sessions:s.sessions,deployment:{version:"synthetic-observer",marketPolicy:s.base.marketPolicy,
+    mappingRevisions:{[s.base.instrument.instrumentId]:"map-1"},maxGasLimit:300000n,maxFeePerGas:5000000000n,approvalLifetimeMs:60000},
+    rpcUrl:"https://fixture.invalid/",recoveryConfig:recovery,securityReviews:[],settlementMaxAgeMs:60000,
+    settlementUncertaintyBps:0,settlementMaxPegDeviationBps:100};
+  let collected=0;
+  const executor=createBStocksExecutionRuntime(input,reviews,collectorMock().fetcher,async(context,evidence)=>{
+    collected++;assert.equal(context.wallet,s.owner.address.toLowerCase());assert.equal(evidence.quantity,null);
+  });
+  assert.equal((await executor.prepare({sessionToken:session.token,planId:"plan",legIndex:0})).kind,"blocked");
+  assert.equal(collected,1);
+  const failed=createBStocksExecutionRuntime(input,reviews,collectorMock().fetcher,async()=>{throw Error("Synthetic evidence disk failure");});
+  await assert.rejects(()=>failed.prepare({sessionToken:session.token,planId:"plan",legIndex:0}),/Synthetic evidence disk failure/);
+  assert.equal((await s.pool.query("SELECT count(*) FROM eoa_execution_reviews")).rows[0].count,"0");
+  assert.equal((await s.pool.query("SELECT count(*) FROM eoa_execution_legs")).rows[0].count,"0");
+}));
+
 test("P7 PostgreSQL owner isolation and changed recovery configuration invalidate stored review",pgOptions,async()=>withPortfolio(async s=>{
   const r=await s.review(),signed=await s.signatures(r.approval),other=Wallet.createRandom(),now=new Date(originalNow);
   const challenge=await s.sessions.challenge(other.address,now);
@@ -366,3 +396,41 @@ test("P8 PostgreSQL execution application authenticates unavailable deployments 
   await assert.rejects(app.read(s.session.token,now,"foreign"),{code:"PORTFOLIO_UNAVAILABLE"});
   assert.equal((await s.pool.query("SELECT count(*) FROM eoa_execution_reviews")).rows[0].count,"0");
 }));
+
+test('P7 PostgreSQL pilot retains original signed evidence after refresh and wallet cap survives a second portfolio',pgOptions,async()=>withPortfolio(async s=>{
+  const {pilotFixture}=await import('./pilot-fixture.js');
+  const p=pilotFixture(s.owner.address);
+  await s.pool.query(`INSERT INTO chain_snapshot_reviews(id,portfolio_id,wallet,expected_revision,kind,reason,evidence_hash,
+    configuration_hash,source_block,source_block_hash,tx_nonce,body,expires_at,owner_signature,activated_revision)
+    VALUES('synthetic-anchor','portfolio',$1,2,'bootstrap','Synthetic trusted adapter fixture',$2,$2,100,$3,7,'{}',now()+interval '1 hour','synthetic',3)`,
+    [s.owner.address.toLowerCase(),'f'.repeat(64),`0x${'a'.repeat(64)}`]);
+  s.change(e=>{
+    const fresh=refreshFixtureEvidence(p.evidence,e.simulation!.simulatedAt,e.quantity!.sourceBlock);
+    return{...fresh,pilotPrices:{...p.evidence.pilotPrices,
+      equity:{...p.evidence.pilotPrices.equity,updatedAt:fresh.reference!.sourceAt,sourceBlock:fresh.quantity!.sourceBlock,observedAt:fresh.simulation!.simulatedAt,blockTimestamp:fresh.simulation!.simulatedAt},
+      settlement:{...p.evidence.pilotPrices.settlement,updatedAt:fresh.settlement!.observedAt,sourceBlock:fresh.quantity!.sourceBlock,observedAt:fresh.simulation!.simulatedAt,blockTimestamp:fresh.simulation!.simulatedAt},
+      mid:{...p.evidence.pilotPrices.mid,sourceBlock:fresh.quantity!.sourceBlock}},pilotRoundTrip:{...p.evidence.pilotRoundTrip,sourceBlock:fresh.quantity!.sourceBlock,
+      observedAt:fresh.simulation!.simulatedAt,expiresAt:new Date(Date.parse(fresh.simulation!.simulatedAt)+60000).toISOString()}};
+  });
+  const deployment={pilotProfile:p.pilotProfile,marketPolicy:p.marketPolicy,approvalLifetimeMs:180000};
+  const executor=s.executor(deployment),review=await executor.prepare({sessionToken:s.session.token,planId:'plan',legIndex:0});
+  assert.equal(review.kind,'review',review.kind==='blocked'?review.gate.reason:undefined);if(review.kind!=='review')return;
+  assert.equal(review.pilotAdmission?.independentReview,'deferred');assert.ok(review.pilotAdmission!.unknownScannerChecks.length>0);
+  const signed=await s.signatures(review.approval);
+  s.setNow('2026-09-28T14:01:00.000Z');
+  const persisted=await executor.persist({sessionToken:s.session.token,reviewId:review.reviewId,...signed});
+  assert.equal(persisted.replay,false);
+  assert.equal((await s.pool.query('SELECT evidence_hash FROM eoa_execution_legs WHERE id=$1',[review.reviewId])).rows[0].evidence_hash,review.approval.evidenceHash);
+  const sends=await Promise.all([executor.broadcast({sessionToken:s.session.token,reviewId:review.reviewId}),executor.broadcast({sessionToken:s.session.token,reviewId:review.reviewId})]);
+  assert.deepEqual(sends.map(r=>r.outcome).sort(),['accepted','already-claimed']);assert.equal(s.sendCount(),1);
+  const ledger=new Ledger(s.pool),coordinator=new CoordinatorStore(s.pool);
+  await ledger.createPortfolio({id:'other',chainId:56,settlement:s.base.snapshot.confirmedCash,
+    balances:[s.base.snapshot.confirmedCash,s.base.snapshot.nativeGas,...s.base.snapshot.positions.map(p=>p.raw)]});
+  await s.store.bindOwnerWallet('other',s.owner.address,0n);
+  await coordinator.activatePolicy({portfolioId:'other',expectedRevision:1n,policyId:'other-policy',version:1,policy:s.base.coordinatorPolicy});
+  await s.store.setPaused('other',2n,false);await s.pool.query("UPDATE portfolios SET data_mode='chain' WHERE id='other'");
+  await coordinator.coordinateAndReserve({portfolioId:'other',expectedRevision:3n,planId:'other-plan',occurrenceId:'other-occurrence',
+    idempotencyKey:'other-request',leaseUntil:new Date(Date.now()+60000),snapshot:{...s.base.snapshot,revision:3n},proposals:[s.base.proposal]});
+  await assert.rejects(()=>s.executor({...deployment,pilotProfile:{...p.pilotProfile,revision:'new-profile'}})
+    .prepare({sessionToken:s.session.token,planId:'other-plan',legIndex:0}),{code:'PILOT_ALREADY_USED'});
+},true));

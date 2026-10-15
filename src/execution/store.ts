@@ -9,6 +9,10 @@ import { eoaApprovalTypedData, verifySignedEoaSwap,
 import { classifyEoaObservation, type EoaChainObservation,
   type EoaLegState, type EoaRecoveryDecision } from "./recovery.js";
 import { verifyEoaReceiptEffects, type EoaReceiptEffectProof } from "./receipt-effects.js";
+import { securityDigest } from "../security/token-security.js";
+import { executionJson } from "./execution-json.js";
+import type { CanonicalAllowanceProof } from "./allowance-proof.js";
+import type { NonceHistoryAnchor } from "./nonce-history.js";
 
 async function transaction<T>(pool: Pool, run: (client: PoolClient) => Promise<T>,
   existingClient?: PoolClient, recoveryConnection?: PoolClient): Promise<T> {
@@ -44,6 +48,7 @@ export interface PrepareSignedEoaLeg {
   readonly ownerSignature: string;
   readonly rawSignedTransaction: string;
   readonly freshRequest: GateRequest;
+  readonly approvedRequest?: GateRequest;
   /** Read from the trusted current plan and policy record, never client input. */
   readonly expected: ApprovalMetadata;
 }
@@ -57,6 +62,7 @@ export interface FinalizedBalanceSnapshot {
   readonly sourceBlockHash: string;
   readonly balances: readonly Amount[];
   readonly receiptEffects: EoaReceiptEffectProof;
+  readonly allowanceProof?:CanonicalAllowanceProof;
   readonly recoverySource?: RecoveryEvidenceSource;
 }
 
@@ -83,6 +89,8 @@ async function recordRecoveryEvidence(client: PoolClient, legId: string,
 }
 
 export interface EoaRecoveryContext {
+  readonly requireZeroAllowance?:boolean;
+  readonly nonceHistoryAnchor?: NonceHistoryAnchor;
   readonly portfolioId: string;
   readonly legId: string;
   readonly chainId: number;
@@ -120,10 +128,10 @@ export class EoaExecutionStore {
         tx_nonce: string; token_in: string; token_out: string; input_raw: string;
         minimum_output_raw: string; state: EoaLegState; included_block: string | null;
         included_block_hash: string | null; receipt_success: boolean | null;
-        signed_transaction: string }>(
+        signed_transaction: string; pilot_profile_hash:string|null }>(
         `SELECT chain_id, wallet, tx_hash, tx_nonce, token_in, token_out,
           input_raw, minimum_output_raw, state, included_block,
-          included_block_hash, receipt_success, signed_transaction
+          included_block_hash, receipt_success, signed_transaction,pilot_profile_hash
           FROM eoa_execution_legs WHERE id = $1 AND portfolio_id = $2`, [legId, portfolioId]);
       const row = leg.rows[0];
       requireInput(row !== undefined && row.chain_id === portfolio.chain_id
@@ -136,7 +144,14 @@ export class EoaExecutionStore {
         confirmed_units: string }>(
         "SELECT asset_id, decimals, confirmed_units FROM balances WHERE portfolio_id = $1",
         [portfolioId]);
-      return { portfolioId, legId, chainId: portfolio.chain_id,
+      const anchors = await client.query<{source_block:string;source_block_hash:string;tx_nonce:string}>(
+        `SELECT source_block,source_block_hash,tx_nonce FROM chain_snapshot_reviews WHERE portfolio_id=$1
+          AND wallet=$2 AND kind='bootstrap' AND activated_revision IS NOT NULL ORDER BY source_block LIMIT 1`,
+        [portfolioId,row.wallet]);
+      const anchor=anchors.rows[0];
+      return { portfolioId, legId,requireZeroAllowance:row.pilot_profile_hash!==null, chainId: portfolio.chain_id,
+        ...(anchor ? {nonceHistoryAnchor:{blockNumber:BigInt(anchor.source_block),blockHash:anchor.source_block_hash,
+          nonce:BigInt(anchor.tx_nonce)}} : {}),
         revision: BigInt(portfolio.revision), wallet: row.wallet,
         transactionHash: row.tx_hash, nonce: BigInt(row.tx_nonce),
         tokenIn: row.token_in, tokenOut: row.token_out,
@@ -207,10 +222,12 @@ export class EoaExecutionStore {
     identifier(input.reservationId);
     const a = input.approval;
     const hash = verifySignedEoaSwap(a, input.ownerSignature, input.rawSignedTransaction,
-      input.freshRequest, input.expected, false).toLowerCase();
+      input.freshRequest, input.expected, false, input.approvedRequest).toLowerCase();
     const typed = eoaApprovalTypedData(a);
     const approvalHash = TypedDataEncoder.hash(typed.domain, typed.types, typed.value).toLowerCase();
     return this.transaction(async (client) => {
+      if (input.freshRequest.pilotProfile) await client.query(
+        "SELECT pg_advisory_xact_lock(hashtextextended('nexus-pilot:' || $1, 0))",[a.wallet.toLowerCase()]);
       const portfolio = await lockPortfolio(client, a.portfolioId);
       const prior = await client.query<{ tx_hash: string; signed_transaction: string }>(
         "SELECT tx_hash, signed_transaction FROM eoa_execution_legs WHERE id = $1", [a.legId]);
@@ -218,6 +235,10 @@ export class EoaExecutionStore {
         requireInput(prior.rows[0].tx_hash === hash && prior.rows[0].signed_transaction === input.rawSignedTransaction,
           "LEG_ID_CONFLICT", "Leg ID was used for different signed bytes.");
         return { hash, replay: true };
+      }
+      if(input.freshRequest.pilotProfile){
+        const used=await client.query("SELECT 1 FROM eoa_execution_legs WHERE chain_id=56 AND wallet=$1 LIMIT 1",[a.wallet.toLowerCase()]);
+        requireInput(used.rowCount===0,"PILOT_ALREADY_USED","One persisted buy consumes the pilot exposure allowance.");
       }
       requireInput(!portfolio.execution_paused, "PORTFOLIO_PAUSED", "Portfolio is paused.");
       requireInput(portfolio.owner_wallet !== null && portfolio.owner_wallet === a.wallet.toLowerCase(),
@@ -243,12 +264,12 @@ export class EoaExecutionStore {
       await client.query(`INSERT INTO eoa_execution_legs(id, portfolio_id, plan_id, reservation_id,
         chain_id, wallet, side, token_in, token_out, input_raw, minimum_output_raw,
         tx_nonce, tx_hash, signed_transaction, authorization_nonce,
-        approval_hash, evidence_hash, state)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, 'signed')`,
+        approval_hash, evidence_hash,pilot_profile_hash, state)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17,$18, 'signed')`,
       [a.legId, a.portfolioId, a.planId, input.reservationId, a.chainId, a.wallet.toLowerCase(),
         input.freshRequest.proposal.side, a.tokenIn.toLowerCase(), a.tokenOut.toLowerCase(),
         a.inputRaw.toString(), a.minimumOutputRaw.toString(), a.transactionNonce, hash,
-        input.rawSignedTransaction, a.authorizationNonce, approvalHash, a.evidenceHash]);
+        input.rawSignedTransaction, a.authorizationNonce, approvalHash, a.evidenceHash,input.freshRequest.pilotProfile?securityDigest(input.freshRequest.pilotProfile):null]);
       await client.query(`INSERT INTO transactions(id, portfolio_id, plan_id, reservation_id, state)
         VALUES ($1, $2, $3, $4, 'unknown')`, [hash, a.portfolioId, a.planId, input.reservationId]);
       await client.query("UPDATE reservations SET state = 'submitted', lease_until = NULL WHERE id = $1", [input.reservationId]);
@@ -265,7 +286,7 @@ export class EoaExecutionStore {
   async claimBroadcastOnce(input: PrepareSignedEoaLeg, existingClient?: PoolClient): Promise<{ hash: string; rawSignedTransaction: string } | null> {
     const a = input.approval;
     const hash = verifySignedEoaSwap(a, input.ownerSignature, input.rawSignedTransaction,
-      input.freshRequest, input.expected, false).toLowerCase();
+      input.freshRequest, input.expected, false, input.approvedRequest).toLowerCase();
     const typed = eoaApprovalTypedData(a);
     const approvalHash = TypedDataEncoder.hash(typed.domain, typed.types, typed.value).toLowerCase();
     return this.transaction(async (client) => {
@@ -352,6 +373,27 @@ export class EoaExecutionStore {
     });
   }
 
+  /** A post-fill allowance anomaly pauses once; submitted funds remain reserved. */
+  async freezeAllowanceIncident(portfolioId:string,legId:string):Promise<void> {
+    identifier(portfolioId);identifier(legId);
+    await this.transaction(async c=>{
+      const p=await lockPortfolio(c,portfolioId);
+      const leg=await c.query(`SELECT 1 FROM eoa_execution_legs WHERE id=$1 AND portfolio_id=$2
+        AND pilot_profile_hash IS NOT NULL AND receipt_success=true AND reconciled_at IS NULL`,[legId,portfolioId]);
+      requireInput(leg.rowCount===1,"INVALID_ALLOWANCE_INCIDENT","An unreconciled successful pilot receipt is required.");
+      const incidentId=`allowance-${legId}`;
+      const existing=await c.query('SELECT 1 FROM decision_records WHERE id=$1',[incidentId]);
+      if(existing.rowCount)return;
+      const next=BigInt(p.revision)+1n;
+      await invalidateHeld(c,portfolioId);
+      await c.query('INSERT INTO portfolio_revisions(portfolio_id,revision,reason) VALUES($1,$2,$3)',
+        [portfolioId,next.toString(),'pilot-post-fill-allowance-incident']);
+      await c.query('UPDATE portfolios SET execution_paused=true,revision=$2 WHERE id=$1',[portfolioId,next.toString()]);
+      await c.query(`INSERT INTO decision_records(id,portfolio_id,revision,kind,body) VALUES($1,$2,$3,'pilot-incident',$4::jsonb)`,
+        [incidentId,portfolioId,next.toString(),executionJson({legId,reason:'PILOT_POST_FILL_ALLOWANCE_NONZERO'})]);
+    });
+  }
+
   /** Applies a finalized receipt and complete trusted chain balances together. */
   async reconcileFinalizedLeg(input: FinalizedBalanceSnapshot): Promise<{
     revision: bigint; spent: bigint; received: bigint }> {
@@ -367,10 +409,10 @@ export class EoaExecutionStore {
         token_in: string; token_out: string; input_raw: string; minimum_output_raw: string;
         included_block: string | null; included_block_hash: string | null;
         receipt_success: boolean | null; reconciled_at: Date | null;
-        tx_hash: string; wallet: string; signed_transaction: string }>(
+        tx_hash: string; wallet: string; signed_transaction: string;pilot_profile_hash:string|null }>(
         `SELECT plan_id, reservation_id, state, token_in, token_out, input_raw,
           minimum_output_raw, included_block, included_block_hash,
-          receipt_success, reconciled_at, tx_hash, wallet, signed_transaction
+          receipt_success, reconciled_at, tx_hash, wallet, signed_transaction,pilot_profile_hash
           FROM eoa_execution_legs
           WHERE id = $1 AND portfolio_id = $2 FOR UPDATE`, [input.legId, input.portfolioId]);
       const row = leg.rows[0];
@@ -393,6 +435,13 @@ export class EoaExecutionStore {
         && input.receiptEffects.blockHash.toLowerCase() === input.sourceBlockHash.toLowerCase()
         && input.receiptEffects.success === row.receipt_success,
       "INVALID_RECEIPT_PROOF", "Proof must match the finalized stored receipt.");
+      if(row.pilot_profile_hash!==null&&row.receipt_success) {
+        const proof=input.allowanceProof;
+        requireInput(!!proof&&proof.wallet.toLowerCase()===row.wallet&&proof.token.toLowerCase()===row.token_in
+          &&proof.spender.toLowerCase()===signed.to.toLowerCase()&&proof.sourceBlock===input.sourceBlock
+          &&proof.sourceBlockHash.toLowerCase()===input.sourceBlockHash.toLowerCase()&&proof.allowanceRaw===0n,
+        "PILOT_POST_FILL_ALLOWANCE_INVALID","Canonical zero post-fill allowance is mandatory for this persisted pilot leg.");
+      }
       const delta = verifyEoaReceiptEffects({ proof: input.receiptEffects,
         chainId: portfolio.chain_id, wallet: row.wallet, transactionHash: row.tx_hash,
         router: signed.to, transactionValue: signed.value,
@@ -404,6 +453,9 @@ export class EoaExecutionStore {
       requireInput(input.balances.some(value => value.assetId === settlement.rows[0]?.settlement_asset_id
         && value.decimals === settlement.rows[0]?.settlement_decimals),
       "MISSING_SETTLEMENT", "Complete settlement balance is required.");
+      await client.query(`INSERT INTO eoa_fill_proofs(leg_id,proof,before_balances,after_balances,allowance_proof)
+        VALUES($1,$2::jsonb,$3::jsonb,$4::jsonb,$5::jsonb)`,[input.legId,executionJson(input.receiptEffects),
+        executionJson(before),executionJson(input.balances),input.allowanceProof?executionJson(input.allowanceProof):null]);
       await client.query("DELETE FROM balances WHERE portfolio_id = $1", [input.portfolioId]);
       for (const value of input.balances) await client.query(
         "INSERT INTO balances(portfolio_id, asset_id, decimals, confirmed_units) VALUES ($1, $2, $3, $4)",

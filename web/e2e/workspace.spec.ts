@@ -122,9 +122,17 @@ test("HTTP boundary rejects cross-origin writes, replay, foreign portfolio and o
   expect((await request.post("/api/execution",{headers:{Origin:origin},data:{kind:"prepare",planId:"plan",legIndex:0,evidence:{state:"clear"}}})).status()).toBe(400);
   expect((await request.post("/api/execution",{headers:{Origin:origin},data:{kind:"prepare",planId:"plan",legIndex:0}})).status()).toBe(503);
   expect((await request.get("/api/execution?portfolio=foreign-portfolio")).status()).toBe(404);
+  for(const path of ['/api/chain-snapshot','/api/pilot-plan','/api/reanchor']){
+    expect((await request.post(path,{headers:{Origin:'https://evil.example'},data:{}})).status()).toBe(403);
+    expect((await request.post(path,{headers:{Origin:origin},data:{extra:'x'.repeat(17000)}})).status()).toBe(413);
+  }
+  expect((await request.get('/api/chain-snapshot?portfolio=foreign-portfolio')).status()).toBe(404);
+  expect((await request.post('/api/reanchor',{headers:{Origin:origin},data:{kind:'prepare',portfolioId:'foreign',legId:'leg'}})).status()).toBe(404);
   expect((await request.post("/api/session/logout",{ headers:{ Origin:origin },data:{} })).status()).toBe(200);
   expect((await request.get("/api/workspace")).status()).toBe(401);
   expect((await request.get("/api/execution?portfolio=foreign-portfolio")).status()).toBe(401);
+  expect((await request.post('/api/reanchor',{headers:{Origin:origin},data:{kind:'prepare',portfolioId:'foreign',legId:'leg'}})).status()).toBe(401);
+  expect((await request.post('/api/pilot-plan',{headers:{Origin:origin},data:{portfolioId:'foreign',requestId:'request'}})).status()).toBe(401);
 });
 
 test("mobile sign-in rejects the wrong chain and preserves keyboard navigation", async ({ page }) => {

@@ -10,9 +10,12 @@ const timed = (value: unknown) => omit(value, ["observedAt", "expiresAt"]);
 /** The wallet sees the earliest original evidence lease, not just the route deadline. */
 export function executionMarketExpiry(request: GateRequest): number {
   const e = request.evidence, p = request.marketPolicy;
+  if (p.approvalClock === "refresh-before-submit") return Math.min(
+    Date.parse(request.now) + 300_000, Date.parse(e.quote!.expiresAt),
+    Date.parse(e.quote!.onchainDeadline), Date.parse(e.quote!.quotedAt) + p.maxQuoteAgeMs);
   const clocks = [e.eligibility,e.quantity,e.settlement,e.session,e.tokenStatus,e.audit,e.event,e.providerEvent];
   const values = clocks.filter(v => v !== null && v !== undefined).flatMap(v => [
-    Date.parse(v.expiresAt), Date.parse(v.observedAt) + p.maxStatusAgeMs]);
+    Date.parse(v.expiresAt), Date.parse(v.observedAt) + (v===e.settlement?p.maxSettlementAgeMs??p.maxStatusAgeMs:p.maxStatusAgeMs)]);
   for (const v of e.portfolioValuations ?? []) values.push(Date.parse(v.expiresAt), Date.parse(v.observedAt)+p.maxReferenceAgeMs);
   for (const s of e.tokenSecurity ?? []) {
     for (const c of [s.observation, ...s.providers, s.reviewArtifact])
@@ -47,7 +50,10 @@ function approvalFacts(e: MarketEvidence): unknown {
 /** Preserve the signed packet only after fresh facts prove it still valid within its original lease. */
 export function revalidateExecutionMarket(approved: GateRequest, current: MarketEvidence, now: string): GateRequest {
   const request = { ...approved, now }, fresh = { ...request, evidence: current };
-  requireInput(evaluateMarketGate(request).allowed && evaluateMarketGate(fresh).allowed,
+  const renewable = approved.marketPolicy.approvalClock === "refresh-before-submit";
+  requireInput(Date.parse(now) >= Date.parse(approved.now)
+    && Date.parse(now) < executionMarketExpiry(approved), "APPROVAL_EXPIRED", "Original review deadline has expired.");
+  requireInput(evaluateMarketGate(renewable ? approved : request).allowed && evaluateMarketGate(fresh).allowed,
     "MARKET_GATE_BLOCKED", "Original and current complete market gates must pass.");
   // Pool movements inside the signed minimum still need today's price/limit checks.
   requireInput(evaluateMarketGate({ ...fresh, evidence: { ...current,
@@ -63,9 +69,14 @@ export function revalidateExecutionMarket(approved: GateRequest, current: Market
     "MARKET_EVIDENCE_CHANGED", "Reference source time cannot move backwards.");
   requireInput(securityDigest(approvalFacts(approved.evidence)) === securityDigest(approvalFacts(current)),
     "MARKET_EVIDENCE_CHANGED", "Current market, review or authorization facts changed.");
+  if(approved.pilotProfile)for(const kind of ['equity','settlement'] as const) {
+    const before=approved.evidence.pilotPrices?.[kind],after=current.pilotPrices?.[kind];
+    requireInput(!!before&&!!after&&after.roundId>=before.roundId&&Date.parse(after.updatedAt)>=Date.parse(before.updatedAt),
+      'MARKET_EVIDENCE_CHANGED','Pilot source round and true update time cannot regress during signing.');
+  }
   const maximumOutput = approved.evidence.quote!.expectedOutputRaw
     * BigInt(10_000 + approved.marketPolicy.maxPositiveFillBufferBps) / 10_000n;
   requireInput(current.simulation!.outputRaw <= maximumOutput,
     "MARKET_EVIDENCE_CHANGED", "Current simulated output exceeds approved portfolio valuation bounds.");
-  return request;
+  return renewable ? fresh : request;
 }

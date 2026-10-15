@@ -21,3 +21,19 @@ export function regularSessionOpen(now: Date, session: SessionEvidence): boolean
     && session.openLocal < session.closeLocal
     && local.time >= session.openLocal && local.time < session.closeLocal;
 }
+
+/** Convert this dated calendar's local open to UTC, including NY DST transitions. */
+export function regularSessionStart(session:SessionEvidence):number|null {
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(session.localDate)||!/^\d{2}:\d{2}$/.test(session.openLocal))return null;
+  const local=Date.parse(`${session.localDate}T${session.openLocal}:00Z`);
+  if(!Number.isFinite(local))return null;
+  let candidate=local;
+  for(let i=0;i<3;i++) {
+    const parts=localParts(new Date(candidate),session.exchangeZone);
+    if(!parts)return null;
+    const rendered=Date.parse(`${parts.date}T${parts.time}:00Z`);
+    candidate+=local-rendered;
+  }
+  const check=localParts(new Date(candidate),session.exchangeZone);
+  return check?.date===session.localDate&&check.time===session.openLocal?candidate:null;
+}

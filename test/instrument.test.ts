@@ -57,3 +57,10 @@ test("missing or ambiguous registry metadata is rejected", () => {
     assert.throws(() => createInstrument({ ...fixture, ...patch }));
   }
 });
+
+test('P5.5 exact Chainlink feed namespaces can be registered without weakening instrument identities',()=>{
+  const referenceSource='chainlink-bsc:0xea5c2cbb5cd57dac24e26180b19a929f3e9699b8';
+  assert.equal(createInstrument({...fixture,referenceSource}).referenceSource,referenceSource);
+  assert.throws(()=>createInstrument({...fixture,issuerId:'issuer:injected'}),{code:'INVALID_ID'});
+  assert.throws(()=>createInstrument({...fixture,referenceSource:'https://arbitrary.example'}),{code:'INVALID_ID'});
+});

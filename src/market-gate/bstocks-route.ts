@@ -102,6 +102,10 @@ export function createBStocksRoutePorts(rpcUrl:string,input:BStocksRouteConfig,f
   const units=(c:ExecutionMarketContext)=>c.proposal.side==="buy"?c.proposal.spend.units:c.proposal.raw.units;
   const pair=(c:ExecutionMarketContext)=>c.proposal.side==="buy"?[USDT,BSTOCKS_BSC_NVDAB]:[BSTOCKS_BSC_NVDAB,USDT];
   return{
+    async pilotMid(c:ExecutionMarketContext,s:BStocksBscQuantitySnapshot) {try {
+      const f=await frame(c,s);await f.finish();return{sourceBlock:s.sourceBlock,sourceBlockHash:s.sourceBlockHash,
+        midNumerator:f.sqrt*f.sqrt,midDenominator:1n<<192n};
+    }catch{return null;}},
     async quote(c:ExecutionMarketContext,s:BStocksBscQuantitySnapshot):Promise<RouteQuote|null>{try{
       const f=await frame(c,s),[tokenIn,tokenOut]=pair(c),inputRaw=units(c);
       if(inputRaw<=0n)throw Error("Invalid accepted amount");
@@ -118,7 +122,7 @@ export function createBStocksRoutePorts(rpcUrl:string,input:BStocksRouteConfig,f
         additionalFeeSettlement:0n,networkFeeSettlement:await networkFee(c,f,nativeFeeRaw),nativeFeeRaw,priceImpactBps:impact,spreadBps:25,
         calldata:routeAbi.encodeFunctionData("exactInputSingle",[[tokenIn,tokenOut,2500,c.wallet,deadline,inputRaw,minimumOutputRaw,0n]]),
         value:0n,quotedAt:c.now,expiresAt:new Date(Number(deadline)*1000).toISOString(),onchainDeadline:new Date(Number(deadline)*1000).toISOString()};
-      if(impact>c.marketPolicy.maxPriceImpactBps||quote.networkFeeSettlement>c.marketPolicy.maxNetworkFeeSettlement
+      if(impact>c.marketPolicy.maxPriceImpactBps||(!c.pilotProfile&&quote.networkFeeSettlement>c.marketPolicy.maxNetworkFeeSettlement)
         ||quote.spreadBps>c.marketPolicy.maxSpreadBps||deadline*1000n<=BigInt(Date.parse(c.now)))return null;
       await f.finish();return quote;
     }catch{return null;}},

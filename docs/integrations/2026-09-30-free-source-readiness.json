@@ -1,0 +1,123 @@
+{
+  "scope": "Read-only public BSC endpoints and Chainlink source clocks; no intended wallet, signatures or transactions.",
+  "primary": {
+    "checkedAt": "2026-09-30T14:23:28.067Z",
+    "endpoint": "https://bsc-dataseed.bnbchain.org/",
+    "chainId": "0x38",
+    "block": {
+      "number": "124923910",
+      "hash": "0x792bca1ae55b4d43e4e8d2128485c985f6632412aa5e20a328d395d0d9b21057",
+      "timestamp": "2026-09-30T14:23:28.000Z"
+    },
+    "capabilities": [
+      {
+        "name": "historicalNativeBalance",
+        "ok": false,
+        "error": "{\"code\":-32000,\"message\":\"missing trie node\"}"
+      },
+      {
+        "name": "historicalContractRead",
+        "ok": false,
+        "error": "{\"code\":-32000,\"message\":\"missing trie node\"}"
+      },
+      {
+        "name": "historicalBlockWithTransactions",
+        "ok": true,
+        "returned": "object"
+      },
+      {
+        "name": "logs",
+        "ok": false,
+        "error": "{\"code\":-32005,\"message\":\"limit exceeded\"}"
+      }
+    ],
+    "feeds": [
+      {
+        "asset": "NVDA",
+        "proxy": "0xea5c2cbb5cd57dac24e26180b19a929f3e9699b8",
+        "description": "NVDA / USD",
+        "answerRaw": "23095500000",
+        "decimals": 8,
+        "updatedAt": "2026-09-30T14:07:31.000Z",
+        "ageSeconds": 959,
+        "roundComplete": true
+      },
+      {
+        "asset": "AAPL",
+        "proxy": "0xb7ed5be7977d61e83534230f3256c021e0fae0b6",
+        "description": "AAPL / USD",
+        "answerRaw": "33819500000",
+        "decimals": 8,
+        "updatedAt": "2026-09-30T14:03:45.000Z",
+        "ageSeconds": 1186,
+        "roundComplete": true
+      },
+      {
+        "asset": "USDT",
+        "proxy": "0xb97ad0e74fa7d920791e90258a6e2085088b4320",
+        "description": "USDT / USD",
+        "answerRaw": "99950000",
+        "decimals": 8,
+        "updatedAt": "2026-09-30T14:23:24.000Z",
+        "ageSeconds": 7,
+        "roundComplete": true
+      }
+    ]
+  },
+  "fallback": {
+    "checkedAt": "2026-09-30T14:25:46.201Z",
+    "endpoint": "https://bsc.publicnode.com",
+    "chainId": "0x38",
+    "checks": [
+      {
+        "tag": "depth-128",
+        "name": "nativeBalance",
+        "ok": false,
+        "error": "{\"code\":-32602,\"message\":\"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode\"}"
+      },
+      {
+        "tag": "depth-128",
+        "name": "contractRead",
+        "ok": false,
+        "error": "{\"code\":-32602,\"message\":\"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode\"}"
+      },
+      {
+        "tag": "depth-5000",
+        "name": "nativeBalance",
+        "ok": false,
+        "error": "{\"code\":-32602,\"message\":\"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode\"}"
+      },
+      {
+        "tag": "depth-5000",
+        "name": "contractRead",
+        "ok": false,
+        "error": "{\"code\":-32602,\"message\":\"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode\"}"
+      },
+      {
+        "tag": "depth-200000",
+        "name": "nativeBalance",
+        "ok": false,
+        "error": "{\"code\":-32602,\"message\":\"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode\"}"
+      },
+      {
+        "tag": "depth-200000",
+        "name": "contractRead",
+        "ok": false,
+        "error": "{\"code\":-32602,\"message\":\"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode\"}"
+      },
+      {
+        "name": "logs",
+        "ok": true
+      },
+      {
+        "name": "blockTransactions",
+        "ok": true
+      },
+      {
+        "name": "receipt",
+        "ok": false,
+        "error": "{\"code\":-32602,\"message\":\"Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode\"}"
+      }
+    ]
+  }
+}

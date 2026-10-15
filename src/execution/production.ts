@@ -14,12 +14,14 @@ import { prepareEoaLegApproval, type ApprovalMetadata } from "./eoa.js";
 import { revalidateExecutionMarket, executionMarketExpiry } from "./market-revalidation.js";
 import { decodeExecutionJson, executionJson } from "./execution-json.js";
 import type { ExecutionChainPort, ExecutionChainState } from "./bsc-execution-chain.js";
+import { pilotPriceBand, validatePilotProfile, type PilotAdmissionProfile } from "../pilot/profile.js";
 
 /** Implemented by SessionStore; authenticated sessions are never browser claims. */
 export interface ExecutionSessions {
   authenticate(token: string, now: Date, client: PoolClient): Promise<{ wallet: string; expiresAt: string }>;
 }
 export interface ExecutionDeployment {
+  readonly pilotProfile?: PilotAdmissionProfile;
   readonly version: string;
   readonly broadcastEnabled: boolean;
   readonly recoveryConfigurationHash: string;
@@ -59,6 +61,7 @@ export class ProductionEoaExecutor {
       && deployment.approvalLifetimeMs > 0 && deployment.approvalLifetimeMs <= 300_000,
     "INVALID_EXECUTION_CONFIG", "Versioned deployment and bounded fees/approval lifetime required.");
     this.deployment = structuredClone(deployment);
+    if (deployment.pilotProfile) validatePilotProfile(deployment.pilotProfile);
   }
   private async transaction<T>(run: (client: PoolClient) => Promise<T>): Promise<T> {
     const client = await this.pool.connect();
@@ -77,6 +80,8 @@ export class ProductionEoaExecutor {
     identifier(planId);
     requireInput(Number.isSafeInteger(index) && index >= 0, "INVALID_LEG", "Stored leg index required.");
     const now = this.now(), session = await this.sessions.authenticate(token, now, client);
+    if (this.deployment.pilotProfile) await client.query(
+      "SELECT pg_advisory_xact_lock(hashtextextended('nexus-pilot:' || $1, 0))", [session.wallet.toLowerCase()]);
     const owned = await client.query<{ id: string; chain_id: number; revision: string; active_policy_id: string | null;
       execution_paused: boolean; data_mode: string; status: string; plan_revision: string }>(`SELECT p.id, p.chain_id,
         p.revision, p.active_policy_id, p.execution_paused, p.data_mode, q.status, q.revision AS plan_revision
@@ -144,10 +149,25 @@ export class ProductionEoaExecutor {
       : { ...original, nominalValue: ceil(original.nominalValue), raw,
         proceeds: amount(floor(original.proceeds.units), original.proceeds), proceedsValueLower: floor(original.proceedsValueLower) };
     const mapping = this.deployment.mappingRevisions[instrument.instrumentId];
+    if (this.deployment.pilotProfile) {
+      const pilot = this.deployment.pilotProfile;
+      requireInput(session.wallet.toLowerCase() === pilot.wallet && instrument.instrumentId === pilot.instrumentId
+        && proposal.side === "buy" && raw.units <= pilot.maximumSpendRaw && stored.body.result.legs.length === 1,
+      "PILOT_SCOPE", "Pilot permits one bounded owner NVDAB buy only.");
+      const prior = await client.query(`SELECT 1 FROM eoa_execution_legs
+        WHERE chain_id=56 AND wallet=$1 AND id NOT IN
+          (SELECT id FROM eoa_execution_reviews WHERE plan_id=$2) LIMIT 1`, [pilot.wallet, planId]);
+      requireInput(prior.rowCount === 0, "PILOT_ALREADY_USED", "A persisted pilot leg consumes the one-buy allowance.");
+    }
     requireInput(typeof mapping === "string" && mapping.length > 0, "MISSING_MAPPING_REVIEW", "Reviewed economic mapping revision required.");
     const policyHash = `0x${securityDigest({ policyId: row.active_policy_id, version: stored.policy_version,
       body: stored.policy, deployment: this.deployment })}`;
+    const bootstrap=this.deployment.pilotProfile?await client.query<{source_block:string}>(
+      `SELECT source_block FROM chain_snapshot_reviews WHERE portfolio_id=$1 AND wallet=$2 AND kind='bootstrap'
+        AND activated_revision IS NOT NULL ORDER BY activated_revision LIMIT 1`,[row.id,session.wallet.toLowerCase()]):null;
     const market: ExecutionMarketContext = { now: now.toISOString(), wallet: session.wallet.toLowerCase(),
+      ...(this.deployment.pilotProfile ? { pilotProfile: this.deployment.pilotProfile } : {}),
+      ...(bootstrap?.rows[0]?{pilotBootstrapBlock:BigInt(bootstrap.rows[0].source_block)}:{}),
       sessionId: createHash("sha256").update(token).digest("hex"), instrument,
       snapshot: currentSnapshot, coordinatorPolicy: policy, proposal,
       marketPolicy: this.deployment.marketPolicy, expectedMappingRevision: mapping };
@@ -161,6 +181,15 @@ export class ProductionEoaExecutor {
       && Number.isSafeInteger(state.nonce) && state.nonce >= 0
       && sameBalances(state.balances, balances(context.market.snapshot)),
     "CHAIN_STATE_CHANGED", "Current EOA nonce and complete tracked balances must match trusted records.");
+    if(this.deployment.pilotProfile){
+      const r=await this.pool.query<{nonce:string}>(`SELECT greatest(s.tx_nonce,coalesce(
+        (SELECT max(l.tx_nonce)+1 FROM eoa_execution_legs l WHERE l.wallet=s.wallet AND l.chain_id=56
+          AND l.reconciled_at IS NOT NULL),0)) AS nonce FROM chain_snapshot_reviews s
+        WHERE s.portfolio_id=$1 AND s.wallet=$2 AND s.activated_revision IS NOT NULL
+        ORDER BY s.activated_revision DESC LIMIT 1`,[context.portfolioId,context.market.wallet]);
+      requireInput(r.rows[0]!==undefined&&BigInt(r.rows[0].nonce)===BigInt(state.nonce),
+        "UNEXPLAINED_NONCE","Owner must acknowledge chain bootstrap or external activity before execution.");
+    }
     return state;
   }
   async prepare(input: { sessionToken: string; planId: string; legIndex: number }) {
@@ -188,7 +217,15 @@ export class ProductionEoaExecutor {
       [reviewId, context.portfolioId, context.planId, context.reservationId, input.legIndex,
         context.hash, executionJson(request), executionJson(metadata), metadata.expiresAt]);
     });
-    return { kind: "review" as const, reviewId, approval };
+    return { kind: "review" as const, reviewId, approval,
+      ...(request.pilotProfile?{pilotAdmission:{mode:'owner-pilot' as const,profileRevision:request.pilotProfile.revision,
+        maximumSpendUnits:request.pilotProfile.maximumSpendRaw.toString(),independentReview:'deferred' as const,
+        referenceSourceAt:evidence.reference!.sourceAt,referenceAgeMs:Date.parse(request.now)-Date.parse(evidence.reference!.sourceAt),
+        referenceBandBps:pilotPriceBand(request.pilotProfile,Date.parse(request.now)-Date.parse(evidence.reference!.sourceAt)),
+        roundTripPassed:evidence.pilotRoundTrip!.success,
+        scannerFindings:evidence.tokenSecurity!.flatMap(s=>s.providers.flatMap(p=>p.findings.map(f=>`${s.assetId}/${p.provider}: ${f}`))),
+        unknownScannerChecks:evidence.tokenSecurity!.flatMap(s=>s.providers.flatMap(p=>Object.entries(p.coverage??{})
+          .filter(([,value])=>value==='unknown').map(([key])=>`${s.assetId}/${p.provider}: ${key}`)))}}:{}) };
   }
   private async review(client: PoolClient, token: string, reviewId: string, lock = false) {
     identifier(reviewId);
@@ -216,6 +253,7 @@ export class ProductionEoaExecutor {
     requireInput(recordedHash === value.row.context_hash && request.wallet === value.context.market.wallet
       && securityDigest(request.coordinatorPolicy) === securityDigest(value.context.market.coordinatorPolicy)
       && securityDigest(request.marketPolicy) === securityDigest(value.context.market.marketPolicy)
+      && securityDigest(request.pilotProfile ?? null) === securityDigest(value.context.market.pilotProfile ?? null)
       && expected.portfolioId === value.context.portfolioId && expected.planId === value.context.planId
       && expected.legId === value.row.id && expected.policyHash === value.context.policyHash
       && Date.parse(expected.expiresAt) === value.row.expires_at.getTime()
@@ -226,7 +264,8 @@ export class ProductionEoaExecutor {
     const freshRequest = revalidateExecutionMarket(request, evidence, this.now().toISOString());
     const state = await this.chainState(value.context);
     requireInput(state.nonce === expected.transactionNonce, "CHAIN_STATE_CHANGED", "EOA nonce changed since review.");
-    return { ...value, approval, expected, freshRequest };
+    return { ...value, approval, expected, freshRequest,
+      ...(request.marketPolicy.approvalClock === "refresh-before-submit" ? { approvedRequest: request } : {}) };
   }
   async persist(input: { sessionToken: string; reviewId: string; ownerSignature: string; rawSignedTransaction: string }) {
     const fresh = await this.fresh(input.sessionToken, input.reviewId);
@@ -237,6 +276,7 @@ export class ProductionEoaExecutor {
         && row.expires_at > this.now(), "EXECUTION_CONTEXT_CHANGED", "Execution context changed before persistence.");
       if (context.planStatus === "reserved") await new Ledger(this.pool).startExecution(context.portfolioId, context.planId, client);
       const signed: PrepareSignedEoaLeg = { reservationId: context.reservationId, approval: fresh.approval,
+        ...(fresh.approvedRequest ? { approvedRequest: fresh.approvedRequest } : {}),
         expected: fresh.expected, freshRequest: { ...fresh.freshRequest, now: this.now().toISOString() },
         ownerSignature: input.ownerSignature, rawSignedTransaction: input.rawSignedTransaction };
       const result = await new EoaExecutionStore(this.pool).persistSignedLeg(signed, client);
@@ -263,6 +303,7 @@ export class ProductionEoaExecutor {
       requireInput(context.hash === fresh.row.context_hash && fresh.row.expires_at > this.now(),
         "EXECUTION_CONTEXT_CHANGED", "Context changed immediately before claim.");
       return new EoaExecutionStore(this.pool).claimBroadcastOnce({ reservationId: context.reservationId,
+        ...(fresh.approvedRequest ? { approvedRequest: fresh.approvedRequest } : {}),
         approval: fresh.approval, expected: fresh.expected, freshRequest: { ...fresh.freshRequest, now: this.now().toISOString() },
         ownerSignature: prior.row.owner_signature!, rawSignedTransaction: prior.leg.signed_transaction }, client);
     });

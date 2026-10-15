@@ -1,3 +1,4 @@
+import { fetchCanonicalAllowance } from "./allowance-proof.js";
 import { requireInput } from "../domain/errors.js";
 import { nativeAssetId, tokenAssetId, validateDenomination,
   type Denomination } from "../domain/amount.js";
@@ -104,12 +105,19 @@ export async function prepareBscBalanceEvidence(store: Pick<BscRecoveryStorePort
     tokenIn: context.tokenIn, tokenOut: context.tokenOut,
     inputRaw: context.inputRaw, minimumOutputRaw: context.minimumOutputRaw,
     before: context.balances, after: balances.balances });
+  const allowanceProof=context.requireZeroAllowance&&context.receiptSuccess?await fetchCanonicalAllowance({rpcUrl:input.rpcUrl,
+    wallet:context.wallet,token:context.tokenIn,spender:context.router,sourceBlock:context.includedBlock,
+    sourceBlockHash:context.includedBlockHash},fetcher):null;
+  if(context.requireZeroAllowance&&context.receiptSuccess) {
+    if(!allowanceProof)return null;
+    requireInput(allowanceProof.allowanceRaw===0n,'PILOT_POST_FILL_ALLOWANCE_NONZERO','Pilot allowance was not completely consumed.');
+  }
   if (input.validateTrackedAssets && await input.validateTrackedAssets(context) !== true) return null;
   if (!matches(await readObservation())) return null;
   return { portfolioId: context.portfolioId, legId: context.legId,
     expectedRevision: context.revision, wallet: context.wallet,
     sourceBlock: balances.blockNumber, sourceBlockHash: balances.blockHash,
-    balances: balances.balances, receiptEffects };
+    balances: balances.balances, receiptEffects,...(allowanceProof?{allowanceProof}:{}) };
 }
 
 export interface BscReconciliationStorePort extends Pick<BscRecoveryStorePort,

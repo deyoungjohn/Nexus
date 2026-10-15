@@ -27,7 +27,10 @@ export function createInstrument(input: InstrumentInput): Instrument {
   const assetId = tokenAssetId(input.chainId, input.tokenAddress);
   validateDenomination({ assetId, decimals: input.decimals });
   for (const value of [input.issuerId, input.productType, input.underlyingId, input.quantityModel,
-    input.adapterVersion, input.classificationVersion, input.statusSource, input.referenceSource]) identifier(value);
+    input.adapterVersion, input.classificationVersion]) identifier(value);
+  for (const value of [input.statusSource, input.referenceSource]) requireInput(typeof value === 'string'
+    && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(value), 'INVALID_ID',
+  'Source identities may include a namespace and exact feed address.');
   requireInput(typeof input.ticker === "string" && /^[A-Za-z0-9][A-Za-z0-9.-]{0,31}$/.test(input.ticker),
     "INVALID_TICKER", "Expected a ticker label.");
   for (const values of [input.sectorTags, input.eligibilityRequirements]) {

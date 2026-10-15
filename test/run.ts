@@ -42,3 +42,15 @@ import "./saved-workflow.test.js";
 
 import "./bstocks-route.test.js";
 import "./execution-wallet.test.js";
+
+import "./pilot.test.js";
+import "./chain-bootstrap.test.js";
+import "./pilot-round-trip.test.js";
+import "./pilot-manual-records.test.js";
+import "./pilot-private-output.test.js";
+import "./pilot-price-monitor.test.js";
+
+import "./pilot-amendment.test.js";
+import "./pilot-recovery.test.js";
+import "./reanchor.test.js";
+import "./pilot-runner.test.js";

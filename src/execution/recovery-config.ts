@@ -19,7 +19,8 @@ export interface RecoveryConfig {
   readonly version: 1;
   readonly registryVersion: string;
   readonly finalityBlocks: string;
-  readonly sources: readonly { readonly id: string; readonly rpcUrl: string }[];
+  readonly sources: readonly { readonly id: string; readonly rpcUrl: string;
+    readonly independence?: { readonly upstreamGroup:string; readonly reviewDigest:string; readonly reviewedAt:string } }[];
   readonly assets: readonly RecoveryAsset[];
 }
 
@@ -42,7 +43,7 @@ export function parseRecoveryConfig(value: unknown): RecoveryConfig {
     && Array.isArray(root.assets) && root.assets.length > 0 && root.assets.length <= 128,
   "INVALID_RECOVERY_CONFIG", "Bounded source and reviewed asset lists required.");
   const sources = root.sources.map(value => {
-    const row = object(value, ["id", "rpcUrl"]);
+    const row = object(value, ["id", "rpcUrl"], ["independence"]);
     requireInput(typeof row.id === "string" && typeof row.rpcUrl === "string",
       "INVALID_RECOVERY_CONFIG", "Source identity and HTTPS endpoint required.");
     identifier(row.id);
@@ -50,7 +51,17 @@ export function parseRecoveryConfig(value: unknown): RecoveryConfig {
     try { url = new URL(row.rpcUrl); } catch { throw new Error("Invalid recovery RPC URL."); }
     requireInput(url.protocol === "https:" && !url.username && !url.password
       && !url.search && !url.hash, "INVALID_RECOVERY_CONFIG", "Use a public HTTPS RPC without embedded credentials.");
-    return Object.freeze({ id: row.id, rpcUrl: url.href });
+    let independence:RecoveryConfig['sources'][number]['independence'];
+    if(row.independence!==undefined) {
+      const record=object(row.independence,['upstreamGroup','reviewDigest','reviewedAt']);
+      requireInput(typeof record.upstreamGroup==='string'&&typeof record.reviewDigest==='string'
+        &&/^[0-9a-f]{64}$/.test(record.reviewDigest)&&typeof record.reviewedAt==='string'
+        &&Number.isFinite(Date.parse(record.reviewedAt)),
+      'INVALID_RECOVERY_CONFIG','Explicit reviewed RPC upstream independence required.');
+      identifier(record.upstreamGroup);
+      independence=Object.freeze({upstreamGroup:record.upstreamGroup,reviewDigest:record.reviewDigest,reviewedAt:record.reviewedAt});
+    }
+    return Object.freeze({ id: row.id, rpcUrl: url.href,...(independence?{independence}:{}) });
   });
   const assets = root.assets.map(value => {
     const row = object(value, ["assetId", "decimals", "semantics", "review"], ["contract"]);
@@ -102,7 +113,8 @@ export function parseRecoveryConfig(value: unknown): RecoveryConfig {
 /** Safe durable binding: endpoint digests rather than URLs or potential path credentials. */
 export function recoveryConfigurationRecord(config: RecoveryConfig): { hash: string; snapshot: unknown } {
   const snapshot = { ...config, sources: config.sources.map(source => ({ id: source.id,
-    endpointHash: createHash("sha256").update(source.rpcUrl).digest("hex") })) };
+    endpointHash: createHash("sha256").update(source.rpcUrl).digest("hex"),
+    ...(source.independence?{independence:source.independence}:{}) })) };
   return { hash: createHash("sha256").update(JSON.stringify(snapshot)).digest("hex"), snapshot };
 }
 

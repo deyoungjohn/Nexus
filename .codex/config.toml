@@ -1,7 +1,16 @@
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = true
+
 [mcp_servers.project-memory]
 command = "bash"
-args = ["scripts/memory-mcp.sh"]
-cwd = "."
+args = ["/home/dell/Projects/Nexus/scripts/memory-mcp.sh"]
+cwd = "/home/dell/Projects/Nexus"
 required = true
 startup_timeout_sec = 30
 tool_timeout_sec = 30
+
+[mcp_servers.project-memory.tools.delete_observations]
+approval_mode = "approve"

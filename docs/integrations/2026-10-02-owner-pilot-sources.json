@@ -1,0 +1,83 @@
+{
+  "observedOn": "2026-10-02",
+  "status": "public-source-recovery-not-live-clearance",
+  "prospectus": {
+    "url": "https://www.adgm.com/globalassets/market-disclosure/content/prospectus/btech-holdings-prospectus----11-june---nvidia-bstocks_06_11_2026_16-44-54.pdf",
+    "sha256": "53b2308780c0da61b80b3bc91e625af7454804d56585f39740f17bccb3cd9378",
+    "bytes": 4222652,
+    "pdfPages": 105,
+    "approvalDate": "2026-06-11",
+    "sections": {
+      "eligibleSecondaryInvestor": {
+        "pdfPage": 5,
+        "printedPage": "5"
+      },
+      "restrictedJurisdictions": {
+        "pdfPages": [
+          8,
+          9
+        ],
+        "printedPages": [
+          "8",
+          "9"
+        ]
+      },
+      "certificateRights": {
+        "pdfPages": [
+          13,
+          14
+        ],
+        "section": "3.1\u20133.2"
+      },
+      "secondaryTransferRepresentations": {
+        "pdfPages": [
+          16,
+          17
+        ],
+        "section": "3.4.1"
+      },
+      "rounding": {
+        "pdfPage": 77
+      },
+      "multiplier": {
+        "pdfPage": 84
+      }
+    }
+  },
+  "heartbeat": {
+    "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
+    "sha256": "7e057eb3cd2aa8f0f8f4e1ad99dd0fdd090d38d8c04a45b900c0fee1ad526860",
+    "feed": {
+      "name": "NVDA / USD",
+      "proxyAddress": "0xea5c2Cbb5cD57daC24E26180b19a929F3E9699B8",
+      "contractAddress": "0x2D6147589Bdda5383165dA12ad7a7E81A778b00F",
+      "heartbeat": 86400,
+      "threshold": 0.5,
+      "decimals": 8,
+      "feedType": "Equities",
+      "docs": {
+        "assetClass": "Equity",
+        "assetSubClass": "US",
+        "attributeType": "equity_price",
+        "baseAsset": "NVDA",
+        "baseAssetClic": "NVDA_EQ",
+        "baseAssetEntityId": "equity-NVDA",
+        "blockchainName": "Binance",
+        "clicProductName": "NVDA/USD-RefPrice-DF-Binance-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "NYSE",
+        "productSubType": "Reference",
+        "productType": "Price",
+        "productTypeCode": "RefPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      }
+    }
+  },
+  "limitations": [
+    "Prospectus restriction list can change; Nigeria absence is not current third-party service clearance.",
+    "Published 24-hour heartbeat is not proof that price has not changed.",
+    "Prospectus eight-place issuance rounding must be reconciled to deployed 18-decimal raw denomination; no automatic share entitlement inferred."
+  ]
+}
